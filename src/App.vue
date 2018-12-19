@@ -9,6 +9,7 @@
 <script>
 import Greeter from './components/Greeter.vue'
 import Carousel from './components/Carousel.vue'
+import Scanner from './components/Scanner.vue'
 
 export default {
   beforeCreate() {
@@ -27,7 +28,7 @@ export default {
       this.$store.commit('navigator/pop')
     },
   },
-  components: { Greeter, Carousel }
+  components: { Greeter, Carousel, Scanner }
 }
 </script>
 
