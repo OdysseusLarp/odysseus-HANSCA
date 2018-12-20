@@ -17,13 +17,15 @@
       <br>
       <v-ons-progress-bar :value="dataProgress2" secondary-value="100"></v-ons-progress-bar>
       </div>
-    <div v-if="state == 'results'">
+      <div v-if="state == 'results'">
         <h2>Results</h2>
-      <v-ons-progress-circular value="-20" secondary-value="70"></v-ons-progress-circular>
-      <v-ons-progress-circular value="90" secondary-value="100"></v-ons-progress-circular>
-      <v-ons-progress-circular value="40" secondary-value="80"></v-ons-progress-circular>
-      <v-ons-progress-circular value="50" secondary-value="60"></v-ons-progress-circular>
-      <v-ons-progress-circular value="60" secondary-value="80"></v-ons-progress-circular>
+        <span class="result" v-for="(result, index) in results">
+          <v-ons-progress-circular :value="result.value" :secondary-value="result.max" @click.prevent="setResultText(index)"></v-ons-progress-circular>
+          <span class="percent">{{ result.value }}%</span>
+        </span>
+        <div class="resultTextBox">
+          <pre><vue-typer :text='resultText' :repeat="0" :type-delay="15"></vue-typer></pre>
+        </div>
     </div>
       <v-ons-bottom-toolbar transparent>
         <v-ons-button modifier="outline" style="margin: 6px 0" @click="scan()">Scan</v-ons-button>
@@ -43,7 +45,15 @@ export default {
       intervalID: 0,
       intervalID1: 0,
       intervalID2: 0,
-      state: ''
+      state: '',
+      results: [
+        { value: 0, intervalID: 0, data: 45, max: 90, text: "Result1 text\nsecond line\t100%\nThird line\t  92%\nFourth line\t-20%" },
+        { value: 0, intervalID: 0, data: 60, max: 70, text: "Result2 text" },
+        { value: 0, intervalID: 0, data: 70, max: 100, text: "Result3 text" },
+        { value: 0, intervalID: 0, data: 20, max: 50, text: "Result4 text" },
+        { value: 0, intervalID: 0, data: 55, max: 80, text: "Result5 text" },
+      ],
+      resultText: 'Click on the results to see details'
     }
   },
   methods: {
@@ -51,11 +61,8 @@ export default {
       this.$store.commit('navigator/pop')
     },
     scan() {
+      Object.assign(this.$data, this.$options.data())
       this.state = 'scanning'
-      this.scanProgress = 0
-      this.dataProgress = 0
-      this.dataProgress1 = 0
-      this.dataProgress2 = 0
       this.intervalID = setInterval(() => {
         if (this.scanProgress === 100) {
           clearInterval(this.intervalID)
@@ -86,15 +93,31 @@ export default {
         if (this.dataProgress2 === 100) {
           clearInterval(this.intervalID2)
           this.state = 'results'
+          this.showResults()
           return
         }
         this.dataProgress2++
       }, 90)
     },
+    showResults() {
+      this.results.forEach((result, index)=> { 
+        result.intervalID = setInterval(() => {
+          if (result.value === result.data) {
+            clearInterval(result.intervalID)
+            return
+          }
+          result.value++
+        }, 20)
+      })
+    },
+    setResultText(index) {
+      this.resultText = this.results[index].text
+      console.log(this.resultText)
+    },
     logout() {
       this.$store.commit('navigator/push', Greeter)
     },
-  }
+  },
 }
 </script>
 <style>
@@ -105,5 +128,21 @@ ons-progress-circular {
 .progress-circular {
   width: 64px;
   height: 64px;
+}
+.result {
+  text-align: center;
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.vue-typer .custom.char.typed { 
+  color: #fff;
+}
+.resultTextBox {
+  background-color: rgba( 0, 0, 0, 0.4);
+  border: 1px solid #333;
+  margin: 20px;
+  padding: 10px; 
+  text-align: left;
 }
 </style>
