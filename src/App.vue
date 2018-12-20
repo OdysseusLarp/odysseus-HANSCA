@@ -28,7 +28,6 @@ export default {
       this.$store.commit('navigator/pop')
     },
   },
-  components: { Greeter, Carousel, Scanner }
 }
 </script>
 

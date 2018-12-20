@@ -32,6 +32,7 @@
   </v-ons-page>
 </template>
 <script>
+import Greeter from './Greeter.vue'
 export default {
   data() {
     return {
@@ -89,9 +90,10 @@ export default {
         }
         this.dataProgress2++
       }, 90)
-
-    }
-
+    },
+    logout() {
+      this.$store.commit('navigator/push', Greeter)
+    },
   }
 }
 </script>

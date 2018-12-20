@@ -17,7 +17,7 @@ export default {
     push() {
       setTimeout(() => { 
         this.$store.commit('navigator/push', Carousel) 
-      }, 500)
+      }, 300)
     }
   }
 }
