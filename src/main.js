@@ -10,7 +10,11 @@ import store from './store.js'
 Vue.use(Vuex)
 Vue.use(VueOnsen)
 
+import VueTyper from 'vue-typer'
+Vue.use(VueTyper)
+
 Vue.config.productionTip = false
+
 
 new Vue({
   render: h => h(App),
