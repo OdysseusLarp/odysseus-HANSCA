@@ -3,7 +3,7 @@
     <v-ons-ripple color='#D38312' background='#373B44'>
       <div class="greeter">
           <h1>HANSCA</h1>
-          <h2>The Standard Universal Hand Scanner</h2>
+          <h3>The Standard Universal Hand Scanner</h3>
 </div>
     </v-ons-ripple>
   </v-ons-page>

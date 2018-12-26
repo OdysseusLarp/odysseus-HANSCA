@@ -7,20 +7,10 @@
     <v-ons-carousel fullscreen swipeable auto-scroll overscrollable
       :index.sync="carouselIndex"
     >
-      <v-ons-carousel-item v-for="(value, key) in items" :style="{backgroundColor: value}">
+      <v-ons-carousel-item v-for="(value, key) in items" :style="{backgroundColor: value.color}">
         <div style="text-align: center; font-size: 30px; margin-top: 20px; color: #fff;">{{key}}</div>
         <div style="text-align: center; margin-top: 50px;">
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-dna" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-vial" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-band-aid" size="3x"></v-ons-icon></span>
-          <br>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-cogs" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-screwdriver" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-flask" size="3x"></v-ons-icon></span>
-          <br>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-medkit" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-microscope" size="3x"></v-ons-icon></span>
-          <span class="scan-item"><v-ons-icon @click="scan()" icon="fa-syringe" size="3x"></v-ons-icon></span>
+          <span class="scan-item" v-for="tool in value.tools"><v-ons-icon @click="scan()" :icon="'fa-' + tool" size="3x"></v-ons-icon></span>
         </div>
       </v-ons-carousel-item>
     </v-ons-carousel>
@@ -37,13 +27,23 @@ import Greeter from './Greeter.vue'
 import Scanner from './Scanner.vue'
 export default {
   name: "Carousel",
+  /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
   data() {
     return {
       carouselIndex: 0,
       items: {
-        SCIENCE: '#085078',
-        ENGINEERING: '#373B44',
-        MEDIC: '#D38312'
+        SCIENCE: { 
+          color: '#085078',
+          tools: [ 'atom', 'dna', 'vial', 'flask', 'biohazard', 'chart-bar', 'eye-dropper', 'mortar-pestle', 'radiation', 'skull-crossbones', 'square-root-alt', 'temperature-high' ],
+        },
+        ENGINEERING: {
+          color: '#373B44',
+          tools: [ 'cogs', 'compass',  'microchip', 'globe', 'charging-station', 'hammer', 'project-diagram', 'rocket', 'ruler', 'satellite', 'sliders-h', 'tools' ],
+        },
+        MEDIC: {
+          color: '#D38312',
+          tools: [ 'medkit', 'microscope', 'syringe', 'diagnoses', 'x-ray', 'band-aid', 'brain', 'first-aid', 'heartbeat', 'notes-medical', 'pills', 'prescription-bottle' ]
+        },
       },
       dots: {
         textAlign: 'center',
