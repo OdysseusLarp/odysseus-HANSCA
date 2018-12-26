@@ -47,11 +47,11 @@ export default {
       intervalID2: 0,
       state: '',
       results: [
-        { value: 0, intervalID: 0, data: 45, max: 90, text: "Result1 text\nsecond line\t100%\nThird line\t  92%\nFourth line\t-20%" },
-        { value: 0, intervalID: 0, data: 60, max: 70, text: "Result2 text" },
-        { value: 0, intervalID: 0, data: 70, max: 100, text: "Result3 text" },
-        { value: 0, intervalID: 0, data: 20, max: 50, text: "Result4 text" },
-        { value: 0, intervalID: 0, data: 55, max: 80, text: "Result5 text" },
+        { value: 0, intervalID: 0, data: 45, max: 90, text: "Test results:\nCompleted\t 100%\nProbability\t92%\nCoherence\t -10%\nCorrelation\t82%\nInterference\t5%" },
+        { value: 0, intervalID: 0, data: 60, max: 70, text: "Test results:\nCompleted\t 100%\nProbability\t79%\nCoherence\t -19%\nCorrelation\t76%\nInterference\t2%" },
+        { value: 0, intervalID: 0, data: 70, max: 100, text: "Test results:\nCompleted\t 100%\nProbability\t86%\nCoherence\t   3%\nCorrelation\t90%\nInterference\t6%" },
+        { value: 0, intervalID: 0, data: 20, max: 50, text: "Test results:\nCompleted\t 100%\nProbability\t89%\nCoherence\t -13%\nCorrelation\t80%\nInterference\t3%" },
+        { value: 0, intervalID: 0, data: 55, max: 80, text: "Test results:\nCompleted\t 100%\nProbability\t60%\nCoherence\t  -6%\nCorrelation\t88%\nInterference\t7%" },
       ],
       resultText: 'Click on the results to see details'
     }
