@@ -18,6 +18,17 @@ export default {
       setTimeout(() => { 
         this.$store.commit('navigator/push', Carousel) 
       }, 300)
+    },
+    nfcLogin() {
+      navigator.nfc.cancelWatch()
+      this.push()
+    }
+  },
+  created() {
+    if ('nfc' in navigator) {
+      navigator.nfc.watch((message) => {
+        this.nfcLogin()
+      }, {mode: 'any'})
     }
   }
 }

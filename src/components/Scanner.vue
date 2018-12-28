@@ -63,15 +63,26 @@ export default {
     scan() {
       Object.assign(this.$data, this.$options.data())
       this.state = 'scanning'
-      this.intervalID = setInterval(() => {
-        if (this.scanProgress === 100) {
-          clearInterval(this.intervalID)
-          this.state = 'processing'
-          this.analyze()
-          return
-        }
-        this.scanProgress++
-      }, 40)
+      if ('nfc' in navigator) {
+        navigator.nfc.watch((message) => {
+          this.processMessage(message)
+        }, {mode: 'any'})
+      } else {
+        this.intervalID = setInterval(() => {
+          if (this.scanProgress === 100) {
+            clearInterval(this.intervalID)
+            this.state = 'processing'
+            this.analyze()
+            return
+          }
+          this.scanProgress++
+        }, 40)
+      }
+    },
+    processMessage(msg) {
+      navigator.nfc.cancelWatch()
+      this.state = 'processing'
+      this.analyze()
     },
     analyze() {
       this.intervalID = setInterval(() => {
