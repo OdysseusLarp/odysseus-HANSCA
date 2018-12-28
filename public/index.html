@@ -4,13 +4,70 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="theme-color" content="#0d0d0d">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+
+    <!--Load selected JavaScript libraries-->
+    <script src="components/loader.js"></script>
+
+    <script type="text/javascript">
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            // Registration was successful
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            var deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+              // Prevent Chrome 67 and earlier from automatically showing the prompt
+              e.preventDefault();
+              // Stash the event so it can be triggered later.
+              deferredPrompt = e;
+
+              showAddToHomeScreen();
+            });
+            function showAddToHomeScreen() {
+
+              var a2hsBtn = document.querySelector(".ad2hs");
+
+              a2hsBtn.style.display = "block";
+
+              a2hsBtn.addEventListener("click", addToHomeScreen);
+
+            }   
+            function addToHomeScreen() {  
+              var a2hsBtn = document.querySelector(".ad2hs");  // hide our user interface that shows our A2HS button
+              a2hsBtn.style.display = 'none';  // Show the prompt
+              deferredPrompt.prompt();  // Wait for the user to respond to the prompt
+              deferredPrompt.userChoice
+                .then(function(choiceResult){
+
+                  if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the A2HS prompt');
+                  } else {
+                    console.log('User dismissed the A2HS prompt');
+                  }
+
+                  deferredPrompt = null;
+                });}
+          }, function(err) {
+            // registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+
+    </script>
+    <!--Load selected CSS libraries-->
+    <link rel="stylesheet" href="components/loader.css">
+
     <title>Hansca</title>
   </head>
   <body>
     <noscript>
       <strong>We're sorry but hansca doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+    <input type="button" class="ad2hs" style="display: none;">Add to homescreen</input>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
