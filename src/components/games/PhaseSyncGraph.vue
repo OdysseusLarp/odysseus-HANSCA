@@ -9,6 +9,10 @@ const WIDTH = 1
 const POINTS = 75
 const ASPECT = 0.25
 const UPDATE_FREQ = 10 // ms
+// When speed is below this limit, the phase is "locked"
+const SPEED_LOCK_LIMIT = 0.1
+// How fast does phase move to zero when in phase lock
+const SPEED_LOCK_SHIFT_SPEED = 0.1
 
 export default {
     props: [ 'graphs' ],
@@ -36,7 +40,20 @@ export default {
     methods: {
         update() {
             for (let i=0; i < this.phases.length; i++) {
-                const phase = (this.phases[i] + UPDATE_FREQ/1000 * this.$props.graphs[i].phaseSpeed*2*Math.PI) % (2*Math.PI)
+                const speed = this.$props.graphs[i].phaseSpeed
+                let phase = this.phases[i]
+                if (Math.abs(speed) < SPEED_LOCK_LIMIT) {
+                    if (phase > SPEED_LOCK_SHIFT_SPEED) {
+                        phase -= SPEED_LOCK_SHIFT_SPEED
+                    } else if (phase < -SPEED_LOCK_SHIFT_SPEED) {
+                        phase += SPEED_LOCK_SHIFT_SPEED
+                    } else {
+                        phase = (Math.random() - 0.5) * 0.1
+                    }
+                } else {
+                    phase += UPDATE_FREQ/1000 * speed*2*Math.PI
+                }
+                phase = phase % (2*Math.PI)
                 this.$set(this.phases, i, phase)
             }
         },
