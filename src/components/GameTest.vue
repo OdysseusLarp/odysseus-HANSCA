@@ -4,7 +4,7 @@
       <div class="left"><v-ons-back-button @click.prevent="back()"></v-ons-back-button></div>
       <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
     </v-ons-toolbar>
-    <phase-sync-game></phase-sync-game>
+    <phase-sync-game :dimensions="2"></phase-sync-game>
   </v-ons-page>
 </template>
 

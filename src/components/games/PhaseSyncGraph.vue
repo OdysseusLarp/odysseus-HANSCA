@@ -12,7 +12,7 @@ const POINTS = 75
 const ASPECT = 0.25
 const UPDATE_FREQ = 40 // ms
 // How fast does phase move to zero when in phase lock
-const SPEED_LOCK_SHIFT_SPEED = 0.1
+const SPEED_LOCK_SHIFT_SPEED = 0.5
 
 export default {
     props: [ 'graphs' ],
@@ -43,12 +43,15 @@ export default {
                 const speed = this.$props.graphs[i].phaseSpeed
                 let phase = this.phases[i]
                 if (this.$props.graphs[i].lock) {
+                    if (phase > Math.PI) {
+                        phase -= 2 * Math.PI
+                    }
                     if (phase > SPEED_LOCK_SHIFT_SPEED) {
                         phase -= SPEED_LOCK_SHIFT_SPEED
                     } else if (phase < -SPEED_LOCK_SHIFT_SPEED) {
                         phase += SPEED_LOCK_SHIFT_SPEED
                     } else {
-                        phase = (Math.random() - 0.5) * 0.1
+                        phase = (Math.random() - 0.5) * 0.15
                     }
                 } else {
                     phase += UPDATE_FREQ/1000 * speed*2*Math.PI
