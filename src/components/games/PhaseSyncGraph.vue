@@ -6,11 +6,11 @@
 
 <script>
 const WIDTH = 1
+// How many points is rendered in one graph
 const POINTS = 75
+// Viewport aspect ratio (also in viewBox)
 const ASPECT = 0.25
-const UPDATE_FREQ = 10 // ms
-// When speed is below this limit, the phase is "locked"
-const SPEED_LOCK_LIMIT = 0.1
+const UPDATE_FREQ = 40 // ms
 // How fast does phase move to zero when in phase lock
 const SPEED_LOCK_SHIFT_SPEED = 0.1
 
@@ -42,7 +42,7 @@ export default {
             for (let i=0; i < this.phases.length; i++) {
                 const speed = this.$props.graphs[i].phaseSpeed
                 let phase = this.phases[i]
-                if (Math.abs(speed) < SPEED_LOCK_LIMIT) {
+                if (this.$props.graphs[i].lock) {
                     if (phase > SPEED_LOCK_SHIFT_SPEED) {
                         phase -= SPEED_LOCK_SHIFT_SPEED
                     } else if (phase < -SPEED_LOCK_SHIFT_SPEED) {
