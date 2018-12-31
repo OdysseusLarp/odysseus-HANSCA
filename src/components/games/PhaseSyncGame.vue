@@ -1,20 +1,28 @@
 <template>
     <div>
-        <phase-sync-graph :class="['graph', success ? 'success':'']" :graphs="graphs"></phase-sync-graph>
+        <phase-sync-graph :class="['graph', locked ? 'locked':'']" :graphs="graphs"></phase-sync-graph>
+        <v-ons-progress-bar :class="['progress', success ? 'success':'']" :value="100 * time / config.duration"></v-ons-progress-bar>
         <div v-for="(t, index) in target" :key="index">
-            <p>{{current[index]}} / {{target[index]}}</p>
+            <p :style="`color: ${colors[index]}`">{{current[index]}} / {{target[index]}}</p>
             <v-ons-range v-model="current[index]" min="0" max="1" step="0.001" style="width: 100%"></v-ons-range>
         </div>
     </div>
 </template>
 
-<style scoped>
+<style>
 .graph {
     background-color: #ddd;
     border: 5px solid #f00;
 }
-.success {
+.locked {
     border-color: #0f0;
+}
+.progress .progress-bar {
+    height: 10px;
+    background-color: #555;
+}
+.progress.success .progress-bar__primary {
+    background-color: #0f0;
 }
 </style>
 
@@ -25,11 +33,19 @@ import PhaseSyncGraph from './PhaseSyncGraph'
 const COLORS = [ "red", "green", "blue", "magenta", "cyan", "yellow" ]
 // Delta below this limit is considered a phase lock
 const DELTA_LIMIT = 0.02
+// How often progress is checked
+const PROGRESS_CHECK_FREQ = 100 // ms
 
 export default {
     props: [ 'config' ],
     components: {
         PhaseSyncGraph
+    },
+    created () {
+        this.timer = setInterval(this.update, PROGRESS_CHECK_FREQ)
+    },
+    beforeDestroy() {
+        clearInterval(this.timer)
     },
     data() {
         const target = []
@@ -78,6 +94,9 @@ export default {
             wavelengthBase,
             phaseSpeedCoefficient,
             coefficients,
+            time: 0,
+            success: false,
+            colors: COLORS,
         }
     },
     computed: {
@@ -115,7 +134,7 @@ export default {
             }
             return graphs
         },
-        success() {
+        locked() {
             for (var i = 0; i < this.config.dimensions; i++) {
                 if (Math.abs(this.delta[i]) > DELTA_LIMIT) {
                     return false
@@ -123,6 +142,18 @@ export default {
             }
             return true
         },
+    },
+    methods: {
+        update() {
+            if (this.locked && !this.success && Math.random() < 0.5) {
+                this.time = Math.min(this.time + 2 * PROGRESS_CHECK_FREQ / 1000, this.config.duration)
+                if (this.time >= this.config.duration) {
+                    this.success = true
+                    this.$emit('gameSuccess')
+                }
+            }
+
+        }
     }
 }
 </script>

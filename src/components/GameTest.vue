@@ -5,18 +5,21 @@
             <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
         </v-ons-toolbar>
         <div class="content">
-            <p>Phase sync game:</p>
+            <p>
+                Phase sync game:
+                <span v-if="finished">Success! Took {{totalTime}} seconds.</span>
+            </p>
             <div v-if="!playing">
                 <p>Dimensions: {{config.dimensions}}</p>
                 <v-ons-range v-model="config.dimensions" min="1" max="6" step="1" style="width: 100%"></v-ons-range>
                 <p>Difficulty: {{config.difficulty}}</p>
                 <v-ons-range v-model="config.difficulty" min="0" max="2" step="0.01" style="width: 100%"></v-ons-range>
                 <p>Duration (secs): {{config.duration}}</p>
-                <v-ons-range v-model="config.duration" min="0" max="300" step="1" style="width: 100%"></v-ons-range>
+                <v-ons-range v-model="config.duration" min="1" max="300" step="1" style="width: 100%"></v-ons-range>
                 <v-ons-button @click="start">Start</v-ons-button>
             </div>
             <div v-if="playing">
-                <phase-sync-game :config="config"></phase-sync-game>
+                <phase-sync-game :config="config" @gameSuccess="gameSuccess"></phase-sync-game>
             </div>
         </div>
     </v-ons-page>
@@ -51,6 +54,10 @@ export default {
         start() {
             this.playing = true
             this.startTime = Date.now()
+        },
+        gameSuccess() {
+            this.finished = true
+            this.totalTime = Math.round((Date.now() - this.startTime)/1000)
         }
     },
 }
