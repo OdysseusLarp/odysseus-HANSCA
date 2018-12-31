@@ -1,6 +1,39 @@
 <template>
-    <svg viewBox="0 -0.25 1 0.5" xmlns="http://www.w3.org/2000/svg">
-        <polyline v-for="(points, index) in graphPoints" :key="index" :points="points" fill="none" :stroke="$props.graphs[index].color" stroke-width="0.005" />
+    <svg viewBox="0 -0.25 1 0.5">
+        <!--
+            Using SVG filters to create a yellow glow/blur effect would be cool,
+            but applying the filter doesn't work (and causes lines to disappear).
+            May be something with quoting?  style="filter:url(&quot;#glow&quot)"
+		<defs>
+			<filter id="glow">
+				<fegaussianblur class="blur" result="coloredBlur" stddeviation="0.05"></fegaussianblur>
+				<femerge>
+					<femergenode in="coloredBlur"></femergenode>
+                    <femergenode in="coloredBlur"></femergenode>
+                    <femergenode in="coloredBlur"></femergenode>
+					<femergenode in="coloredBlur"></femergenode>
+                    <femergenode in="coloredBlur"></femergenode>
+                    <femergenode in="coloredBlur"></femergenode>
+					<femergenode in="SourceGraphic"></femergenode>
+				</femerge>
+			</filter>
+		</defs>
+            :style="graphs[index].lock ? 'filter: url(#glow)' : ''"
+        -->
+        <g v-for="(points, index) in graphPoints" :key="index">
+            <polyline
+                v-if="$props.graphs[index].lock"
+                :points="points"
+                fill="none"
+                stroke="yellow"
+                stroke-opacity="0.7"
+                stroke-width="0.008" />
+            <polyline
+                :points="points"
+                fill="none"
+                :stroke="$props.graphs[index].color"
+                stroke-width="0.005" />
+        </g>
     </svg>
 </template>
 
