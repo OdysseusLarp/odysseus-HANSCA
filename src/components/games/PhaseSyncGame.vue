@@ -145,14 +145,20 @@ export default {
     },
     methods: {
         update() {
-            if (this.locked && !this.success && Math.random() < 0.5) {
-                this.time = Math.min(this.time + 2 * PROGRESS_CHECK_FREQ / 1000, this.config.duration)
-                if (this.time >= this.config.duration) {
-                    this.success = true
-                    this.$emit('gameSuccess')
+            if (!this.success) {
+                if (this.config.drift) {
+                    const targets = []
+                    const mul = this.config.drift * PROGRESS_CHECK_FREQ / 1000
+                    this.target = this.target.map(t => Math.min(Math.max(t + (Math.random()*2-1)*mul, 0), 1))
+                }
+                if (this.locked  && Math.random() < 0.5) {
+                    this.time = Math.min(this.time + 2 * PROGRESS_CHECK_FREQ / 1000, this.config.duration)
+                    if (this.time >= this.config.duration) {
+                        this.success = true
+                        this.$emit('gameSuccess')
+                    }
                 }
             }
-
         }
     }
 }

@@ -11,11 +11,18 @@
             </p>
             <div v-if="!playing">
                 <p>Dimensions: {{config.dimensions}}</p>
+                <p>How many sliders / graphs there are</p>
                 <v-ons-range v-model="config.dimensions" min="1" max="6" step="1" style="width: 100%"></v-ons-range>
                 <p>Difficulty: {{config.difficulty}}</p>
+                <p>How much the sliders affect other graphs. 0.2 is good, larger values harder. (No impact for 1 dimension)</p>
                 <v-ons-range v-model="config.difficulty" min="0" max="2" step="0.01" style="width: 100%"></v-ons-range>
                 <p>Duration (secs): {{config.duration}}</p>
-                <v-ons-range v-model="config.duration" min="1" max="300" step="1" style="width: 100%"></v-ons-range>
+                <p>How long the lock must be held to complete. 1-3 secs for a "one-off" game, longer useful with drift.</p>
+                <v-ons-range v-model="config.duration" min="1" max="60" step="1" style="width: 100%"></v-ons-range>
+                <p>Drift: {{config.drift}}</p>
+                <p>How much target values drift. Good values 0-0.15</p>
+                <v-ons-range v-model="config.drift" min="0" max="0.3" step="0.001" style="width: 100%"></v-ons-range>
+                <p></p>
                 <v-ons-button @click="start">Start</v-ons-button>
             </div>
             <div v-if="playing">
@@ -41,6 +48,7 @@ export default {
                 dimensions: 2,
                 difficulty: 0.2,
                 duration: 1,
+                drift: 0,
             }
         }
     },
