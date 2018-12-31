@@ -60,7 +60,7 @@ export default {
                 if (i === j) {
                     coeff.push(1)
                 } else {
-                    coeff.push(0.2 + 0.2 * Math.random())
+                    coeff.push(this.config.difficulty * (0.5 + 0.5 * Math.random()))
                 }
             }
             coefficients.push(coeff)
