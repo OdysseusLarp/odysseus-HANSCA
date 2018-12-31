@@ -27,9 +27,7 @@ const COLORS = [ "red", "green", "blue", "magenta", "cyan", "yellow" ]
 const DELTA_LIMIT = 0.02
 
 export default {
-    props: {
-        "dimensions": Number
-    },
+    props: [ 'config' ],
     components: {
         PhaseSyncGraph
     },
@@ -44,7 +42,7 @@ export default {
 
         const targetWavelength = 0.25 + 0.5 * Math.random()
 
-        for (var i = 0; i < this.dimensions; i++) {
+        for (var i = 0; i < this.config.dimensions; i++) {
             let t = Math.random()
             let c = Math.random()
             while (Math.abs(t-c) < 0.15) {
@@ -58,7 +56,7 @@ export default {
             phaseSpeedCoefficient.push((7 + 6 * Math.random()) * Math.sign(Math.random()-0.5))
 
             const coeff = []
-            for (var j = 0; j < this.dimensions; j++) {
+            for (var j = 0; j < this.config.dimensions; j++) {
                 if (i === j) {
                     coeff.push(1)
                 } else {
@@ -85,14 +83,14 @@ export default {
     computed: {
         delta() {
             const delta = []
-            for (var i = 0; i < this.dimensions; i++) {
+            for (var i = 0; i < this.config.dimensions; i++) {
                 delta.push(this.target[i] - this.current[i])
             }
 
             const result = []
-            for (var i = 0; i < this.dimensions; i++) {
+            for (var i = 0; i < this.config.dimensions; i++) {
                 let d = 0
-                for (var j = 0; j < this.dimensions; j++) {
+                for (var j = 0; j < this.config.dimensions; j++) {
                     d += delta[j] * this.coefficients[i][j]
                 }
                 result.push(d)
@@ -101,7 +99,7 @@ export default {
         },
         graphs() {
             const graphs = []
-            for (var i = 0; i < this.dimensions; i++) {
+            for (var i = 0; i < this.config.dimensions; i++) {
                 const delta = this.delta[i]
                 const amplitude = this.amplitudeBase[i] + delta * this.amplitudeCoefficient[i]
                 const wavelength = this.wavelengthBase[i] * Math.max(1 + delta, 0.1)
@@ -118,7 +116,7 @@ export default {
             return graphs
         },
         success() {
-            for (var i = 0; i < this.dimensions; i++) {
+            for (var i = 0; i < this.config.dimensions; i++) {
                 if (Math.abs(this.delta[i]) > DELTA_LIMIT) {
                     return false
                 }
