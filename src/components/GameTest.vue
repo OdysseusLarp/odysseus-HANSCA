@@ -23,6 +23,18 @@
                 <p>How much target values drift. Good values 0-0.15</p>
                 <v-ons-range v-model="config.drift" min="0" max="0.3" step="0.001" style="width: 100%"></v-ons-range>
                 <p></p>
+                <p>Presets:</p>
+                <v-ons-button @click="preset(2, 0.2, 1, 0)" modifier="quiet">2D easy</v-ons-button>
+                <v-ons-button @click="preset(2, 0.6, 2, 0)" modifier="quiet">2D hard</v-ons-button>
+                <v-ons-button @click="preset(3, 0.2, 1, 0)" modifier="quiet">3D easy</v-ons-button>
+                <v-ons-button @click="preset(3, 0.6, 2, 0)" modifier="quiet">3D hard</v-ons-button>
+                <v-ons-button @click="preset(5, 0.2, 3, 0)" modifier="quiet">5D easy</v-ons-button>
+                <v-ons-button @click="preset(5, 0.0, 3, 0)" modifier="quiet">5D independent</v-ons-button>
+                <p></p>
+                <v-ons-button @click="preset(1, 0.0, 20, 0.2)" modifier="quiet">1D drifting</v-ons-button>
+                <v-ons-button @click="preset(2, 0.2, 20, 0.1)" modifier="quiet">2D drifting</v-ons-button>
+                <v-ons-button @click="preset(2, 0.0, 20, 0.1)" modifier="quiet">2D drift independent</v-ons-button>
+                <p></p>
                 <v-ons-button @click="start">Start</v-ons-button>
             </div>
             <div v-if="playing">
@@ -34,6 +46,7 @@
 
 <script>
 import PhaseSyncGame from './games/PhaseSyncGame.vue'
+import Greeter from './Greeter.vue'
 export default {
     components: {
         PhaseSyncGame
@@ -66,7 +79,13 @@ export default {
         gameSuccess() {
             this.finished = true
             this.totalTime = Math.round((Date.now() - this.startTime)/1000)
-        }
+        },
+        preset(dimensions, difficulty, duration, drift) {
+            this.config.dimensions = dimensions
+            this.config.difficulty = difficulty
+            this.config.duration = duration
+            this.config.drift = drift
+        },
     },
 }
 </script>
