@@ -26,6 +26,7 @@
 import Greeter from './Greeter.vue'
 import Scanner from './Scanner.vue'
 import RadiationDetector from './RadiationDetector.vue'
+import GameTest from './GameTest.vue'
 export default {
   name: "Carousel",
   /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
@@ -64,6 +65,8 @@ export default {
     scan(tool) {
       if (tool === 'radiation') {
         this.$store.commit('navigator/push', RadiationDetector)
+      } else if (tool === 'chart-bar') {
+        this.$store.commit('navigator/push', GameTest)
       } else {
         this.$store.commit('navigator/push', Scanner)
       }
