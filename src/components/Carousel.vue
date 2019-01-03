@@ -68,6 +68,8 @@ export default {
         this.$store.commit('navigator/push', RadiationDetector)
       } else if (tool === 'project-diagram') {
         this.$store.commit('navigator/push', LightsOut)
+      } else if (tool === 'chart-bar') {
+        this.$store.commit('navigator/push', GameTest)
       }  else {
         this.$store.commit('navigator/push', Scanner)
       }
