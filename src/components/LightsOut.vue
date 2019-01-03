@@ -5,13 +5,13 @@
       <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
     </v-ons-toolbar>
     <div style="text-align: center; margin-top: 50px;">
-<form name=lighttable>
-        <table border>
+      <form name=lighttable>
+        <table class="lighttable">
           <tr v-for="(row, i) in lights">
             <td v-for="(col, j) in row" :id="'cell' + i + j" @click="changeColor(i, j)" :class="{ lit: lights[i][j] }"> </td>
           </tr>
         </table>
-        </form>
+      </form>
 
     </div>
   </v-ons-page>
@@ -55,13 +55,13 @@ export default {
 </script>
 <style>
 
-table {
+table.lighttable {
   margin: 0 auto;
   border-collapse: collapse;
   font-size: 52px;
   background-color: black;
 }
-table tr td {
+.lighttable tr td {
   width: 50px;
   height: 50px;
   border: 2px solid white;
