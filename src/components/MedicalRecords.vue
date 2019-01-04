@@ -10,7 +10,7 @@
         <v-ons-list-item v-for="record in results" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>	
 			</v-ons-list>
       <div class="resultTextBox">
-        <pre><vue-typer :text='resultText' :repeat="0" :type-delay="15"></vue-typer></pre>
+        <pre><vue-typer :text='resultText' :repeat="0" :type-delay="10"></vue-typer></pre>
       </div>
     </div>
   </v-ons-page>
@@ -22,43 +22,43 @@ export default {
     return {
       records: [
         { id: 0, name: 'Kathryn Janeway', age: 41, position: 'Captain', medical: `
-        Problems
-        
-        DIABETES MELLITUS (ICD-250.)
-        HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
+      Problems
+      
+      DIABETES MELLITUS (ICD-250.)
+      HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
 
-        Medications
-        
-        PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
-        Last Refill: #30 x 2 : Carl Savem MD (08/27/2410)
-        HUMULIN INJ 70/30 (INSULIN REG & ISOPHANE (HUMAN)) 20 units ac breakfast
-        Last Refill: #600 u x 0 : Carl Savem MD (08/27/2410)` },
+      Medications
+      
+      PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
+      Last Refill: #30 x 2 : Carl Savem MD (08/27/2410)
+      HUMULIN INJ 70/30 (INSULIN REG & ISOPHANE (HUMAN)) 20 units ac breakfast
+      Last Refill: #600 u x 0 : Carl Savem MD (08/27/2410)` },
         { id: 1, name: 'Malcolm Reynolds', age: 38, position: 'Captain', medical: `
-        Problems
-      
-        DEPRESSION (ICD-311)
+      Problems
+    
+      DEPRESSION (ICD-311)
 
-        Medications
-      
-        PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
-      
-        Last Refill: #30 x 2 : Carl Savem MD (06/17/2410)` },
+      Medications
+    
+      PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
+    
+      Last Refill: #30 x 2 : Carl Savem MD (06/17/2410)` },
         { id: 2, name: 'William Adama', age: 51, position: 'Commander', medical: `
-        Problems
-        
-        HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
-        DEPRESSION (ICD-311)
-        RETINOPATHY, DIABETIC (ICD-362.0)
-        POLYNEUROPATHY IN DIABETES (ICD-357.2)
+      Problems
+      
+      HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
+      DEPRESSION (ICD-311)
+      RETINOPATHY, DIABETIC (ICD-362.0)
+      POLYNEUROPATHY IN DIABETES (ICD-357.2)
 
-        Medications
-        
-        HYTRIN CAP 5MG (TERAZOSIN HCL) 1 po qd
-        Last Refill: #30 x 0 : Carl Savem (10/27/2410)
-        PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
-        Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)
-        PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
-        Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)` },
+      Medications
+      
+      HYTRIN CAP 5MG (TERAZOSIN HCL) 1 po qd
+      Last Refill: #30 x 0 : Carl Savem (10/27/2410)
+      PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
+      Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)
+      PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
+      Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)` },
         { id: 3, name: 'Susan Ivanova', age: 45, position: 'Lieutenant Commander', medical: "" },
         { id: 4, name: 'Turanga Leela', age: 32, position: 'Pilot', medical: "" },
         { id: 5, name: 'David Bowman', age: 36, position: 'Doctor', medical: "" },
