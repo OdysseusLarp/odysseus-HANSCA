@@ -10,7 +10,7 @@
       <v-ons-carousel-item v-for="(value, key) in items" :style="{backgroundColor: value.color}">
         <div style="text-align: center; font-size: 30px; margin-top: 20px; color: #fff;">{{key}}</div>
         <div style="text-align: center; margin-top: 50px;">
-          <span class="scan-item" v-for="tool in value.tools"><v-ons-icon @click="scan()" :icon="'fa-' + tool" size="3x"></v-ons-icon></span>
+          <span class="scan-item" v-for="tool in value.tools"><v-ons-icon @click="scan(tool)" :icon="'fa-' + tool" size="3x"></v-ons-icon></span>
         </div>
       </v-ons-carousel-item>
     </v-ons-carousel>
@@ -25,6 +25,9 @@
 <script>
 import Greeter from './Greeter.vue'
 import Scanner from './Scanner.vue'
+import RadiationDetector from './RadiationDetector.vue'
+import GameTest from './GameTest.vue'
+import LightsOut from './LightsOut.vue'
 export default {
   name: "Carousel",
   /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
@@ -32,7 +35,7 @@ export default {
     return {
       carouselIndex: 0,
       items: {
-        SCIENCE: { 
+        SCIENCE: {
           color: '#085078',
           tools: [ 'atom', 'dna', 'vial', 'flask', 'biohazard', 'chart-bar', 'eye-dropper', 'mortar-pestle', 'radiation', 'skull-crossbones', 'square-root-alt', 'temperature-high' ],
         },
@@ -60,8 +63,16 @@ export default {
     logout() {
       this.$store.commit('navigator/push', Greeter)
     },
-    scan() {
-      this.$store.commit('navigator/push', Scanner)
+    scan(tool) {
+      if (tool === 'radiation') {
+        this.$store.commit('navigator/push', RadiationDetector)
+      } else if (tool === 'project-diagram') {
+        this.$store.commit('navigator/push', LightsOut)
+      } else if (tool === 'chart-bar') {
+        this.$store.commit('navigator/push', GameTest)
+      }  else {
+        this.$store.commit('navigator/push', Scanner)
+      }
     }
   }
 }
