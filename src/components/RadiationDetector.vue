@@ -32,13 +32,10 @@ export default {
       exposure: 0,
       exposureRisk: 'exposure-normal',
       radiationSources: [
-        { type: 'Gamma', intensity: 1000, latitude: 60.624176, longitude: 24.875920, distance: 0, radiationLevel: 0 },
-        { type: 'X-ray', intensity: 5000, latitude: 60.624276, longitude: 24.876011, distance: 0, radiationLevel: 0 },
-        /*{ type: 'Gamma', intensity: 1000, latitude: 60.322611, longitude: 24.856569, distance: 0, radiationLevel: 0 },
+        { type: 'Gamma', intensity: 1000, latitude: 60.322611, longitude: 24.856569, distance: 0, radiationLevel: 0 },
         { type: 'X-ray', intensity: 5000, latitude: 60.322695, longitude: 24.856748, distance: 0, radiationLevel: 0 },
-        { type: 'Neutron', intensity: 10000, latitude: 60.62424, longitude: 24.876, distance: 0, radiationLevel: 0 },
-        { type: 'Ultraviolet', intensity: 50000, latitude: 60.6242, longitude: 24.878, distance: 0, radiationLevel: 0 },
-        */
+        { type: 'Neutron', intensity: 10000, latitude: 60.624176, longitude: 24.875920, distance: 0, radiationLevel: 0 },
+        { type: 'Ultraviolet', intensity: 50000, latitude: 60.624276, longitude: 24.876011, distance: 0, radiationLevel: 0 },
       ],
       columns: ['type', 'distance', 'radiationLevel'],
       watcher: 0
