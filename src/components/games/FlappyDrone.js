@@ -21,6 +21,7 @@ class FlappyDrone {
     this.bX = 10
     this.bY = 150
     this.gravity = 1
+    this.collision = false
 
     this.pipes = [{
       x: canvas.width,
@@ -59,7 +60,7 @@ class FlappyDrone {
 
       this.drawScore()
 
-      requestAnimationFrame(go)
+      if (!this.collision) requestAnimationFrame(go)
     }
 
     go()
@@ -73,7 +74,7 @@ class FlappyDrone {
     
       this.pipes[i].x--
 
-      if ( this.pipes[i]. x == 125 ) {
+      if ( this.pipes[i]. x == 175 ) {
         this.pipes.push({
           x: this.cvs.width,
           y: Math.floor(Math.random() * this.pipeNorth.height) - this.pipeNorth.height
@@ -116,7 +117,7 @@ class FlappyDrone {
     if (this.bX + this.drone.width >= x && this.bX <= x + this.pipeNorth.width &&
     (this.bY <= y + this.pipeNorth.height || this.bY + this.drone.height >= y + this.getGap())
     || this.bY + this.drone.height >= this.cvs.height - this.fg.height) {
-      location.reload()
+      this.collision = true
     }
   }
 
