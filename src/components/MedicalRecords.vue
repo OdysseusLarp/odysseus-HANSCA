@@ -67,7 +67,7 @@ export default {
       ],
       query: '',
       results: [ ],
-      resultText: ' '
+      resultText: 'Input patient name or scan ID card.'
     }
   },
   methods: {
