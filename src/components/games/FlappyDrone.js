@@ -74,7 +74,7 @@ class FlappyDrone {
     
       this.pipes[i].x--
 
-      if ( this.pipes[i]. x == 175 ) {
+      if ( this.pipes[i]. x == 225 ) {
         this.pipes.push({
           x: this.cvs.width,
           y: Math.floor(Math.random() * this.pipeNorth.height) - this.pipeNorth.height
