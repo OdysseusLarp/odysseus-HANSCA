@@ -15,6 +15,8 @@ Vue.use(VueTyper)
 
 Vue.config.productionTip = false
 
+import ToolbarTop from './components/ToolbarTop.vue'
+Vue.component('toolbar-top', ToolbarTop)
 
 new Vue({
   render: h => h(App),

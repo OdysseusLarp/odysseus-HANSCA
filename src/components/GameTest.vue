@@ -1,9 +1,6 @@
 <template>
     <v-ons-page>
-        <v-ons-toolbar>
-            <div class="left"><v-ons-back-button @click.prevent="back()"></v-ons-back-button></div>
-            <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
-        </v-ons-toolbar>
+    <toolbar-top/></toolbar-top>
         <div class="content">
             <p>
                 Phase sync game:
@@ -46,7 +43,6 @@
 
 <script>
 import PhaseSyncGame from './games/PhaseSyncGame.vue'
-import Greeter from './Greeter.vue'
 export default {
     components: {
         PhaseSyncGame
@@ -66,12 +62,6 @@ export default {
         }
     },
     methods: {
-        back() {
-            this.$store.commit('navigator/pop')
-        },
-        logout() {
-            this.$store.commit('navigator/push', Greeter)
-        },
         start() {
             this.playing = true
             this.startTime = Date.now()

@@ -1,9 +1,6 @@
 <template>
   <v-ons-page>
-    <v-ons-toolbar>
-      <div class="left"><v-ons-back-button @click.prevent="back()"></v-ons-back-button></div>
-      <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
-    </v-ons-toolbar>
+    <toolbar-top/></toolbar-top>
     <div style="text-align: center; margin-top: 50px;">
       <h1 :class="exposureRisk">{{ radiationLevel }}</h1>
       <div>
@@ -26,7 +23,6 @@
   </v-ons-page>
 </template>
 <script>
-import Greeter from './Greeter.vue'
 export default {
   data() {
     return {
@@ -49,14 +45,6 @@ export default {
     }
   },
   methods: {
-    back() {
-      navigator.geolocation.clearWatch(this.watcher)
-      this.$store.commit('navigator/pop')
-    },
-    logout() {
-      navigator.geolocation.clearWatch(this.watcher)
-      this.$store.commit('navigator/push', Greeter)
-    },
     updatePosition(position) {
       this.latitude = position.coords.latitude
       this.longitude = position.coords.longitude
@@ -80,6 +68,10 @@ export default {
       this.watcher = navigator.geolocation.watchPosition(this.updatePosition, this.positionError, {maximumAge:0, timeout:5000, enableHighAccuracy: true})
     }
   },
+  beforeDestroy () {
+      navigator.geolocation.clearWatch(this.watcher)
+  }
+
 }
 
 function distance(lon1, lat1, lon2, lat2) {

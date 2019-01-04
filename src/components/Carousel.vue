@@ -1,9 +1,6 @@
 <template>
   <v-ons-page>
-    <v-ons-toolbar>
-      <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
-    </v-ons-toolbar>
-
+    <toolbar-top/></toolbar-top>
     <v-ons-carousel fullscreen swipeable auto-scroll overscrollable
       :index.sync="carouselIndex"
     >
@@ -23,7 +20,6 @@
   </v-ons-page>
 </template>
 <script>
-import Greeter from './Greeter.vue'
 import Scanner from './Scanner.vue'
 import RadiationDetector from './RadiationDetector.vue'
 import GameTest from './GameTest.vue'
@@ -62,9 +58,6 @@ export default {
     }
   },
   methods: {
-    logout() {
-      this.$store.commit('navigator/push', Greeter)
-    },
     scan(tool) {
       if (tool === 'radiation') {
         this.$store.commit('navigator/push', RadiationDetector)

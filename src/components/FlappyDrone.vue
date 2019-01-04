@@ -1,16 +1,12 @@
 <template>
   <v-ons-page>
-    <v-ons-toolbar>
-      <div class="left"><v-ons-back-button @click.prevent="back()"></v-ons-back-button></div>
-      <div class="right"><ons-toolbar-button @click="logout()"><v-ons-icon icon="fa-sign-out-alt"></v-ons-icon></ons-toolbar-button></div>
-    </v-ons-toolbar>
+    <toolbar-top/></toolbar-top>
     <div style="text-align: center;">
       <canvas ref="flappy" width="480" height="640"></canvas>
     </div>
   </v-ons-page>
 </template>
 <script>
-import Greeter from './Greeter.vue'
 import FlappyDrone from './games/FlappyDrone'
 export default {
   name: 'FlappyDrone',
@@ -29,14 +25,6 @@ export default {
       flappy.fly()
       e.preventDefault()
     })
-  },
-  methods: {
-    back() {
-      this.$store.commit('navigator/pop')
-    },
-      logout() {
-        this.$store.commit('navigator/push', Greeter)
-      },
   },
 }
 </script>
