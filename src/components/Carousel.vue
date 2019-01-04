@@ -28,6 +28,7 @@ import Scanner from './Scanner.vue'
 import RadiationDetector from './RadiationDetector.vue'
 import GameTest from './GameTest.vue'
 import LightsOut from './LightsOut.vue'
+import FlappyDrone from './FlappyDrone.vue'
 export default {
   name: "Carousel",
   /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
@@ -70,6 +71,8 @@ export default {
         this.$store.commit('navigator/push', LightsOut)
       } else if (tool === 'chart-bar') {
         this.$store.commit('navigator/push', GameTest)
+      } else if (tool === 'satellite') {
+        this.$store.commit('navigator/push', FlappyDrone)
       }  else {
         this.$store.commit('navigator/push', Scanner)
       }
