@@ -26,6 +26,7 @@ import GameTest from './GameTest.vue'
 import LightsOut from './LightsOut.vue'
 import MedicalRecords from './MedicalRecords.vue'
 import FlappyDrone from './FlappyDrone.vue'
+import Locator from './Locator.vue'
 export default {
   name: "Carousel",
   /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
@@ -69,6 +70,8 @@ export default {
         this.$store.commit('navigator/push', MedicalRecords)
       } else if (tool === 'satellite') {
         this.$store.commit('navigator/push', FlappyDrone)
+      } else if (tool === 'compass') {
+        this.$store.commit('navigator/push', Locator)
       }  else {
         this.$store.commit('navigator/push', Scanner)
       }
