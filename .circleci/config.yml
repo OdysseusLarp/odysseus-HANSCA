@@ -1,6 +1,4 @@
-version: 2.1
-orbs:
-  aws-s3: circleci/aws-s3@1.0.0
+version: 2
 jobs:
   build:
     docker:
@@ -17,12 +15,15 @@ jobs:
     steps:
       - checkout
 
+
       # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+
+      - run: sudo apt-get install -y python-pip awscli
 
       - run: npm install
 
@@ -33,10 +34,5 @@ jobs:
 
       - run: npm run build
 
-      - run: sudo apt-get install -y python-pip
-
-      - aws-s3/sync:
-          from: dist
-          to: 's3://turboencabulator.space'
-          overwrite: true
+      - run: aws s3 sync dist/ s3://turboencabulator.space
 
