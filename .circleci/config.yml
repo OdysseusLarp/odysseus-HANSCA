@@ -23,7 +23,8 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: sudo apt-get install -y python-pip awscli
+      - run: sudo apt-get install -y python-pip
+      - run: sudo pip install awscli
 
       - run: npm install
 
