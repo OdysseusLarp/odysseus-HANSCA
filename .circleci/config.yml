@@ -27,6 +27,7 @@ jobs:
       - run: sudo pip install awscli
 
       - run: npm install
+      - run: cp -r fonts/* node_modules/onsenui/css/font_awesome
 
       - save_cache:
           paths:
