@@ -155,7 +155,7 @@ export default {
                     this.time = Math.min(this.time + 2 * PROGRESS_CHECK_FREQ / 1000, this.config.duration)
                     if (this.time >= this.config.duration) {
                         this.success = true
-                        this.$emit('gameSuccess')
+                        setTimeout(() => this.$emit('gameSuccess'), 500)
                     }
                 }
             }

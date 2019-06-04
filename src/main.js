@@ -7,6 +7,8 @@ import VueOnsen from 'vue-onsenui'
 
 import App from './App.vue'
 import store from './store.js'
+import './axios-settings'
+
 Vue.use(Vuex)
 Vue.use(VueOnsen)
 
@@ -17,6 +19,7 @@ Vue.config.productionTip = false
 
 import ToolbarTop from './components/ToolbarTop.vue'
 Vue.component('toolbar-top', ToolbarTop)
+
 
 new Vue({
   render: h => h(App),

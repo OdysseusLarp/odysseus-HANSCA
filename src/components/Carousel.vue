@@ -21,6 +21,7 @@
 </template>
 <script>
 import Scanner from './Scanner.vue'
+import GameScanner from './GameScanner'
 import RadiationDetector from './RadiationDetector.vue'
 import GameTest from './GameTest.vue'
 import LightsOut from './LightsOut.vue'
@@ -62,6 +63,8 @@ export default {
     scan(tool) {
       if (tool === 'radiation') {
         this.$store.commit('navigator/push', RadiationDetector)
+      } else if (tool === 'atom') {
+        this.$store.commit('navigator/push', GameScanner)
       } else if (tool === 'project-diagram') {
         this.$store.commit('navigator/push', LightsOut)
       } else if (tool === 'chart-bar') {
