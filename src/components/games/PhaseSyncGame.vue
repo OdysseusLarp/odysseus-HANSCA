@@ -3,13 +3,17 @@
         <phase-sync-graph :class="['graph', locked ? 'locked':'']" :graphs="graphs"></phase-sync-graph>
         <v-ons-progress-bar :class="['progress', success ? 'success':'']" :value="100 * time / config.duration"></v-ons-progress-bar>
         <div v-for="(t, index) in target" :key="index">
-            <p :style="`color: ${colors[index]}`">{{current[index]}} / {{target[index]}}</p>
+            <p class="label" :style="`color: ${colors[index]}`">Phase {{index+1}}</p>
+            <!-- DEBUGGING: <p :style="`color: ${colors[index]}`">{{current[index]}} / {{target[index]}}</p> -->
             <v-ons-range v-model="current[index]" min="0" max="1" step="0.001" style="width: 100%"></v-ons-range>
         </div>
     </div>
 </template>
 
 <style>
+.label {
+    margin: 1em;
+}
 .graph {
     background-color: #ddd;
     border: 5px solid #f00;
