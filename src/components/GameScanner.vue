@@ -139,7 +139,7 @@ export default {
     if ('nfc' in navigator) {
       navigator.nfc.watch((message) => {
         message.records.forEach(function (record) {
-          if (record.recordType == "string") {
+          if (record.recordType == "text") {
             this.tag = record.data
           }
           navigator.nfc.cancelWatch()
