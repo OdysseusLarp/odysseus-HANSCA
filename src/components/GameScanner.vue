@@ -135,6 +135,18 @@ export default {
       this.$store.commit('navigator/pop')
     }
   },
+  created() {
+    if ('nfc' in navigator) {
+      navigator.nfc.watch((message) => {
+        message.data.forEach(function (record) {
+          if (record.recordType == "string") {
+            this.tag = record.data
+          }
+          navigator.nfc.cancelWatch()
+        })
+      }, {mode: 'any'})
+    }
+  },
   components: {
   }
 }
