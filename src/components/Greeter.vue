@@ -18,6 +18,7 @@ export default {
       setTimeout(() => { 
         this.$store.commit('navigator/push', Carousel) 
       }, 300)
+      navigator.nfc.cancelWatch()
     },
     nfcLogin() {
       navigator.nfc.cancelWatch()

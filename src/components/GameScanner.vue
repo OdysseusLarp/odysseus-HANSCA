@@ -143,7 +143,7 @@ export default {
             this.tag = record.data
           }
           navigator.nfc.cancelWatch()
-        })
+        }, this)
       }, {mode: 'any'})
     }
   },
