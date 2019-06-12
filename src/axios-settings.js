@@ -2,9 +2,9 @@ import axios from 'axios'
 
 // FIXME: Retrieve URI settings from somewhere...?
 const backend = {
-    uri: 'http://localhost:8888/',
-    username: undefined,
-    password: undefined,
+    uri: process.env.VUE_APP_BACKEND_URL,
+    username: process.env.VUE_APP_BACKEND_USER,
+    password: process.env.VUE_APP_BACKEND_PASS,
 }
 
 axios.defaults.baseURL = backend.uri;
