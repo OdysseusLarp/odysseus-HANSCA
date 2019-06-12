@@ -66,7 +66,7 @@ const GAMES = {
 export default {
   data() {
     return {
-      tag: "game:reactor_1",
+      tag: "",
       component: undefined,
       game: {},
       gameConfig: {},
@@ -138,7 +138,7 @@ export default {
   created() {
     if ('nfc' in navigator) {
       navigator.nfc.watch((message) => {
-        message.data.forEach(function (record) {
+        message.records.forEach(function (record) {
           if (record.recordType == "string") {
             this.tag = record.data
           }
