@@ -11,6 +11,7 @@
 
 <script>
 import Carousel from './Carousel.vue'
+import { startWatch, cancelWatch } from '../nfc'
 export default {
   name: "greeter",
   methods: {
@@ -18,20 +19,16 @@ export default {
       setTimeout(() => { 
         this.$store.commit('navigator/push', Carousel) 
       }, 300)
-      navigator.nfc.cancelWatch()
+      cancelWatch()
     },
     nfcLogin() {
-      navigator.nfc.cancelWatch()
+      cancelWatch()
       this.push()
     }
   },
   created() {
-    if ('nfc' in navigator) {
-      navigator.nfc.watch((message) => {
-        this.nfcLogin()
-      }, {mode: 'any'})
-    }
-  }
+    startWatch(this.nfcLogin)
+  },
 }
 </script>
 <style>

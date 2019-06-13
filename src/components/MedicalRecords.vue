@@ -13,79 +13,43 @@
   </v-ons-page>
 </template>
 <script>
+
+import { getBlob, patchBlob } from '../blob'
+import { startWatch } from '../nfc'
+
 export default {
   data() {
     return {
-      records: [
-        { id: 0, name: 'Kathryn Janeway', age: 41, position: 'Captain', medical: `
-      Problems
-      
-      DIABETES MELLITUS (ICD-250.)
-      HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
-
-      Medications
-      
-      PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
-      Last Refill: #30 x 2 : Carl Savem MD (08/27/2410)
-      HUMULIN INJ 70/30 (INSULIN REG & ISOPHANE (HUMAN)) 20 units ac breakfast
-      Last Refill: #600 u x 0 : Carl Savem MD (08/27/2410)` },
-        { id: 1, name: 'Malcolm Reynolds', age: 38, position: 'Captain', medical: `
-      Problems
-    
-      DEPRESSION (ICD-311)
-
-      Medications
-    
-      PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
-    
-      Last Refill: #30 x 2 : Carl Savem MD (06/17/2410)` },
-        { id: 2, name: 'William Adama', age: 51, position: 'Commander', medical: `
-      Problems
-      
-      HYPERTENSION, BENIGN ESSENTIAL (ICD-401.1)
-      DEPRESSION (ICD-311)
-      RETINOPATHY, DIABETIC (ICD-362.0)
-      POLYNEUROPATHY IN DIABETES (ICD-357.2)
-
-      Medications
-      
-      HYTRIN CAP 5MG (TERAZOSIN HCL) 1 po qd
-      Last Refill: #30 x 0 : Carl Savem (10/27/2410)
-      PRINIVIL TABS 20 MG (LISINOPRIL) 1 po qd
-      Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)
-      PROZAC CAPS 10 MG (FLUOXETINE HCL) 1 po qd
-      Last Refill: #30 x 2 : Carl Savem MD (10/27/2410)` },
-        { id: 3, name: 'Susan Ivanova', age: 45, position: 'Lieutenant Commander', medical: "" },
-        { id: 4, name: 'Turanga Leela', age: 32, position: 'Pilot', medical: "" },
-        { id: 5, name: 'David Bowman', age: 36, position: 'Doctor', medical: "" },
-        { id: 6, name: 'Zaphod Beeblebrox', age: 32, position: 'Ex-Galactic President', medical: "" },
-        { id: 7, name: 'Wilhuff Tarkin', age: 57, position: 'Admiral', medical: "" },
-      ],
+      record: { },
+      id: 0,
       query: '',
       results: [ ],
       resultText: 'Input patient name or scan ID card.'
     }
   },
   methods: {
-    scan() {
-      Object.assign(this.$data, this.$options.data())
-      this.state = 'scanning'
-      if ('nfc' in navigator) {
-        navigator.nfc.watch((message) => {
-          this.processMessage(message)
-        }, {mode: 'any'})
-      }
-    },
-    showRecord(id) {
-      let record = this.records.find((record) => { return (id === record.id)})
+    showRecord() {
       this.query = ''
       this.resultText = `
-      Name:     ${ record.name }
-      Age:      ${ record.age }
-      Position: ${ record.position }
+      Name:        ${ this.record.first_name } ${ this.record.last_name }
+      Age:         ${ this.record.age }
+      Position:    ${ this.record.position }
+      Home planet: ${ this.record.home_planet }
       Medical records:
-      ${ record.medical }`
+      ${ this.record.medical }`
     },
+    async getRecords(message) {
+      message.records.forEach(function (record) {
+        if (record.recordType == "text") {
+          if (record.data.startsWith('person:')) {
+            this.id = record.data.split( ':', 2)[1]
+          }
+        }
+      }, this)
+      this.record = await getBlob('person', this.id)
+      console.log(this.record)
+      this.showRecord()
+    }
   },
   watch: {
     query: function(val) {
@@ -94,11 +58,7 @@ export default {
     },
   },
   created() {
-    if ('nfc' in navigator) {
-      navigator.nfc.watch((message) => {
-        this.showRecord(this.records[Math.floor(Math.random() * this.records.length)].id)
-      }, {mode: 'any'})
-    }
+    startWatch(this.getRecords)
   },
 }
 </script>

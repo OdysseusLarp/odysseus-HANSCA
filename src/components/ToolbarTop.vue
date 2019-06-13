@@ -6,13 +6,16 @@
 </template>
 <script>
 import Greeter from './Greeter.vue'
+import { cancelWatch } from '../nfc'
 export default {
   name: 'ToolbarTop',
   methods: {
     back() {
+      cancelWatch()
       this.$store.commit('navigator/pop')
     },
     logout() {
+      cancelWatch()
       this.$store.commit('navigator/push', Greeter)
     },
   }
