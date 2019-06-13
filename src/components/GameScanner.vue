@@ -80,7 +80,7 @@ export default {
       // Load the game configs into 'this'
       if (this.tag.startsWith('game:')) {
         const id = this.tag.split(':', 2)[1]
-        this.game = await getBlob('game', id)
+        this.game = await getBlob('/data/game', id)
         if (!this.game.game_config) {
           console.error(`Game '${id}' did not contain game_config`)
           return
@@ -124,7 +124,7 @@ export default {
       this.state = 'game'
     },
     success() {
-      patchBlob(this.game.type, this.game.id, { status: 'fixed' })
+      patchBlob('/data/' + this.game.type, this.game.id, { status: 'fixed' })
       if (this.config.endDescription) {
         this.state = 'end'
       } else {
