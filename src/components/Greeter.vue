@@ -26,7 +26,7 @@ export default {
     async nfcLogin(message) {
       if(message.startsWith('person:') || message.startsWith( 'bio:')) {
         const id = this.tag.split(':', 2)[1]
-        const user = await getBlob('person', this.id)
+        const user = await getBlob('/person', this.id)
         this.$store.commit('user/login', user)
         cancelWatch()
         this.push()

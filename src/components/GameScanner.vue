@@ -86,7 +86,7 @@ export default {
           return
         }
 
-        this.gameConfig = await getBlob('game_config', this.game.game_config)
+        this.gameConfig = await getBlob('/data/game_config', this.game.game_config)
         if (!this.gameConfig.default) {
           console.error(`Game config '${this.game.game_config}' did not contain default config`)
           return

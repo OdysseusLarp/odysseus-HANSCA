@@ -46,7 +46,7 @@ export default {
           }
         }
       }, this)
-      this.record = await getBlob('person', this.id)
+      this.record = await getBlob('/person', this.id)
       console.log(this.record)
       this.showRecord()
     }
