@@ -12,6 +12,8 @@
 <script>
 import Carousel from './Carousel.vue'
 import { startWatch, cancelWatch } from '../nfc'
+import { getBlob, patchBlob } from '../blob'
+
 export default {
   name: "greeter",
   methods: {
@@ -21,9 +23,14 @@ export default {
       }, 300)
       cancelWatch()
     },
-    nfcLogin() {
-      cancelWatch()
-      this.push()
+    async nfcLogin(message) {
+      if(message.startsWith('person:') || message.startsWith( 'bio:')) {
+        const id = this.tag.split(':', 2)[1]
+        const user = await getBlob('person', this.id)
+        this.$store.commit('user/login', user)
+        cancelWatch()
+        this.push()
+      }
     }
   },
   created() {

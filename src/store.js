@@ -31,9 +31,33 @@ export default {
         options(state, newOptions = {}) {
           state.options = newOptions
         }
+      },
+      getters: {
+        current: state => {
+          return state.stack[state.stack.length - 1].name
+        }
       }
     },
-
+    user: {
+      strict: true,
+      namespaced: true,
+      state: {
+        user: {},
+      },
+      mutations: {
+        login(state, user) {
+          state.user = user
+        },
+        logout(state) {
+          state.user = {}
+        }
+      },
+      getters: {
+        userLevel: state => {
+          return state.user.user_level
+        }
+      }
+    },
     // Copy-paste from odysseus-misc-ui
     backend: {
       state: {
