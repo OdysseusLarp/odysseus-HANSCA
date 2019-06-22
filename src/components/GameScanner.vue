@@ -3,10 +3,12 @@
     <toolbar-top></toolbar-top>
     <!-- For wtf reason v-if causes a crash when changing state -->
     <div v-show="state == 'scanning'" style="text-align: center; margin-top: 50px;">
-      <h2>Scanning...</h2>
-      <p>Tag contents:</p>
-      <v-ons-input placeholder="Tag contents" float v-model="tag"></v-ons-input>
-      <v-ons-button @click="start">Start</v-ons-button>
+      <h2 @click="countDebug">Scanning...</h2>
+      <div v-if="debug">
+        <p>Tag contents:</p>
+        <v-ons-input placeholder="Tag contents" float v-model="tag"></v-ons-input>
+        <v-ons-button @click="start">Start</v-ons-button>
+      </div>
     </div>
     <div></div>
     <div v-show="state == 'init'">
@@ -72,7 +74,9 @@ export default {
       gameConfig: {},
       config: {},
       state: 'scanning',
-      defaultNotBroken: 'The system is operating nominally'
+      defaultNotBroken: 'The system is operating nominally',
+      debug: false,
+      debugCount: 0,
     }
   },
   methods: {
@@ -133,7 +137,16 @@ export default {
     },
     close() {
       this.$store.commit('navigator/pop')
-    }
+    },
+    countDebug() {
+      if (!this.debug) {
+        this.debugCount++
+        if (this.debugCount >= 5) {
+          this.debug = true
+          this.tag = 'game:reactor_1'
+        }
+      }
+    },
   },
   created() {
     if ('nfc' in navigator) {
@@ -141,6 +154,7 @@ export default {
         message.records.forEach(function (record) {
           if (record.recordType == "text") {
             this.tag = record.data
+            this.start()
           }
           navigator.nfc.cancelWatch()
         }, this)
