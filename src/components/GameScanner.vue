@@ -58,12 +58,12 @@
 <script>
 import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
+import ManualGame from './games/ManualGame'
 
 const GAMES = {
-  phasesync: PhaseSyncGame
+  phasesync: PhaseSyncGame,
+  manual: ManualGame,
 }
-
-// FIXME: Add NFC scanning functionality
 
 export default {
   data() {
