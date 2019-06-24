@@ -24,30 +24,26 @@ export default {
     }
   },
   methods: {
-    push() {
-      setTimeout(() => { 
-        this.$store.commit('navigator/push', Carousel) 
-      }, 300)
-      cancelWatch()
-    },
-    async nfcLogin(message) {
-      if(message.startsWith( 'bio:')) {
+    nfcLogin(message) {
+      if(message.startsWith('bio:')) {
         const id = message.split(':', 2)[1]
-        const user = await getBlob('/person/bio', id)
-        this.$store.commit('user/login', user)
-        cancelWatch()
-        this.push()
+        this.login(id)
       }
     },
-    async submit() {
+    submit() {
+      this.login(this.bioId)
+    },
+    async login(bioId) {
       try {
-        const user = await getBlob('/person/bio', this.bioId.toUpperCase())
+        const user = await getBlob('/person/bio', bioId.toUpperCase())
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
         cancelWatch()
-        this.push()
+        setTimeout(() => { 
+          this.$store.commit('navigator/push', Carousel) 
+        }, 300)
       } catch (e) {
-        // no-op
+        console.log("User login error", e)
       }
       this.bioId = ""
     }
