@@ -1,11 +1,12 @@
-<!-- Medical version of ScienceScanner.vue -->
+<!-- Science version of MedicalScanner.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />
     <div class="container">
         <h1>MEDICAL SCANNERS</h1>
-        <label for="bio-id">PATIENT BIO ID<span class="required">*</span></label>
-        <input v-model="bio_id" type="text" id="bio-id" />
+        <p>Medical scanners might reveal something about artifacts too.</p>
+        <label for="artifact-id">ARTIFACT CATALOG ID<span class="required">*</span></label>
+        <input v-model="catalog_id" type="text" id="artifact-id" />
         <button :disabled="standingInProgress || tableInProgress" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
@@ -32,7 +33,7 @@ export default {
         tableInProgressTimeout: null,
         standingInProgress: false,
         standingInProgressTimeout: null,
-        bio_id: '', // Target person Bio ID
+        catalog_id: '', // Artifact Catalog ID
     }
   },
   methods: {
@@ -57,7 +58,7 @@ export default {
     clearScanning() {
         this.standingInProgress = false;
         this.tableInProgress = false;
-        this.bio_id = '';
+        this.catalog_id = '';
     },
     startScanner(channel) {
         return post(`/dmx/event/${channel}`).then(() => {
@@ -73,17 +74,17 @@ export default {
         });
     },
     postOperationResults(scannerType) {
-        if (!this.bio_id) {
-            console.log('no bio_id, not submitting the operation result');
+        if (!this.catalog_id) {
+            console.log('no catalog_id, not submitting the operation result');
             return;
         }
         const data = {
             is_complete: false,
             is_analysed: false,
             author_id: this.$store.state.user.user.id,
-            type: 'MEDIC',
+            type: 'SCIENCE',
             additional_type: scannerType,
-            bio_id: this.bio_id,
+            catalog_id: this.catalog_id,
       };
       post('/operation', data).then(res => {
           console.log('created operation result for the scan', data);

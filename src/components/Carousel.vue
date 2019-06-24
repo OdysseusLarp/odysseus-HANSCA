@@ -1,13 +1,15 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
     <v-ons-carousel fullscreen swipeable auto-scroll overscrollable
       :index.sync="carouselIndex"
     >
-      <v-ons-carousel-item v-for="(value, key) in items" :style="{backgroundColor: value.color}">
+      <v-ons-carousel-item v-for="(value, key) in items" v-bind:key="key" :style="{backgroundColor: value.color}">
         <div style="text-align: center; font-size: 30px; margin-top: 20px; color: #fff;">{{key}}</div>
         <div style="text-align: center; margin-top: 50px;">
-          <span class="scan-item" v-for="tool in value.tools"><v-ons-icon @click="scan(tool)" :icon="'fa-' + tool" size="3x"></v-ons-icon></span>
+          <span class="scan-item" v-bind:key="tool" v-for="tool in value.tools">
+            <v-ons-icon @click="scan(tool)" :icon="'fa-' + tool" size="3x"></v-ons-icon>
+          </span>
         </div>
       </v-ons-carousel-item>
     </v-ons-carousel>
@@ -32,6 +34,7 @@ import MedicalScanner from './MedicalScanner.vue'
 import ScienceArtifactDetails from './ScienceArtifactDetails.vue'
 import ScienceInspectObject from './ScienceInspectObject.vue'
 import ScienceAnalysis from './ScienceAnalysis.vue'
+import ScienceScanner from './ScienceScanner.vue'
 import FlappyDrone from './FlappyDrone.vue'
 import Locator from './Locator.vue'
 
@@ -78,6 +81,8 @@ export default {
         this.$store.commit('navigator/push', ScienceInspectObject)
       } else if (tool === 'flask') {
         this.$store.commit('navigator/push', ScienceAnalysis)
+      } else if (tool === 'eye-dropper') {
+        this.$store.commit('navigator/push', ScienceScanner)
       } else if (tool === 'project-diagram') {
         this.$store.commit('navigator/push', LightsOut)
       } else if (tool === 'chart-bar') {
