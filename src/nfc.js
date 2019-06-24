@@ -8,3 +8,16 @@ export function startWatch(handler) {
 export function cancelWatch( ) {
   if(navigator.nfc) navigator.nfc.cancelWatch()
 }
+
+export function hasNfc() {
+  return 'nfc' in navigator;
+}
+
+export function keyboardInputToTag(prefix, input) {
+  return {
+    records: [{
+      recordType: 'text',
+      data: `${prefix}${prefix ? ':' : ''}${input}`,
+    }],
+  };
+}

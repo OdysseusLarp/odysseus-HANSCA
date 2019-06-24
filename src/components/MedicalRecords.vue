@@ -15,7 +15,8 @@
 <script>
 
 import { getBlob, patchBlob } from '../blob'
-import { startWatch } from '../nfc'
+import { startWatch, hasNfc, keyboardInputToTag } from '../nfc'
+import { debounce } from 'lodash';
 
 export default {
   data() {
@@ -24,7 +25,7 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Input patient name or scan ID card.'
+      resultText: 'Input patient name or scan ID card xxx.'
     }
   },
   methods: {
@@ -32,33 +33,47 @@ export default {
       this.query = ''
       this.resultText = `
       Name:        ${ this.record.first_name } ${ this.record.last_name }
-      Age:         ${ this.record.age }
-      Position:    ${ this.record.position }
+      Age:         ${ 542 - this.record.birth_year }
+      Occupation:  ${ this.record.occupation }
       Home planet: ${ this.record.home_planet }
+
       Medical records:
-      ${ this.record.medical }`
+
+${ this.record.entries
+  .filter(e => e.type === 'MEDICAL')
+  .map(e => e.entry)
+  .reduce((prev, cur) => {
+    const split = cur.split('\n\n');
+    return [...prev, ...split];
+  }, [])
+  .map(e => '       ' + e)
+  .join('\n\n') }`
     },
     async getRecords(message) {
-      message.records.forEach(function (record) {
+      console.log('getRecords', message);
+      message.records.forEach(async function (record) {
         if (record.recordType == "text") {
           if (record.data.startsWith('person:')) {
-            this.id = record.data.split( ':', 2)[1]
+              this.id = record.data.split( ':', 2)[1]
+              if (!this.id) return;
+              this.record = await getBlob('/person', this.id)
+              console.log(this.record)
+              this.showRecord()
           }
         }
       }, this)
-      this.record = await getBlob('/person', this.id)
-      console.log(this.record)
-      this.showRecord()
-    }
+    },
   },
   watch: {
     query: function(val) {
-      if(val !== '') this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
+      if (!hasNfc()) this.debouncedGetRecords(keyboardInputToTag('person', val))
+      if(val !== '' && this.records) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
       else this.results = [ ]
     },
   },
   created() {
     startWatch(this.getRecords)
+    this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
 }
 </script>
