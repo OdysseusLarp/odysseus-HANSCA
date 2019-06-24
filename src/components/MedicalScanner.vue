@@ -34,19 +34,33 @@ export default {
   methods: {
     startTableScanner() {
         if (this.tableInProgress) return;
-        this.startScanner(TABLE_SCANNER_DMX_CHANNEL);
-        this.tableInProgress = true;
-        this.tableInProgressTimeout = setTimeout(() => this.tableInProgress = false, SCAN_DURATION);
+        this.startScanner(TABLE_SCANNER_DMX_CHANNEL).then(success => {
+            if (!success) return;
+            this.tableInProgress = true;
+            this.tableInProgressTimeout = setTimeout(() => this.tableInProgress = false, SCAN_DURATION);
+        });
     },
     startStandingScanner() {
         if (this.standingInProgress) return;
-        this.startScanner(STANDING_SCANNER_DMX_CHANNEL);
-        this.standingInProgress = true;
-        this.standingInProgressTimeout = setTimeout(() => this.standingInProgress = false, SCAN_DURATION);
+        this.startScanner(STANDING_SCANNER_DMX_CHANNEL).then(success => {
+            if (!success) return;
+            this.standingInProgress = true;
+            this.standingInProgressTimeout = setTimeout(() => this.standingInProgress = false, SCAN_DURATION);
+        })
     },
     startScanner(channel) {
         console.log('Launching DMX', channel);
-        post(`/dmx/event/${channel}`);
+        return post(`/dmx/event/${channel}`).then(() => {
+            this.$ons.notification.alert(
+            'Scanner is initializing',
+            { title: 'Initializing scanner...', maskColor: 'rgba(0, 255, 0, 0.2)' });
+            return true;
+        }).catch(() => {
+            this.$ons.notification.alert(
+            'Could not start the scanner',
+            { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
+            return false;
+        });
     }
   },
   watch: {},
