@@ -39,7 +39,7 @@ export default {
 
       Medical records:
 
-${ this.record.entries
+${ (this.record.entries || [])
   .filter(e => e.type === 'MEDICAL')
   .map(e => e.entry)
   .reduce((prev, cur) => {
@@ -50,24 +50,19 @@ ${ this.record.entries
   .join('\n\n') }`
     },
     async getRecords(message) {
-      console.log('getRecords', message);
-      message.records.forEach(async function (record) {
-        if (record.recordType == "text") {
-          if (record.data.startsWith('person:')) {
-              this.id = record.data.split( ':', 2)[1]
-              if (!this.id) return;
-              this.record = await getBlob('/person', this.id)
-              console.log(this.record)
-              this.showRecord()
-          }
-        }
-      }, this)
-    },
+      if (message.startsWith('person:')) {
+        this.id = message.split( ':', 2)[1]
+        if (!this.id) return;
+        this.record = await getBlob('/person', this.id)
+        console.log(this.record)
+        this.showRecord()
+      }
+    }
   },
   watch: {
     query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords(keyboardInputToTag('person', val))
-      if(val !== '' && this.records) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
+      if (!hasNfc()) this.debouncedGetRecords('person:' + val)
+      if(val !== '' && Array.isArray(this.records)) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
       else this.results = [ ]
     },
   },

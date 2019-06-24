@@ -1,11 +1,13 @@
 <template>
-  <v-ons-page @click="push()">
-    <v-ons-ripple color='#D38312' background='#373B44'>
-      <div class="greeter">
-          <h1>HANSCA</h1>
-          <h3>The Standard Universal Hand Scanner</h3>
-</div>
-    </v-ons-ripple>
+  <v-ons-page>
+    <div class="greeter">
+        <h1>HANSCA</h1>
+        <h3>The Standard Universal Hand Scanner</h3>
+
+        <p class="bioid">Bio ID:</p>
+        <v-ons-input v-model="bioId"></v-ons-input>
+        <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
+    </div>
   </v-ons-page>
 </template>
 
@@ -16,21 +18,34 @@ import { getBlob, patchBlob } from '../blob'
 
 export default {
   name: "greeter",
+  data() {
+    return {
+      bioId: ""
+    }
+  },
   methods: {
-    push() {
-      setTimeout(() => { 
-        this.$store.commit('navigator/push', Carousel) 
-      }, 300)
-      cancelWatch()
+    nfcLogin(message) {
+      if(message.startsWith('bio:')) {
+        const id = message.split(':', 2)[1]
+        this.login(id)
+      }
     },
-    async nfcLogin(message) {
-      if(message.startsWith('person:') || message.startsWith( 'bio:')) {
-        const id = this.tag.split(':', 2)[1]
-        const user = await getBlob('/person', this.id)
+    submit() {
+      this.login(this.bioId)
+    },
+    async login(bioId) {
+      try {
+        const user = await getBlob('/person/bio', bioId.toUpperCase())
+        console.log("Committing user:", user)
         this.$store.commit('user/login', user)
         cancelWatch()
-        this.push()
+        setTimeout(() => { 
+          this.$store.commit('navigator/push', Carousel) 
+        }, 300)
+      } catch (e) {
+        console.log("User login error", e)
       }
+      this.bioId = ""
     }
   },
   created() {
@@ -50,5 +65,11 @@ export default {
 }
 .greeter h1 {
   color: #D38312;
+}
+.bioid {
+  margin-top: 4em;
+}
+.submit {
+  margin-top: 1em;
 }
 </style>
