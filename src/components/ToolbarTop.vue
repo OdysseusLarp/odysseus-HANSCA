@@ -17,7 +17,7 @@ export default {
     logout() {
       cancelWatch()
       this.$store.commit('user/logout')
-      this.$store.commit('navigator/push', Greeter)
+      this.$store.commit('navigator/reset', Greeter)
     },
   },
   computed: {
