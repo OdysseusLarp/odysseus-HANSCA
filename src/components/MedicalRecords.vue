@@ -1,10 +1,11 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
+      <h1>MEDICAL SCAN</h1>
       <v-ons-search-input placeholder="Search" v-model="query"></v-ons-search-input>
 			<v-ons-list class="autocomplete">
-        <v-ons-list-item v-for="record in results" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>	
+        <v-ons-list-item v-for="record in results" v-bind:key="record.id" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>
 			</v-ons-list>
       <div class="resultTextBox">
         <pre><vue-typer :text='resultText' :repeat="0" :type-delay="10"></vue-typer></pre>
@@ -16,7 +17,7 @@
 
 import { getBlob, patchBlob } from '../blob'
 import { startWatch, hasNfc } from '../nfc'
-import { debounce } from 'lodash';
+import { debounce, chunk } from 'lodash';
 
 export default {
   data() {
@@ -25,28 +26,36 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Input patient name or scan ID card xxx.'
+      resultText: 'Scan patient ID card or enter it manually.'
     }
   },
   methods: {
     showRecord() {
+      const person = this.record;
+      if (!person) return this.resultText = `Unknown scan target, scan not authorized.`;
       this.query = ''
-      this.resultText = `
-      Name:        ${ this.record.first_name } ${ this.record.last_name }
-      Age:         ${ 542 - this.record.birth_year }
-      Occupation:  ${ this.record.occupation }
-      Home planet: ${ this.record.home_planet }
+      this.resultText = `Medical scan results:
 
-      Medical records:
+  Age:                ${ 542 - person.birth_year }
+  Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
+  Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
+  Blood type:         ${ person.blood_type || 'Unknown' }
+
+  Medical records:
 
 ${ (this.record.entries || [])
   .filter(e => e.type === 'MEDICAL')
   .map(e => e.entry)
   .reduce((prev, cur) => {
-    const split = cur.split('\n\n');
-    return [...prev, ...split];
+      // The first medical entry is actually multiple entries split by two newlines, so split those
+      // into individual entries and cut the line length to max X characters
+      const split = cur.split('\n\n');
+      const entryWithNewLines = split.map(entry => {
+        return chunk(entry.split(''), 35).map(e => e.join('')).join('\n    ');
+      });
+    return [...prev, ...entryWithNewLines];
   }, [])
-  .map(e => '       ' + e)
+  .map(e => '   ' + e)
   .join('\n\n') }`
     },
     async getRecords(message) {
