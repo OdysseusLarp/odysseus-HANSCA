@@ -35,7 +35,7 @@ export default {
         is_complete: false,
         is_analysed: false,
         author_id: this.$store.state.user.user.id,
-        type: 'MEDICAL',
+        type: 'MEDIC',
         additional_type: this.additional_type,
         bio_id: this.bio_id,
         sample_id: this.sample_id,

@@ -2,7 +2,7 @@
   <v-ons-page>
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
-      <h1>MEDICAL SCAN</h1>
+      <h1>SCAN ARTIFACT</h1>
       <v-ons-search-input placeholder="Search" v-model="query"></v-ons-search-input>
 			<v-ons-list class="autocomplete">
         <v-ons-list-item v-for="record in results" v-bind:key="record.id" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>
@@ -27,37 +27,38 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Scan patient ID card or enter it manually.'
+      resultText: 'Scan the artifact.'
     }
   },
   methods: {
     showRecord() {
-      const person = this.record;
-      if (!person) return this.resultText = `Unknown scan target, scan not authorized.`;
+      const artifact = this.record;
+      if (!artifact) return this.resultText = `This artifact is unknown.`;
       this.query = ''
-      this.resultText = `Medical scan results:
+      this.resultText = `Artifact scan results:
 
-  Age:                ${ 542 - person.birth_year }
-  Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
-  Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
-  Blood type:         ${ person.blood_type || 'Unknown' }
+  Name:               ${ artifact.name }
+  Discovered by:      ${ artifact.discovered_by || 'Unknown' }
+  Discovery time:     ${ artifact.discovered_at || 'Unknown' }
+  Discovery location: ${ artifact.discovered_from || 'Unknown' }
+  Artifact type:      ${ artifact.type || 'Unknown' }
 
-  Medical records:
+  Additional entries:
 
-${ parseEntries(this.record.entries, 'MEDICAL') }`
+${ parseEntries(this.record.entries) }`
     },
     async getRecords(message) {
-      if (message.startsWith('person:')) {
+      if (message.startsWith('artifact:')) {
         this.id = message.split( ':', 2)[1]
         if (!this.id) return;
-        this.record = await getBlob('/person', this.id)
+        this.record = await getBlob('/science/artifact', this.id)
         this.showRecord()
       }
     }
   },
   watch: {
     query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords('person:' + val)
+      if (!hasNfc()) this.debouncedGetRecords('artifact:' + val)
       if(val !== '' && Array.isArray(this.records)) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
       else this.results = [ ]
     },
@@ -75,14 +76,14 @@ ${ parseEntries(this.record.entries, 'MEDICAL') }`
   width: 80px;
   height: 80px;
 }
-.vue-typer .custom.char.typed { 
+.vue-typer .custom.char.typed {
   color: #fff;
 }
 .resultTextBox {
   background-color: rgba( 0, 0, 0, 0.4);
   border: 1px solid #333;
   margin: 20px;
-  padding: 10px; 
+  padding: 10px;
   text-align: left;
 }
 ons-list.autocomplete {

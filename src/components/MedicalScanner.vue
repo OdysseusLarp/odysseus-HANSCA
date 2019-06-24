@@ -3,10 +3,12 @@
     <toolbar-top />
     <div class="container">
         <h1>MEDICAL SCANNERS</h1>
-        <button :disabled="standingInProgress" type="button" class="button-standing-scanner" @click="startStandingScanner">
+        <label for="bio-id">PATIENT BIO ID<span class="required">*</span></label>
+        <input v-model="bio_id" type="text" id="bio-id" />
+        <button :disabled="standingInProgress || tableInProgress" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
-        <button :disabled="tableInProgress" type="button" class="button-table-scanner" @click="startTableScanner">
+        <button :disabled="tableInProgress || standingInProgress" type="button" class="button-table-scanner" @click="startTableScanner">
           {{ tableInProgress ? 'TABLE SCANNER IS SCANNING...' : 'START TABLE SCANNER' }}
         </button>
     </div>
@@ -29,6 +31,7 @@ export default {
         tableInProgressTimeout: null,
         standingInProgress: false,
         standingInProgressTimeout: null,
+        bio_id: '', // Target person Bio ID
     }
   },
   methods: {
@@ -36,17 +39,24 @@ export default {
         if (this.tableInProgress) return;
         this.startScanner(TABLE_SCANNER_DMX_CHANNEL).then(success => {
             if (!success) return;
+            this.postOperationResults('TABLE_SCANNER');
             this.tableInProgress = true;
-            this.tableInProgressTimeout = setTimeout(() => this.tableInProgress = false, SCAN_DURATION);
+            this.tableInProgressTimeout = setTimeout(() => this.clearScanning(), SCAN_DURATION);
         });
     },
     startStandingScanner() {
         if (this.standingInProgress) return;
         this.startScanner(STANDING_SCANNER_DMX_CHANNEL).then(success => {
             if (!success) return;
+            this.postOperationResults('STANDING_SCANNER');
             this.standingInProgress = true;
-            this.standingInProgressTimeout = setTimeout(() => this.standingInProgress = false, SCAN_DURATION);
+            this.standingInProgressTimeout = setTimeout(() => this.clearScanning(), SCAN_DURATION);
         })
+    },
+    clearScanning() {
+        this.standingInProgress = false;
+        this.tableInProgress = false;
+        this.bio_id = '';
     },
     startScanner(channel) {
         console.log('Launching DMX', channel);
@@ -61,6 +71,25 @@ export default {
             { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
             return false;
         });
+    },
+    postOperationResults(scannerType) {
+        if (!this.bio_id) {
+            console.log('no bio_id, not submitting the operation result');
+            return;
+        }
+        const data = {
+            is_complete: false,
+            is_analysed: false,
+            author_id: this.$store.state.user.user.id,
+            type: 'MEDIC',
+            additional_type: scannerType,
+            bio_id: this.bio_id,
+      };
+      post('/operation', data).then(res => {
+          console.log('created operation result for the scan', data);
+      }).catch(err => {
+          console.log('failed to create operation result for the scan', err);
+      });
     }
   },
   watch: {},
@@ -76,14 +105,26 @@ $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
 
+input {
+  background: lighten($gray, 20);
+  background-color: lighten($gray, 20);
+  border: 1px solid lighten($gray, 25);
+  font-size: 1.6rem;
+  padding: 0.5rem;
+  color: #fff;
+  margin: 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
 button {
   background: darken($orange, 10);
   border: 0.1rem solid darken($orange, 25);
   font-size: 1.6rem;
   padding: 1.5rem 0.9rem;
   margin: 0.5rem;
-  margin-top: 4rem;
   color: #fff;
+  margin-top: 2rem;
   text-shadow: 0px 0px 3px rgba(0, 0, 0, .8);
 }
 button:disabled {

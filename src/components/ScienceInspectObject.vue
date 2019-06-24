@@ -38,7 +38,9 @@ export default {
   methods: {
     async getRecords(message) {
       if (message.match(this.tagRegexp)) {
-        const res = await axios.get(`/tag/${message}`);
+        const res = await axios.get(`/tag/${message}`).catch(() => {
+          this.resultText = this.tagNotFoundMessage;
+        });
         this.resultText = get(res, 'data.description', this.tagNotFoundMessage);
       } else {
         this.resultText = this.invalidTagTypeMessage;
@@ -53,11 +55,11 @@ export default {
     },
   },
   created() {
-    this.title = 'DIAGNOSE AN INJURY';
-    this.resultText = 'Scan the injury';
-    this.tagRegexp = /^DIAGNOSIS:..*/;
-    this.tagNotFoundMessage = 'This injury is unknown';
-    this.invalidTagTypeMessage = 'This is not recognized as an injury\n\nScan the injury';
+    this.title = 'INSPECT OBJECT';
+    this.resultText = 'Scan the object';
+    this.tagRegexp = /^SCIENCE:..*/;
+    this.tagNotFoundMessage = 'This object is unknown';
+    this.invalidTagTypeMessage = 'This is not recognized as an object\n\nScan the object';
     startWatch(this.getRecords)
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
@@ -70,14 +72,14 @@ export default {
   width: 80px;
   height: 80px;
 }
-.vue-typer .custom.char.typed { 
+.vue-typer .custom.char.typed {
   color: #fff;
 }
 .resultTextBox {
   background-color: rgba( 0, 0, 0, 0.4);
   border: 1px solid #333;
   margin: 20px;
-  padding: 10px; 
+  padding: 10px;
   text-align: left;
 }
 ons-list.autocomplete {
