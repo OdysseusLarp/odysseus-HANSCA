@@ -52,7 +52,7 @@ ${ parseEntries(this.record.entries) }`
       if (message.startsWith('artifact:')) {
         this.id = message.split( ':', 2)[1]
         if (!this.id) return;
-        this.record = await getBlob('/science/artifact', this.id)
+        this.record = await getBlob('/science/artifact/catalog', this.id.toUpperCase())
         this.showRecord()
       }
     }
