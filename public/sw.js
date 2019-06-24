@@ -1,7 +1,7 @@
 var CACHE_NAME = 'hansca-cache-v1';
 var urlsToCache = [
-  '/',
-  '/index.html'
+  // '/',
+  // '/index.html'
 ];
 
 self.addEventListener('install', function(event) {
