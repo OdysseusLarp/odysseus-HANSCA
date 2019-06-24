@@ -15,7 +15,7 @@
 <script>
 
 import { getBlob, patchBlob } from '../blob'
-import { startWatch, hasNfc, keyboardInputToTag } from '../nfc'
+import { startWatch, hasNfc } from '../nfc'
 import { debounce } from 'lodash';
 
 export default {

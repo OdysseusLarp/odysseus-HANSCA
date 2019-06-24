@@ -15,7 +15,7 @@
 <script>
 
 import { getBlob, patchBlob } from '../blob'
-import { startWatch, hasNfc, keyboardInputToTag } from '../nfc'
+import { startWatch, hasNfc } from '../nfc'
 import { debounce, get } from 'lodash';
 import axios from 'axios';
 
@@ -33,21 +33,17 @@ export default {
   methods: {
     async getRecords(message) {
       console.log('getRecords', message);
-      message.records.forEach(async function (record) {
-        if (record.recordType == "text") {
-          if (record.data.match(/^DIAGNOSIS:..*/)) {
-            const res = await axios.get(`/tag/${record.data}`);
-            this.resultText = get(res, 'data.description', 'This injury is unknown');
-          } else {
-            this.resultText = 'This is not recognized as an injury\n\nScan the injury';
-          }
-        }
-      }, this)
+      if (message.match(/^DIAGNOSIS:..*/)) {
+        const res = await axios.get(`/tag/${message}`);
+        this.resultText = get(res, 'data.description', 'This injury is unknown');
+      } else {
+        this.resultText = 'This is not recognized as an injury\n\nScan the injury';
+      }
     },
   },
   watch: {
     query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords(keyboardInputToTag('', val))
+      if (!hasNfc()) this.debouncedGetRecords(val)
       if(val !== '' && this.records) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
       else this.results = [ ]
     },

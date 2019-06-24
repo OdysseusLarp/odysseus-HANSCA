@@ -16,11 +16,3 @@ export function hasNfc() {
   return 'nfc' in navigator;
 }
 
-export function keyboardInputToTag(prefix, input) {
-  return {
-    records: [{
-      recordType: 'text',
-      data: `${prefix}${prefix ? ':' : ''}${input}`,
-    }],
-  };
-}
