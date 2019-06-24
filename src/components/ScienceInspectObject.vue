@@ -1,3 +1,4 @@
+<!-- Science version of MedicalDiagnosis.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />

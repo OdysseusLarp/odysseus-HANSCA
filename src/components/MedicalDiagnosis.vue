@@ -1,3 +1,4 @@
+<!-- Medic version of ScienceInspectObject.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />

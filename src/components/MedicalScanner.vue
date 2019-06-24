@@ -59,7 +59,6 @@ export default {
         this.bio_id = '';
     },
     startScanner(channel) {
-        console.log('Launching DMX', channel);
         return post(`/dmx/event/${channel}`).then(() => {
             this.$ons.notification.alert(
             'Scanner is initializing',

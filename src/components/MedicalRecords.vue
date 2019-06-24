@@ -1,3 +1,4 @@
+<!-- Medic version of ScienceArtifactDetails.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />

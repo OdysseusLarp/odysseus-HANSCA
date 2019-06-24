@@ -31,6 +31,7 @@ import MedicalSample from './MedicalSample.vue'
 import MedicalScanner from './MedicalScanner.vue'
 import ScienceArtifactDetails from './ScienceArtifactDetails.vue'
 import ScienceInspectObject from './ScienceInspectObject.vue'
+import ScienceAnalysis from './ScienceAnalysis.vue'
 import FlappyDrone from './FlappyDrone.vue'
 import Locator from './Locator.vue'
 
@@ -75,6 +76,8 @@ export default {
         this.$store.commit('navigator/push', ScienceArtifactDetails)
       } else if (tool === 'vial') {
         this.$store.commit('navigator/push', ScienceInspectObject)
+      } else if (tool === 'flask') {
+        this.$store.commit('navigator/push', ScienceAnalysis)
       } else if (tool === 'project-diagram') {
         this.$store.commit('navigator/push', LightsOut)
       } else if (tool === 'chart-bar') {

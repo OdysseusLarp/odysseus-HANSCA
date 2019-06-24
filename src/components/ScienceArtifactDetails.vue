@@ -1,3 +1,4 @@
+<!-- Science version of MedicalRecords.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />

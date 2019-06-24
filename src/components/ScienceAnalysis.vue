@@ -1,19 +1,21 @@
-<!-- Medic version of ScienceAnalysis.vue -->
+<!-- Science version of MedicalSample.vue -->
 <template>
   <v-ons-page>
     <toolbar-top />
     <div class="container">
-        <h1>TAKE A SAMPLE</h1>
-        <label for="bio-id">PATIENT BIO ID<span class="required">*</span></label>
+        <h1>MAKE AN ANALYSIS</h1>
+        <!--
+        <label for="bio-id">PATIENT BIO ID???<span class="required">*</span></label>
         <input v-model="bio_id" type="text" id="bio-id" />
+        -->
         <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
         <input v-model="sample_id" type="text" id="sample-id" />
-        <label for="additional-type">SAMPLE TYPE (BLOOD, SALIVA...)<span class="required">*</span></label>
+        <label for="additional-type">SAMPLE TYPE (BLOOD, GENE...)<span class="required">*</span></label>
         <input v-model="additional_type" type="text" id="additional-type" />
         <label for="sample-description">DESCRIPTION</label>
         <textarea v-model="description" id="sample-description" />
         <button type="button" @click="submitSample">
-          SUBMIT FOR ANALYSIS
+          SUBMIT ANALYSIS
         </button>
     </div>
   </v-ons-page>
@@ -24,7 +26,7 @@ import { post } from 'axios';
 export default {
   data() {
     return {
-      bio_id: '',
+      // bio_id: '',
       sample_id: '',
       description: '',
       additional_type: '',
@@ -36,33 +38,28 @@ export default {
         is_complete: false,
         is_analysed: false,
         author_id: this.$store.state.user.user.id,
-        type: 'MEDIC',
+        type: 'SCIENCE',
         additional_type: this.additional_type,
-        bio_id: this.bio_id,
+        // bio_id: this.bio_id,
         sample_id: this.sample_id,
         description: this.description,
       };
-      if (!data.author_id || !data.additional_type || !data.bio_id || !data.sample_id)
+      if (!data.author_id || !data.additional_type || !data.sample_id)
         return this.$ons.notification.alert(
           'Make sure you fill in the required fields',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample sent for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Analysis submitted', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
       }).catch(err => {
         // No time to make error handling that makes sense, so behold:
-        const msg = get(err, 'response.data.error');
-        const mightBeBioIdError = msg.includes('operation_result_bio_id_foreign');
-
         this.$ons.notification.alert(
-          mightBeBioIdError ?
-            'Make sure that you have the correct patient Bio ID.' :
-            'Could not submit sample for analysis.',
+            'Failed to complete analysis',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       })
     },
     clearFields() {
-      this.bio_id = '';
+      // this.bio_id = '';
       this.sample_id = '';
       this.description = '';
       this.additional_type = '';
