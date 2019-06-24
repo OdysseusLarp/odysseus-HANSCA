@@ -39,13 +39,9 @@ export default {
       ${ this.record.medical }`
     },
     async getRecords(message) {
-      message.records.forEach(function (record) {
-        if (record.recordType == "text") {
-          if (record.data.startsWith('person:')) {
-            this.id = record.data.split( ':', 2)[1]
-          }
-        }
-      }, this)
+      if (message.startsWith('person:')) {
+        this.id = record.data.split( ':', 2)[1]
+      }
       this.record = await getBlob('/person', this.id)
       console.log(this.record)
       this.showRecord()
