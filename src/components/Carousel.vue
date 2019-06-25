@@ -38,6 +38,7 @@ import ScienceAnalysis from './ScienceAnalysis.vue'
 import ScienceScanner from './ScienceScanner.vue'
 import FlappyDrone from './FlappyDrone.vue'
 import Locator from './Locator.vue'
+import ShipDatabase from './ShipDatabase.vue'
 
 const PAGES = [
   {
@@ -78,6 +79,11 @@ const PAGES = [
         icon: 'tools',
         title: 'Repair system',
         page: GameScanner,
+      },
+      {
+        icon: 'info-circle',
+        title: 'Ship knowledge database',
+        page: ShipDatabase,
       },
     ],
   },
@@ -145,7 +151,7 @@ export default {
   display: inline-block;
   margin: 20px;
   width: 80px;
-  height: 100px;
+  height: 120px;
   text-align: center;
   overflow: hidden;
 }
