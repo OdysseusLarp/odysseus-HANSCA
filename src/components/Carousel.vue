@@ -159,10 +159,14 @@ export default {
   name: "Carousel",
   /* icons: 'magnet', 'id-card', 'car-battery', 'calculator', 'screwdriver', 'wrench'  */
   data() {
-    const groups = this.$store.state.user.user.groups;
+    const user = this.$store.state.user.user;
+    const groups = user.groups;
     const pages = PAGES.filter(page => groups.includes(page.role))
     if (pages.length == 0) {
       this.$store.commit('navigator/reset')
+      this.$ons.notification.alert(
+          `${user.full_name}, you are not authorized to use any HANSCA features.`,
+        { title: 'Unauthorized', maskColor: 'rgba(255, 0, 0, 0.2)' });
     }
     return {
       carouselIndex: 0,
@@ -178,7 +182,6 @@ export default {
       },
     }
   },
-
   methods: {
     scan(tool) {
       this.$store.commit('navigator/push', tool.page)

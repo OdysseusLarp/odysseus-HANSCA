@@ -3,7 +3,6 @@
     <div class="greeter">
         <h1>HANSCA</h1>
         <h3>The Standard Universal Hand Scanner</h3>
-
         <p class="bioid">Bio ID:</p>
         <v-ons-input v-model="bioId"></v-ons-input>
         <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
@@ -20,7 +19,7 @@ export default {
   name: "greeter",
   data() {
     return {
-      bioId: ""
+      bioId: "",
     }
   },
   methods: {
@@ -28,6 +27,8 @@ export default {
       if(message.startsWith('bio:')) {
         const id = message.split(':', 2)[1]
         this.login(id)
+      } else {
+        this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' })
       }
     },
     submit() {
@@ -35,12 +36,15 @@ export default {
     },
     async login(bioId) {
       try {
-        const user = await getBlob('/person/bio', bioId.toUpperCase())
+        const user = await getBlob('/person/bio', bioId.toUpperCase());
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
         this.$store.commit('navigator/push', Carousel) 
       } catch (e) {
         console.log("User login error", e)
+        this.$ons.notification.alert(
+          'Authorization to ship server failed',
+        { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       }
       this.bioId = ""
     },
