@@ -161,7 +161,9 @@ export default {
   data() {
     const groups = this.$store.state.user.user.groups;
     const pages = PAGES.filter(page => groups.includes(page.role))
-
+    if (pages.length == 0) {
+      this.$store.commit('navigator/reset')
+    }
     return {
       carouselIndex: 0,
       pages,
