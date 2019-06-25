@@ -114,7 +114,45 @@ const PAGES = [
         page: MedicalScanner,
       },
     ],
-  }
+  },
+  {
+    id: 'admin',
+    title: 'Off-game admin',
+    role: 'role:admin',
+    color: '#9c4e4e',
+    tools: [
+      {
+        icon: 'atom',
+        title: 'Radiation detector',
+        page: RadiationDetector,
+      },
+      {
+        icon: 'atom',
+        title: 'Lights out',
+        page: LightsOut,
+      },
+      {
+        icon: 'atom',
+        title: 'Phase sync game test',
+        page: GameTest,
+      },
+      {
+        icon: 'atom',
+        title: 'Flappy drone',
+        page: FlappyDrone,
+      },
+      {
+        icon: 'atom',
+        title: 'Locator',
+        page: Locator,
+      },
+      {
+        icon: 'atom',
+        title: 'Scanner',
+        page: Scanner,
+      },
+    ],
+  },
 ]
 
 export default {
