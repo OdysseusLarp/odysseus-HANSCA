@@ -102,7 +102,19 @@ export default {
     },
     startGame() {
       // Start the game
-      let config = this.gameConfig.default  // Should choose config based on logged in user
+      
+      // Find proper config for the user
+      const groups = this.$store.state.user.user.groups;
+      const roleForConfig = groups.find(g => g in this.gameConfig)
+      let config
+      if (roleForConfig) {
+        config = this.gameConfig[roleForConfig]
+        console.log('Using config for role ' + roleForConfig, config)
+      } else {
+        config = this.gameConfig.default
+        console.log('Using default config', config)
+      }
+
       if (this.game.config) {
         config = { ...config, ...this.game.config }
       }
