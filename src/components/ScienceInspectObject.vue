@@ -42,7 +42,7 @@ export default {
         });
         this.resultText = chunk(get(res, 'data.description', this.tagNotFoundMessage).split(''), 40)
           .map(line => line.join(''))
-          .join('\n');
+          .join('\n') + '\n\nReady to scan another object';
       } else {
         this.resultText = this.invalidTagTypeMessage;
       }
