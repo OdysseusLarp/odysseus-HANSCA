@@ -3,11 +3,8 @@
   <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
-      <h1>MEDICAL SCAN</h1>
-      <v-ons-search-input placeholder="Search" v-model="query"></v-ons-search-input>
-			<v-ons-list class="autocomplete">
-        <v-ons-list-item v-for="record in results" v-bind:key="record.id" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>
-			</v-ons-list>
+      <h1>MEDICAL DETAILS</h1>
+      <v-ons-search-input placeholder="Search" v-model="query" v-if="hasInput"></v-ons-search-input>
       <div class="resultTextBox">
         <pre><vue-typer :text='resultText' :repeat="0" :type-delay="10"></vue-typer></pre>
       </div>
@@ -28,31 +25,42 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Scan patient ID card or enter it manually.'
+      resultText: 'Scan a patient ID card',
+      hasInput: !hasNfc()
     }
   },
   methods: {
     showRecord() {
       const person = this.record;
-      if (!person) return this.resultText = `Unknown scan target, scan not authorized.`;
+      if (!person) return this.resultText = `Unknown person.
+
+Ready to scan another patient ID card`;
       this.query = ''
-//       this.resultText = `Medical scan results:
+      this.resultText = `Medical details:
 
-//   Age:                ${ 542 - person.birth_year }
-//   Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
-//   Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
-//   Blood type:         ${ person.blood_type || 'Unknown' }
+  Age:                ${ 542 - person.birth_year }
+  Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
+  Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
+  Blood type:         ${ person.blood_type || 'Unknown' }
 
-//   Medical records:
+  Medical records:
 
-// ${ parseEntries(this.record.entries, 'MEDICAL') }`
+${ parseEntries(this.record.entries, 'MEDICAL') }
+
+
+Ready to scan another patient ID card`
     },
     async getRecords(message) {
-      if (message.startsWith('person:')) {
+      if (message.startsWith('card:')) {
         this.id = message.split( ':', 2)[1]
         if (!this.id) return;
-        this.record = await getBlob('/person', this.id)
+        this.record = await getBlob('/person/card', this.id)
         this.showRecord()
+      } else {
+        this.resultText = `This does not seem to be an ID card.
+
+
+Scan a patient ID card`;
       }
     },
     show() {
@@ -60,13 +68,6 @@ export default {
     },
     hide() {
       cancelWatch()
-    },
-  },
-  watch: {
-    query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords('person:' + val)
-      if(val !== '' && Array.isArray(this.records)) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
-      else this.results = [ ]
     },
   },
   created() {
