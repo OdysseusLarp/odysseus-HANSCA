@@ -15,7 +15,7 @@
       </v-ons-carousel-item>
     </v-ons-carousel>
 
-    <div :style="dots">
+    <div :style="dots" v-if="Object.keys(pages).length > 1">
       <span :index="dotIndex - 1" v-for="dotIndex in Object.keys(pages).length" :key="dotIndex" style="cursor: pointer" @click="carouselIndex = dotIndex - 1">
         {{ carouselIndex === dotIndex - 1 ? '\u25CF' : '\u25CB' }}
       </span>
