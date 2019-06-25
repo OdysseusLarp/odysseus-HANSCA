@@ -4,10 +4,7 @@
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <h1>SCAN ARTIFACT</h1>
-      <v-ons-search-input placeholder="Search" v-model="query"></v-ons-search-input>
-			<v-ons-list class="autocomplete">
-        <v-ons-list-item v-for="record in results" v-bind:key="record.id" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>
-			</v-ons-list>
+      <v-ons-search-input placeholder="Search" v-model="query" v-if="showInput"></v-ons-search-input>
       <div class="resultTextBox">
         <pre><vue-typer :text='resultText' :repeat="0" :type-delay="10"></vue-typer></pre>
       </div>
@@ -28,7 +25,8 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Scan the artifact.'
+      resultText: 'Ready to scan an artifact.',
+      showInput: !hasNfc()
     }
   },
   methods: {
@@ -46,7 +44,9 @@ export default {
 
   Additional entries:
 
-${ parseEntries(this.record.entries) }`
+${ parseEntries(this.record.entries) }
+
+Ready to scan a new artifact.`
     },
     async getRecords(message) {
       if (message.startsWith('artifact:')) {
@@ -54,6 +54,10 @@ ${ parseEntries(this.record.entries) }`
         if (!this.id) return;
         this.record = await getBlob('/science/artifact/catalog', this.id.toUpperCase())
         this.showRecord()
+      } else {
+        this.resultText = `This does not seem to be an artifact.
+
+Ready to scan an artifact.`
       }
     },
     show() {
@@ -63,15 +67,14 @@ ${ parseEntries(this.record.entries) }`
       cancelWatch()
     },
   },
-  watch: {
-    query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords('artifact:' + val)
-      if(val !== '' && Array.isArray(this.records)) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
-      else this.results = [ ]
-    },
-  },
   created() {
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
+  },
+  show() {
+    startWatch(this.getRecords)
+  },
+  hide() {
+    cancelWatch()
   },
 }
 </script>
