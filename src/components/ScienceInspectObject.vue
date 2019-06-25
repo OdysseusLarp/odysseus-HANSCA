@@ -4,10 +4,7 @@
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <h1>{{ this.title }}</h1>
-      <v-ons-search-input placeholder="Search" v-model="query"></v-ons-search-input>
-			<v-ons-list class="autocomplete">
-        <v-ons-list-item v-for="record in results" v-bind:key="record.id" @click="showRecord(record.id)">{{ record.name }}</v-ons-list-item>
-			</v-ons-list>
+      <v-ons-search-input placeholder="Search" v-model="query" v-if="hasInput"></v-ons-search-input>
       <div class="resultTextBox">
         <pre><vue-typer :text="resultText" :repeat="0" :type-delay="10" v-if="resultText"></vue-typer></pre>
       </div>
@@ -18,7 +15,7 @@
 
 import { getBlob, patchBlob } from '../blob'
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { debounce, get } from 'lodash';
+import { debounce, get, chunk } from 'lodash';
 import axios from 'axios';
 
 export default {
@@ -34,6 +31,7 @@ export default {
       tagRegexp: '',
       invalidTagTypeMessage: '',
       tagNotFoundMessage: '',
+      hasInput: !hasNfc()
     }
   },
   methods: {
@@ -42,7 +40,9 @@ export default {
         const res = await axios.get(`/tag/${message}`).catch(() => {
           this.resultText = this.tagNotFoundMessage;
         });
-        this.resultText = get(res, 'data.description', this.tagNotFoundMessage);
+        this.resultText = chunk(get(res, 'data.description', this.tagNotFoundMessage).split(''), 40)
+          .map(line => line.join(''))
+          .join('\n');
       } else {
         this.resultText = this.invalidTagTypeMessage;
       }
@@ -54,19 +54,12 @@ export default {
       cancelWatch()
     },
   },
-  watch: {
-    query: function(val) {
-      if (!hasNfc()) this.debouncedGetRecords(val)
-      if(val !== '' && this.records) this.results = this.records.filter(function (record) { let re = new RegExp(val, 'gi'); return (record.name.match(re)) })
-      else this.results = [ ]
-    },
-  },
   created() {
     this.title = 'INSPECT OBJECT';
-    this.resultText = 'Scan the object';
-    this.tagRegexp = /^SCIENCE:..*/;
+    this.resultText = 'Ready to scan an object';
+    this.tagRegexp = /^science:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
-    this.invalidTagTypeMessage = 'This is not recognized as an object\n\nScan the object';
+    this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
 }
