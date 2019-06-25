@@ -19,6 +19,15 @@
         }
       }
 
+      function cancel() {
+        try {
+          navigator.nfc.cancelWatch();
+          consoleLog('Cancelled watch');
+        } catch (e) {
+          consoleLog('Error when cancelling: ' + e + ' JSON: ' + JSON.stringify(e));
+        }
+      }
+
       function consoleLog(data) {
         var logElement = document.getElementById('log');
         logElement.innerHTML += '\n' + data;
@@ -58,6 +67,7 @@
   <body>
     <p>
       <button class="btn btn-lg btn-default" onclick="readNfc()">Test NFC Read/Write</button>
+      <button class="btn btn-lg btn-default" onclick="cancel()">Unregister</button>
     </p>
 
     <pre id="log"></pre>

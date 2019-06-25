@@ -56,6 +56,7 @@ export default {
     scan() {
       Object.assign(this.$data, this.$options.data())
       this.state = 'scanning'
+      // FIXME: Use methods in nfc.js
       if ('nfc' in navigator) {
         navigator.nfc.watch((message) => {
           this.processMessage(message)

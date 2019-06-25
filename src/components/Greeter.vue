@@ -1,5 +1,5 @@
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <div class="greeter">
         <h1>HANSCA</h1>
         <h3>The Standard Universal Hand Scanner</h3>
@@ -38,18 +38,18 @@ export default {
         const user = await getBlob('/person/bio', bioId.toUpperCase())
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
-        cancelWatch()
-        setTimeout(() => { 
-          this.$store.commit('navigator/push', Carousel) 
-        }, 300)
+        this.$store.commit('navigator/push', Carousel) 
       } catch (e) {
         console.log("User login error", e)
       }
       this.bioId = ""
-    }
-  },
-  created() {
-    startWatch(this.nfcLogin)
+    },
+    show() {
+      startWatch(this.nfcLogin)
+    },
+    hide() {
+      cancelWatch()
+    },
   },
 }
 </script>

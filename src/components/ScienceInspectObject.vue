@@ -1,6 +1,6 @@
 <!-- Science version of MedicalDiagnosis.vue -->
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <h1>{{ this.title }}</h1>
@@ -17,7 +17,7 @@
 <script>
 
 import { getBlob, patchBlob } from '../blob'
-import { startWatch, hasNfc } from '../nfc'
+import { startWatch, cancelWatch, hasNfc } from '../nfc'
 import { debounce, get } from 'lodash';
 import axios from 'axios';
 
@@ -47,6 +47,12 @@ export default {
         this.resultText = this.invalidTagTypeMessage;
       }
     },
+    show() {
+      startWatch(this.getRecords)
+    },
+    hide() {
+      cancelWatch()
+    },
   },
   watch: {
     query: function(val) {
@@ -61,7 +67,6 @@ export default {
     this.tagRegexp = /^SCIENCE:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
     this.invalidTagTypeMessage = 'This is not recognized as an object\n\nScan the object';
-    startWatch(this.getRecords)
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
 }

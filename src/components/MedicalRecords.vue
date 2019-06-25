@@ -1,6 +1,6 @@
 <!-- Medic version of ScienceArtifactDetails.vue -->
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <h1>MEDICAL SCAN</h1>
@@ -17,7 +17,7 @@
 <script>
 
 import { getBlob, patchBlob } from '../blob'
-import { startWatch, hasNfc } from '../nfc'
+import { startWatch, cancelWatch, hasNfc } from '../nfc'
 import { debounce } from 'lodash';
 import { parseEntries } from '../helpers';
 
@@ -36,16 +36,16 @@ export default {
       const person = this.record;
       if (!person) return this.resultText = `Unknown scan target, scan not authorized.`;
       this.query = ''
-      this.resultText = `Medical scan results:
+//       this.resultText = `Medical scan results:
 
-  Age:                ${ 542 - person.birth_year }
-  Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
-  Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
-  Blood type:         ${ person.blood_type || 'Unknown' }
+//   Age:                ${ 542 - person.birth_year }
+//   Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
+//   Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
+//   Blood type:         ${ person.blood_type || 'Unknown' }
 
-  Medical records:
+//   Medical records:
 
-${ parseEntries(this.record.entries, 'MEDICAL') }`
+// ${ parseEntries(this.record.entries, 'MEDICAL') }`
     },
     async getRecords(message) {
       if (message.startsWith('person:')) {
@@ -54,7 +54,13 @@ ${ parseEntries(this.record.entries, 'MEDICAL') }`
         this.record = await getBlob('/person', this.id)
         this.showRecord()
       }
-    }
+    },
+    show() {
+      startWatch(this.getRecords)
+    },
+    hide() {
+      cancelWatch()
+    },
   },
   watch: {
     query: function(val) {
@@ -64,7 +70,6 @@ ${ parseEntries(this.record.entries, 'MEDICAL') }`
     },
   },
   created() {
-    startWatch(this.getRecords)
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
 }

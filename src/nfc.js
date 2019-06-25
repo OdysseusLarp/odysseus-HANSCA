@@ -1,18 +1,27 @@
+
+let currentHandler = undefined
+let watchAdded = false
+
 export function startWatch(handler) {
-  if ('nfc' in navigator) {
-    navigator.nfc.watch((message) => {
-      const record = message.records.find(record => record.recordType === 'text')
-      if (record) {
-        handler(record.data)
-      }
-    }, {mode: 'any'})
+  if (!watchAdded) {
+    if ('nfc' in navigator) {
+      navigator.nfc.watch(nfcHandler, {mode: 'any'})
+    }
+    watchAdded = true
   }
+  currentHandler = handler;
 }
-export function cancelWatch( ) {
-  if(navigator.nfc) navigator.nfc.cancelWatch()
+export function cancelWatch() {
+  currentHandler = undefined
 }
 
 export function hasNfc() {
   return 'nfc' in navigator;
 }
 
+function nfcHandler(message) {
+  const record = message.records.find(record => record.recordType === 'text')
+  if (record && currentHandler) {
+    currentHandler(record.data)
+  }
+}

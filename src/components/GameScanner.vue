@@ -1,5 +1,5 @@
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <toolbar-top></toolbar-top>
     <!-- For wtf reason v-if causes a crash when changing state -->
     <div v-show="state == 'scanning'" style="text-align: center; margin-top: 50px;">
@@ -59,6 +59,7 @@
 import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
+import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
   phasesync: PhaseSyncGame,
@@ -126,6 +127,7 @@ export default {
 
       const gameComponent = GAMES[config.game]
       if (gameComponent) {
+        cancelWatch()
         this.component = gameComponent
         if (config.initDescription) {
           this.state = 'init'
@@ -159,21 +161,16 @@ export default {
         }
       }
     },
+    handleTag(message) {
+      this.tag = message
+      this.start()
+    },
+    show() {
+      startWatch(this.handleTag)
+    },
+    hide() {
+      cancelWatch()
+    },
   },
-  created() {
-    if ('nfc' in navigator) {
-      navigator.nfc.watch((message) => {
-        message.records.forEach(function (record) {
-          if (record.recordType == "text") {
-            this.tag = record.data
-            this.start()
-          }
-          navigator.nfc.cancelWatch()
-        }, this)
-      }, {mode: 'any'})
-    }
-  },
-  components: {
-  }
 }
 </script>
