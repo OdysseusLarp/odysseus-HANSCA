@@ -39,7 +39,8 @@ export default {
         const user = await getBlob('/person/bio', bioId.toUpperCase());
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
-        this.$store.commit('navigator/push', Carousel) 
+        this.$store.commit('navigator/push', Carousel)
+        this.$ons.notification.toast(`Welcome to HANSCA, ${user.full_name}!`, { timeout: 2500, animation: 'fall' })
       } catch (e) {
         console.log("User login error", e)
         this.$ons.notification.alert(
