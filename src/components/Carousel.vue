@@ -6,9 +6,9 @@
     >
       <v-ons-carousel-item v-for="page in pages" v-bind:key="page.id" :style="{backgroundColor: page.color}">
         <div style="text-align: center; font-size: 30px; margin-top: 20px; color: #fff;">{{page.title}}</div>
-        <div style="text-align: center; margin-top: 50px;">
-          <span class="scan-item" v-for="tool in page.tools" v-bind:key="tool.title">
-            <v-ons-icon @click="scan(tool)" :icon="'fa-' + tool.icon" size="3x"></v-ons-icon><br>
+        <div style="text-align: center; margin-top: 50px;" class="item-container">
+          <span class="scan-item" v-for="tool in page.tools" @click="scan(tool)" v-bind:key="tool.title">
+            <v-ons-icon :icon="'fa-' + tool.icon" size="3x"></v-ons-icon><br>
             <span class="scan-title">{{tool.title}}</span>
           </span>
         </div>
@@ -43,7 +43,7 @@ import ShipDatabase from './ShipDatabase.vue'
 const PAGES = [
   {
     id: 'science',
-    title: 'Science',
+    title: 'HANSCA / SCIENCE',
     role: 'role:science',
     color: '#085078',
     tools: [
@@ -71,7 +71,7 @@ const PAGES = [
   },
   {
     id: 'engineering',
-    title: 'Engineering',
+    title: 'HANSCA / ENGINEERING',
     role: 'role:engineer',
     color: '#373B44',
     tools: [
@@ -89,7 +89,7 @@ const PAGES = [
   },
   {
     id: 'medic',
-    title: 'Medic',
+    title: 'HANSCA / MEDIC',
     role: 'role:medic',
     color: '#D38312',
     tools: [
@@ -189,12 +189,12 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .scan-item {
   display: inline-block;
-  margin: 20px;
-  width: 80px;
-  height: 120px;
+  width: 30%;
+  margin: 10px;
+  padding: 20px;
   text-align: center;
   overflow: hidden;
 }
