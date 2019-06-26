@@ -60,12 +60,14 @@ import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
 import LightsOut from './games/LightsOut'
+import FlappyDrone from './games/FlappyDrone.vue'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
   phasesync: PhaseSyncGame,
   manual: ManualGame,
   lightsout: LightsOut,
+  flappy: FlappyDrone,
 }
 
 export default {

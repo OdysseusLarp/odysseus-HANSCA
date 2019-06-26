@@ -1,7 +1,8 @@
 class FlappyDrone {
-  constructor(context, canvas) {
+  constructor(context, canvas, config, game) {
     this.ctx = context
     this.cvs = canvas
+    this.game = game
 
     this.drone = new Image()
     this.bg = new Image()
@@ -17,11 +18,14 @@ class FlappyDrone {
 
     this.scor = 0
 
-    this.gap = 100
+    this.gap = config.gap
+    this.interval = config.interval
     this.bX = 10
-    this.bY = 150
-    this.gravity = 1
+    this.bY = 100
+    this.gravity = config.gravity
     this.collision = false
+    this.requiredScore = config.score
+    console.log( this.requiredScore)
 
     this.pipes = [{
       x: canvas.width,
@@ -60,11 +64,20 @@ class FlappyDrone {
 
       this.drawScore()
 
-      if (!this.collision) requestAnimationFrame(go)
+      if (this.checkComplete()) {
+        this.game.$emit('gameSuccess')
+      } else {
+        if (!this.collision) requestAnimationFrame(go)
+        else this.game.$store.commit('navigator/pop')
+      }
     }
 
     go()
 
+  }
+
+  checkComplete() {
+    return this.scor >= this.requiredScore
   }
 
   drawPipes() {
@@ -74,7 +87,7 @@ class FlappyDrone {
     
       this.pipes[i].x--
 
-      if ( this.pipes[i]. x == 225 ) {
+      if ( this.pipes[i]. x == this.interval ) {
         this.pipes.push({
           x: this.cvs.width,
           y: Math.floor(Math.random() * this.pipeNorth.height) - this.pipeNorth.height

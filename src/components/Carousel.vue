@@ -35,7 +35,6 @@ import ScienceArtifactDetails from './ScienceArtifactDetails.vue'
 import ScienceInspectObject from './ScienceInspectObject.vue'
 import ScienceAnalysis from './ScienceAnalysis.vue'
 import ScienceScanner from './ScienceScanner.vue'
-import FlappyDrone from './FlappyDrone.vue'
 import Locator from './Locator.vue'
 import ShipDatabase from './ShipDatabase.vue'
 
@@ -129,11 +128,6 @@ const PAGES = [
         icon: 'atom',
         title: 'Phase sync game test',
         page: GameTest,
-      },
-      {
-        icon: 'atom',
-        title: 'Flappy drone',
-        page: FlappyDrone,
       },
       {
         icon: 'atom',
