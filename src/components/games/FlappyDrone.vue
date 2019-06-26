@@ -1,19 +1,19 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
     <div style="text-align: center;">
       <canvas ref="flappy" width="480" height="640"></canvas>
     </div>
   </v-ons-page>
 </template>
 <script>
-import FlappyDrone from './games/FlappyDrone'
+import FlappyDrone from './FlappyDrone'
 export default {
   name: 'FlappyDrone',
+  props: [ 'config' ],
   mounted() {
     const cvs = this.$refs.flappy
     const ctx = cvs.getContext('2d')
-    const flappy = new FlappyDrone(ctx, cvs)
+    const flappy = new FlappyDrone(ctx, cvs, this.config, this)
     setTimeout(() => {
       flappy.draw()
     }, 0)

@@ -6,6 +6,7 @@
         <p class="bioid">Bio ID:</p>
         <v-ons-input v-model="bioId"></v-ons-input>
         <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
+        <p class="version">Version {{version}}</p>
     </div>
   </v-ons-page>
 </template>
@@ -19,7 +20,8 @@ export default {
   name: "greeter",
   data() {
     return {
-      bioId: "",
+      bioId: '',
+      version: '626.1040',  // <month><day>.<hour><minute>
     }
   },
   created() {
@@ -92,5 +94,9 @@ export default {
 }
 .submit {
   margin-top: 1em;
+}
+.version {
+  margin-top: 5em;
+  color: #444;
 }
 </style>

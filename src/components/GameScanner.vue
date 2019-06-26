@@ -22,13 +22,22 @@
     </div>
     <div></div>
     <div v-show="state == 'game'">
-      <component :is="component" v-bind="{ config }" v-on:gameSuccess="success"></component>
+      <component :is="component" v-bind="{ config }" v-on:gameSuccess="success" v-on:gameFail="fail"></component>
     </div>
     <div></div>
     <div v-show="state == 'end'">
       <div class="desc">
         <h1 v-if="config.title">{{config.title}}</h1>
         <div v-html="config.endDescription"/>
+      </div>
+      <div class="center">
+        <v-ons-button @click="close">Close</v-ons-button>
+      </div>
+    </div>
+    <div v-show="state == 'fail'">
+      <div class="desc">
+        <h1 v-if="config.title">{{config.title}}</h1>
+        <div v-html="config.failDescription"/>
       </div>
       <div class="center">
         <v-ons-button @click="close">Close</v-ons-button>
@@ -59,11 +68,15 @@
 import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
+import LightsOut from './games/LightsOut'
+import FlappyDrone from './games/FlappyDrone.vue'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
   phasesync: PhaseSyncGame,
   manual: ManualGame,
+  lightsout: LightsOut,
+  flappy: FlappyDrone,
 }
 
 export default {
@@ -145,6 +158,13 @@ export default {
       patchBlob('/data/' + this.game.type, this.game.id, { status: 'fixed' })
       if (this.config.endDescription) {
         this.state = 'end'
+      } else {
+        this.close()
+      }
+    },
+    fail() {
+      if (this.config.failDescription) {
+        this.state = 'fail'
       } else {
         this.close()
       }
