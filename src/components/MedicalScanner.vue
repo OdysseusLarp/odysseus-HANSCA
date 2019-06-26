@@ -1,11 +1,11 @@
 <!-- Medical version of ScienceScanner.vue -->
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div class="container">
         <h1>MEDICAL SCANNERS</h1>
-        <label for="bio-id">PATIENT BIO ID<span class="required">*</span></label>
-        <input v-model="bio_id" type="text" id="bio-id" />
+        <p class="has-id" v-if="bio_id">BIO ID OK</p>
+        <p class="no-bio-id" v-else-if="!standingInProgress && !tableInProgress">SCAN PATIENT BIO ID</p>
         <button :disabled="standingInProgress || tableInProgress" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
@@ -17,6 +17,7 @@
 </template>
 <script>
 import { post } from 'axios';
+import { startWatch, cancelWatch, hasNfc } from '../nfc'
 
 // Should get the channel config from backend /dmx/channels
 // but aint nobody got time for that right now
@@ -32,6 +33,7 @@ export default {
         tableInProgressTimeout: null,
         standingInProgress: false,
         standingInProgressTimeout: null,
+        hasInput: !hasNfc(),
         bio_id: '', // Target person Bio ID
     }
   },
@@ -90,6 +92,23 @@ export default {
       }).catch(err => {
           console.log('failed to create operation result for the scan', err);
       });
+    },
+    setBioId(message) {
+        console.log('got message', message);
+        if (message.startsWith('bio:')) {
+            console.log('starts with bio');
+            const id = message.split(':', 2)[1];
+            this.bio_id = id;
+            console.log('this bio id =>', this.bio_id);
+        } else {
+            this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' });
+        }
+    },
+    show() {
+        startWatch(this.setBioId)
+    },
+    hide() {
+        cancelWatch()
     }
   },
   watch: {},
@@ -97,7 +116,7 @@ export default {
   destroyed() {
       clearTimeout(this.tableInProgress);
       clearTimeout(this.standingInProgress);
-  }
+  },
 }
 </script>
 <style lang="scss">
@@ -105,16 +124,11 @@ $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
 
-input {
-  background: lighten($gray, 20);
-  background-color: lighten($gray, 20);
-  border: 1px solid lighten($gray, 25);
-  font-size: 1.6rem;
-  padding: 0.5rem;
-  color: #fff;
-  margin: 1rem;
-  margin-top: 0.5rem;
-  text-align: center;
+.has-id {
+    color: rgb(88, 240, 88);
+}
+.no-bio-id {
+    color: rgb(228, 78, 78);
 }
 
 button {

@@ -1,11 +1,11 @@
 <!-- Medic version of ScienceAnalysis.vue -->
 <template>
-  <v-ons-page>
+  <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div class="container">
         <h1>TAKE A SAMPLE</h1>
-        <label for="bio-id">PATIENT BIO ID<span class="required">*</span></label>
-        <input v-model="bio_id" type="text" id="bio-id" />
+        <p class="has-id" v-if="bio_id">BIO ID OK</p>
+        <p class="no-bio-id" v-else>SCAN PATIENT BIO ID</p>
         <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
         <input v-model="sample_id" type="text" id="sample-id" />
         <label for="additional-type">SAMPLE TYPE (BLOOD, SALIVA...)<span class="required">*</span></label>
@@ -20,6 +20,7 @@
 </template>
 <script>
 import { post } from 'axios';
+import { startWatch, cancelWatch, hasNfc } from '../nfc'
 
 export default {
   data() {
@@ -31,6 +32,17 @@ export default {
     }
   },
   methods: {
+    setBioId(message) {
+      console.log('got message', message);
+      if (message.startsWith('bio:')) {
+          console.log('starts with bio');
+          const id = message.split(':', 2)[1];
+          this.bio_id = id;
+          console.log('this bio id =>', this.bio_id);
+      } else {
+        this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' });
+      }
+    },
     submitSample() {
       const data = {
         is_complete: false,
@@ -66,10 +78,14 @@ export default {
       this.sample_id = '';
       this.description = '';
       this.additional_type = '';
+    },
+    show() {
+      startWatch(this.setBioId)
+    },
+    hide() {
+        cancelWatch()
     }
   },
-  watch: {},
-  created() {},
 }
 </script>
 <style lang="scss">
@@ -77,6 +93,10 @@ $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
 
+p {
+  font-weight: bold;
+  margin-bottom: 40px;
+}
 .container {
   text-align: center;
   margin-top: 50px;

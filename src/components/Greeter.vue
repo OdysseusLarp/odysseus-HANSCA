@@ -22,6 +22,14 @@ export default {
       bioId: "",
     }
   },
+  created() {
+    getBlob('/data/misc', 'hansca').then(res => {
+      const analyseBaseTime = res.data.analyseBaseTime;
+      this.$store.commit('user/analyseBaseTime', analyseBaseTime || 90);
+    }).catch(err => {
+      console.log('could not get hansca config from backend', err);
+    });
+  },
   methods: {
     nfcLogin(message) {
       if(message.startsWith('bio:')) {
@@ -37,8 +45,16 @@ export default {
     async login(bioId) {
       try {
         const user = await getBlob('/person/bio', bioId.toUpperCase());
+        if (!user) throw new Error('user is null');
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
+
+        // User skill level, so that things that take time can be defined for novices
+        // and then multiplied by user.skillFactor to make it faster for more skilled characters
+        const isExpert = user.groups.includes('skill:expert');
+        const isMaster = user.groups.includes('skill:master');
+        this.$store.commit('user/skillFactor', isExpert ? 0.33 : isMaster ? 0.66 : 1);
+
         this.$store.commit('navigator/push', Carousel)
         this.$ons.notification.toast(`Welcome to HANSCA, ${user.full_name}!`, { timeout: 2500, animation: 'fall' })
       } catch (e) {

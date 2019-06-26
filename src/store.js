@@ -43,10 +43,18 @@ export default {
       namespaced: true,
       state: {
         user: {},
+        skillFactor: 1,
+        analyseBaseTime: 90,
       },
       mutations: {
         login(state, user) {
           state.user = user
+        },
+        skillFactor(state, value) {
+          state.skillFactor = value;
+        },
+        analyseBaseTime(state, value) {
+          state.analyseBaseTime = value;
         },
         logout(state) {
           state.user = {}
