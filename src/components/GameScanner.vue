@@ -59,11 +59,13 @@
 import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
+import LightsOut from './games/LightsOut'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
   phasesync: PhaseSyncGame,
   manual: ManualGame,
+  lightsout: LightsOut,
 }
 
 export default {

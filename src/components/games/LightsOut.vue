@@ -1,6 +1,5 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
     <div style="text-align: center; margin-top: 50px;">
       <form name=lighttable>
         <table class="lighttable">
@@ -15,31 +14,49 @@
 </template>
 <script>
 export default {
+  props: [ 'config' ],
   data() {
     return {
       lights: [ ],
-      size: 5
     }
   },
   methods: {
     changeColor(row, col){
       this.toggle(row, col)
       this.lights = JSON.parse(JSON.stringify(this.lights))
+      if (this.checkComplete()) {
+        this.$emit('gameSuccess')
+      }
     },
     toggle(row, col) {
       this.lights[row][col] = !this.lights[row][col]
-      if(col % this.size !== 0) this.lights[row][col-1] = !this.lights[row][col-1]
-      if ((col+1) % this.size !== 0) this.lights[row][col+1] = !this.lights[row][col+1]
+      if(col % this.config.size !== 0) this.lights[row][col-1] = !this.lights[row][col-1]
+      if ((col+1) % this.config.size !== 0) this.lights[row][col+1] = !this.lights[row][col+1]
       if (this.lights[row-1]) this.lights[row-1][col] = !this.lights[row-1][col]
       if (this.lights[row+1]) this.lights[row+1][col] = !this.lights[row+1][col]
     },
+    randomize() {
+      this.lights = Array.from(Array(this.config.size), (_, x) => Array.from(Array(this.config.size), (_, x) => 0))
+      for(var i=0; i<this.config.random;i++) {
+        this.toggle(Math.floor(Math.random()*this.config.size), Math.floor(Math.random()*this.config.size))
+      }
+      this.lights = JSON.parse(JSON.stringify(this.lights))
+    },
+    checkComplete() {
+      let lights = this.lights.flat()
+      console.log(lights)
+      return lights.every(this.isLit)
+    },
+    isLit(value) {
+      return value !== true
+    },
   },
   created() {
-    this.lights = Array.from(Array(this.size), (_, x) => Array.from(Array(this.size), (_, x) => 0))
-    for(var i=0; i<10;i++) {
-      this.toggle(Math.floor(Math.random()*this.size), Math.floor(Math.random()*this.size))
+    if (this.config.random > 0) {
+      this.randomize()
+    } else {
+      this.lights = this.config.lights
     }
-    this.lights = JSON.parse(JSON.stringify(this.lights))
   },
 }
 </script>

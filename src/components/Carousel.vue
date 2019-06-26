@@ -27,7 +27,6 @@ import Scanner from './Scanner.vue'
 import GameScanner from './GameScanner'
 import RadiationDetector from './RadiationDetector.vue'
 import GameTest from './GameTest.vue'
-import LightsOut from './LightsOut.vue'
 import MedicalRecords from './MedicalRecords.vue'
 import MedicalDiagnosis from './MedicalDiagnosis.vue'
 import MedicalSample from './MedicalSample.vue'
@@ -125,11 +124,6 @@ const PAGES = [
         icon: 'atom',
         title: 'Radiation detector',
         page: RadiationDetector,
-      },
-      {
-        icon: 'atom',
-        title: 'Lights out',
-        page: LightsOut,
       },
       {
         icon: 'atom',
