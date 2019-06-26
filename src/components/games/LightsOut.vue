@@ -3,8 +3,8 @@
     <div style="text-align: center; margin-top: 50px;">
       <form name=lighttable>
         <table class="lighttable">
-          <tr v-for="(row, i) in lights">
-            <td v-for="(col, j) in row" :id="'cell' + i + j" @click="changeColor(i, j)" :class="{ lit: lights[i][j] }"> </td>
+          <tr v-bind:key="i" v-for="(row, i) in lights">
+            <td v-bind:key="j" v-for="(col, j) in row" :id="'cell' + i + j" @click="changeColor(i, j)" :class="{ lit: lights[i][j] }"> </td>
           </tr>
         </table>
       </form>

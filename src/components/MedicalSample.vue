@@ -21,6 +21,7 @@
 <script>
 import { post } from 'axios';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
+import { get } from 'lodash';
 
 export default {
   data() {
