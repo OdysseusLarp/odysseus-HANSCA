@@ -68,7 +68,7 @@ class FlappyDrone {
         this.game.$emit('gameSuccess')
       } else {
         if (!this.collision) requestAnimationFrame(go)
-        else this.game.$store.commit('navigator/pop')
+        else this.game.$emit('gameFail')
       }
     }
 
