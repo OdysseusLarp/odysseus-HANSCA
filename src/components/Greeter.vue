@@ -58,7 +58,6 @@ export default {
         this.$store.commit('user/skillFactor', isExpert ? 0.33 : isMaster ? 0.66 : 1);
 
         this.$store.commit('navigator/push', Carousel)
-        this.$ons.notification.toast(`Welcome to HANSCA, ${user.full_name}!`, { timeout: 2500, animation: 'fall' })
       } catch (e) {
         console.log("User login error", e)
         this.$ons.notification.alert(
