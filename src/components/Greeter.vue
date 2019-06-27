@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       bioId: '',
-      version: '627.1330',  // <month><day>.<hour><minute>
+      version: '627.1710',  // <month><day>.<hour><minute>
     }
   },
   created() {
@@ -46,7 +46,7 @@ export default {
     },
     async login(bioId) {
       try {
-        const user = await getBlob('/person/bio', bioId.toUpperCase());
+        const user = await getBlob('/person/bio', bioId.toLowerCase());
         if (!user) throw new Error('user is null');
         console.log("Committing user:", user)
         this.$store.commit('user/login', user)
