@@ -111,6 +111,11 @@ const PAGES = [
         title: 'Operate scanners',
         page: MedicalScanner,
       },
+      {
+        icon: 'puzzle-piece',
+        title: 'Analyze',
+        page: ScienceAnalysis,
+      },
     ],
   },
   {

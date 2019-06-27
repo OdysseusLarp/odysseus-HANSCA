@@ -8,7 +8,9 @@
           </tr>
         </table>
       </form>
-
+    </div>
+    <div class="reset">
+      <v-ons-button @click="randomize">Reset</v-ons-button>
     </div>
   </v-ons-page>
 </template>
@@ -74,6 +76,10 @@ table.lighttable {
   border: 2px solid white;
 }
 .lit {
-  background-color: yellow;
+  background-color: red;
+}
+.reset {
+  margin: 3em;
+  text-align: center;
 }
 </style>
