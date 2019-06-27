@@ -24,7 +24,8 @@ import { startWatch, cancelWatch, hasNfc } from '../nfc'
 const STANDING_SCANNER_DMX_CHANNEL = 163;
 const TABLE_SCANNER_DMX_CHANNEL = 164;
 
-const SCAN_DURATION = 30 * 1000;
+const TABLE_SCANNER_DURATION = 42 * 1000;
+const STANDING_SCANNER_DURATION = 30 * 1000;
 
 export default {
   data() {
@@ -44,7 +45,7 @@ export default {
             if (!success) return;
             this.postOperationResults('TABLE_SCANNER');
             this.tableInProgress = true;
-            this.tableInProgressTimeout = setTimeout(() => this.clearScanning(), SCAN_DURATION);
+            this.tableInProgressTimeout = setTimeout(() => this.clearScanning(), TABLE_SCANNER_DURATION);
         });
     },
     startStandingScanner() {
@@ -53,7 +54,7 @@ export default {
             if (!success) return;
             this.postOperationResults('STANDING_SCANNER');
             this.standingInProgress = true;
-            this.standingInProgressTimeout = setTimeout(() => this.clearScanning(), SCAN_DURATION);
+            this.standingInProgressTimeout = setTimeout(() => this.clearScanning(), STANDING_SCANNER_DURATION);
         })
     },
     clearScanning() {
