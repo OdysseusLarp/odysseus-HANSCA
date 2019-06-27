@@ -3,7 +3,7 @@
   <v-ons-page>
     <toolbar-top />
     <div class="container">
-        <h1>MAKE AN ANALYSIS</h1>
+        <h1>WHICH SAMPLE TO ANALYZE</h1>
         <!--
         <label for="bio-id">PATIENT BIO ID???<span class="required">*</span></label>
         <input v-model="bio_id" type="text" id="bio-id" />
