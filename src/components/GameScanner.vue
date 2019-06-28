@@ -91,6 +91,7 @@ export default {
       defaultNotBroken: 'The system is operating nominally',
       debug: false,
       debugCount: 0,
+      gameLoader: () => undefined
     }
   },
   methods: {
@@ -138,20 +139,26 @@ export default {
         return
       }
 
-      const gameComponent = GAMES[config.game]
-      if (gameComponent) {
+      console.log('getting game component');
+      if (config.game in GAMES) {
         cancelWatch()
-        this.component = gameComponent
+        this.gameLoader = () => this.component = GAMES[config.game]
         if (config.initDescription) {
           this.state = 'init'
         } else {
           this.state = 'game'
+          this.gameLoader();
+          this.gameLoader = () => undefined;
         }
       } else {
         console.log(`Game type '${config.game}' is unknown`)
       }
     },
     proceed() {
+      if (typeof this.gameLoader === 'function') {
+        this.gameLoader();
+        this.gameLoader = () => undefined;
+      }
       this.state = 'game'
     },
     success() {
