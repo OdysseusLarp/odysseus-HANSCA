@@ -7,9 +7,16 @@
 </template>
 <script>
 import FlappyDrone from './FlappyDrone'
+import { getBlob, patchBlob } from '../../blob'
+
 export default {
   name: 'FlappyDrone',
   props: [ 'config' ],
+  data() {
+    return {
+      drones: 0
+    }
+  },
   mounted() {
     const cvs = this.$refs.flappy
     const ctx = cvs.getContext('2d')
@@ -25,6 +32,14 @@ export default {
       flappy.fly()
       e.preventDefault()
     })
+  },
+  created() {
+    this.getDrones()
+  },
+  methods: {
+    async getDrones() {
+      this.drones = await getBlob('/data/misc/flappy_drone', '')
+    }
   },
 }
 </script>
