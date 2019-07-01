@@ -3,7 +3,15 @@
     <div style="text-align: center; margin-top: 50px;">
       <h1 v-if="config.gameTitle">{{config.gameTitle}}</h1>
       <p class="value">{{value}} {{config.unit}}</p>
-      <div :class="{btn:true, selected: current[index]}" v-for="(value, index) in values" :key="index" @click="toggle(index)">{{index+1}}</div>
+      <div :class="{btn:true, selected: current[index], hint}" v-for="(value, index) in values" :key="index" @click="toggle(index)">
+        <div class="index">{{index+1}}</div>
+        <div class="hint">{{value}} {{config.unit}}</div>
+      </div>
+
+      <div v-if="hintAvailable" style="margin-top: 3em">
+        <v-ons-button modifier="quiet" @click="showHint">Show hint</v-ons-button>
+      </div>
+
     </div>
   </v-ons-page>
 </template>
@@ -22,6 +30,14 @@
   border: 1px solid #eee;
   text-align: center;
 }
+.btn .hint {
+  font-size: 70%;
+  color: #777;
+  visibility: hidden;
+}
+.btn.hint .hint {
+  visibility: visible;
+}
 .selected {
   background-color: yellow;
   color: #333;
@@ -30,13 +46,16 @@
 
 
 <script>
+const HINT_DURATION = 20000
+
 export default {
   /*
      config: {
        "count": 5,
        "max": 15,
        "decimals": 1,
-       "unit": "A"
+       "unit": "A",
+       "hintAfter": 120,  // seconds
      }
    */
   props: [ 'config' ],
@@ -45,6 +64,9 @@ export default {
       values: [ ],
       startValue: 0,
       current: [ ],
+      startAt: Date.now(),
+      hint: false,
+      hintAvailable: false,
     }
   },
   computed: {
@@ -92,9 +114,16 @@ export default {
         }
       }, 500)
     },
+    showHint() {
+      this.hint = true
+      setTimeout(() => this.hint = false, HINT_DURATION)
+    }
   },
   created() {
     this.randomize()
+    if (this.config.hintAfter) {
+      setTimeout(() => this.hintAvailable = true, this.config.hintAfter*1000)
+    }
   },
 }
 </script>
