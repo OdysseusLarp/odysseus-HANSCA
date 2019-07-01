@@ -70,6 +70,7 @@ import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
 import LightsOut from './games/LightsOut'
 import FlappyDrone from './games/FlappyDrone.vue'
+import ValueBalance from './games/ValueBalance.vue'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
@@ -77,6 +78,7 @@ const GAMES = {
   manual: ManualGame,
   lightsout: LightsOut,
   flappy: FlappyDrone,
+  balance: ValueBalance,
 }
 
 export default {
