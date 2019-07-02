@@ -1,3 +1,4 @@
+import { getBlob, patchBlob } from '../../blob'
 class FlappyDrone {
   constructor(context, canvas, config, game) {
     this.ctx = context
@@ -68,7 +69,11 @@ class FlappyDrone {
         this.game.$emit('gameSuccess')
       } else {
         if (!this.collision) requestAnimationFrame(go)
-        else this.game.$emit('gameFail')
+        else {
+          let drones = this.game.drones.amount -1
+          patchBlob('/data/misc', 'flappy_drone', { amount: drones })
+          this.game.$emit('gameFail')
+        }
       }
     }
 

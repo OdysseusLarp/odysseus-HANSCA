@@ -43,6 +43,15 @@
         <v-ons-button @click="close">Close</v-ons-button>
       </div>
     </div>
+    <div v-show="state == 'preFail'">
+      <div class="desc">
+        <h1 v-if="config.title">{{config.title}}</h1>
+        <div v-html="config.preFailDescription"/>
+      </div>
+      <div class="center">
+        <v-ons-button @click="close">Close</v-ons-button>
+      </div>
+    </div>
     <div v-show="state == 'notbroken'">
       <div class="desc">
         <h1 v-if="config.title">{{config.title}}</h1>
@@ -117,7 +126,7 @@ export default {
         console.error(`Unknown tag: '${this.tag}`)
       }
     },
-    startGame() {
+    async startGame() {
       // Start the game
       
       // Find proper config for the user
@@ -145,12 +154,20 @@ export default {
       if (config.game in GAMES) {
         cancelWatch()
         this.gameLoader = () => this.component = GAMES[config.game]
-        if (config.initDescription) {
-          this.state = 'init'
-        } else {
-          this.state = 'game'
-          this.gameLoader();
-          this.gameLoader = () => undefined;
+        let condition = true
+        if (this.config.preCondition) {
+          condition = await this.checkPreCondition()
+        }
+        if (condition) {
+          if (config.initDescription) {
+            this.state = 'init'
+          } else {
+            this.state = 'game'
+            this.gameLoader();
+            this.gameLoader = () => undefined;
+          }
+        }else {
+          this.state = 'preFail'
         }
       } else {
         console.log(`Game type '${config.game}' is unknown`)
@@ -186,7 +203,7 @@ export default {
         this.debugCount++
         if (this.debugCount >= 5) {
           this.debug = true
-          this.tag = 'game:reactor_1'
+          this.tag = 'game:flappy_example'
         }
       }
     },
@@ -199,6 +216,12 @@ export default {
     },
     hide() {
       cancelWatch()
+    },
+    async checkPreCondition() {
+      this.conditionData = await getBlob(this.config.preCondition, '')
+      console.log('precon data', this.conditionData)
+      return (this.conditionData.amount > 0)
+
     },
   },
 }
