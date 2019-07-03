@@ -11,7 +11,7 @@
           </option>
         </v-ons-select>
         <div v-else>There are currently no samples waiting to be analyzed</div>
-        <button type="button" @click="markAnalysisDone" :disabled="!isValid">
+        <button type="button" @click="markAnalysisDone" :disabled="!isValid || isSubmitting">
           SUBMIT TO EVA FOR ANALYSIS
         </button>
     </div>
@@ -26,6 +26,7 @@ export default {
       operation_id: '',
       unanalyzedSamples: [],
       isValid: false,
+      isSubmitting: false,
     }
   },
   created() {
@@ -36,16 +37,20 @@ export default {
       this.isValid = !!this.operation_id;
     },
     markAnalysisDone() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
       const data = { is_analysed: true };
       axios.put(`/operation/${this.operation_id}`, data).then(res => {
         this.$ons.notification.alert('Analysis submitted to EVA for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
+        this.isSubmitting = false;
       }).catch(err => {
         // No time to make error handling that makes sense, so behold:
         this.$ons.notification.alert(
             'Failed to submit analysis',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
-      })
+        this.isSubmitting = false;
+      });
     },
     clearFields() {
       this.operation_id = '';

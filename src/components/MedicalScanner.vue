@@ -68,20 +68,28 @@ export default {
     },
     startTableScanner() {
         if (this.tableInProgress) return;
+        this.tableInProgress = true;
         this.startScanner(TABLE_SCANNER_DMX_CHANNEL).then(success => {
             if (!success) return;
             this.postOperationResults('TABLE_SCANNER');
             this.tableInProgress = true;
             this.tableInProgressTimeout = setTimeout(() => this.clearScanning(), TABLE_SCANNER_DURATION);
-        });
+        }).catch(err => {
+            console.log('error starting scanner', err);
+            this.tableInProgress = false;
+        })
     },
     startStandingScanner() {
         if (this.standingInProgress) return;
+        this.standingInProgress = true;
         this.startScanner(STANDING_SCANNER_DMX_CHANNEL).then(success => {
             if (!success) return;
             this.postOperationResults('STANDING_SCANNER');
             this.standingInProgress = true;
             this.standingInProgressTimeout = setTimeout(() => this.clearScanning(), STANDING_SCANNER_DURATION);
+        }).catch(err => {
+            console.log('error starting scanner', err);
+            this.tableInProgress = false;
         })
     },
     clearScanning() {

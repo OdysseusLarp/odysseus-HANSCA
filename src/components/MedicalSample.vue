@@ -2,7 +2,7 @@
 <template>
   <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
-    <div class="container">
+    <div class="container no-top-margin">
         <h1>TAKE A SAMPLE</h1>
         <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
         <p class="bio-id no-bio-id" v-else-if="isMedic">SCAN PATIENT BIO ID<span class="required">*</span></p>
@@ -18,7 +18,7 @@
         </v-ons-select>
         <label for="sample-description" v-if="additional_type === 'OTHER_SAMPLE'">DESCRIPTION<span class="required">*</span></label>
         <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" />
-        <button type="button" @click="submitSample" :disabled="!isValid">
+        <button type="button" @click="submitSample" :disabled="!isValid || isSubmitting">
           SUBMIT SAMPLE FOR ANALYSIS
         </button>
     </div>
@@ -40,6 +40,7 @@ export default {
       isMedic: false,
       isScientist: false,
       isValid: false,
+      isSubmitting: false,
       typeOptions: []
     }
   },
@@ -87,6 +88,8 @@ export default {
       this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER_SAMPLE' || description)
     },
     submitSample() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
       let type;
       if (this.isMedic) type = 'MEDIC';
       else if (this.isScientist) type = 'SCIENCE';
@@ -104,13 +107,15 @@ export default {
       post('/operation', data).then(res => {
         this.$ons.notification.alert('Sample sent for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
+        this.isSubmitting = false;
       }).catch(err => {
         // No time to make error handling that makes sense, so behold:
         console.log('got error', err);
         this.$ons.notification.alert(
           'Could not submit sample for analysis. Make sure that the sample ID is unique.',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
-      })
+        this.isSubmitting = false;
+      });
     },
     clearFields() {
       this.bio_id = '';
@@ -158,6 +163,9 @@ p {
   padding-left: 5vw;
   padding-right: 5vw;
   padding-bottom: 3vh;
+}
+.container.no-top-margin {
+    margin-top: 0 !important;
 }
 .required {
   color: $orange;
