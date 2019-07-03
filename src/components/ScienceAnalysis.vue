@@ -3,73 +3,77 @@
   <v-ons-page>
     <toolbar-top />
     <div class="container">
-        <h1>WHICH SAMPLE TO ANALYZE</h1>
-        <!--
-        <label for="bio-id">PATIENT BIO ID???<span class="required">*</span></label>
-        <input v-model="bio_id" type="text" id="bio-id" />
-        -->
-        <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
-        <input v-model="sample_id" type="text" id="sample-id" />
-        <label for="additional-type">SAMPLE TYPE (BLOOD, GENE...)<span class="required">*</span></label>
-        <input v-model="additional_type" type="text" id="additional-type" />
-        <label for="sample-description">DESCRIPTION</label>
-        <textarea v-model="description" id="sample-description" />
-        <button type="button" @click="submitSample">
-          SUBMIT ANALYSIS
+        <h1>ANALYZE SAMPLE</h1>
+        <label for="sample-id">SELECT SAMPLE TO ANALYZE<span class="required">*</span></label>
+        <v-ons-select name="sample-id" class="type-select" v-model="operation_id" @change="validateForm" v-if="unanalyzedSamples.length">
+          <option v-for="option in unanalyzedSamples" :value="option.key" v-bind:key="option.key">
+            {{ option.text }}
+          </option>
+        </v-ons-select>
+        <div v-else>There are currently no samples waiting to be analyzed</div>
+        <button type="button" @click="markAnalysisDone" :disabled="!isValid">
+          SUBMIT TO EVA FOR ANALYSIS
         </button>
     </div>
   </v-ons-page>
 </template>
 <script>
-import { post } from 'axios';
+import axios from 'axios';
 
 export default {
   data() {
     return {
-      // bio_id: '',
-      sample_id: '',
-      description: '',
-      additional_type: '',
+      operation_id: '',
+      unanalyzedSamples: [],
+      isValid: false,
     }
   },
+  created() {
+    this.fetchUnanalyzedSamples();
+  },
   methods: {
-    submitSample() {
-      const data = {
-        is_complete: false,
-        is_analysed: false,
-        author_id: this.$store.state.user.user.id,
-        type: 'SCIENCE',
-        additional_type: this.additional_type,
-        // bio_id: this.bio_id,
-        sample_id: this.sample_id,
-        description: this.description,
-      };
-      if (!data.author_id || !data.additional_type || !data.sample_id)
-        return this.$ons.notification.alert(
-          'Make sure you fill in the required fields',
-          { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
-      post('/operation', data).then(res => {
-        this.$ons.notification.alert('Analysis submitted', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+    validateForm(evt) {
+      this.isValid = !!this.operation_id;
+    },
+    markAnalysisDone() {
+      const data = { is_analysed: true };
+      axios.put(`/operation/${this.operation_id}`, data).then(res => {
+        this.$ons.notification.alert('Analysis submitted to EVA for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
       }).catch(err => {
         // No time to make error handling that makes sense, so behold:
         this.$ons.notification.alert(
-            'Failed to complete analysis',
+            'Failed to submit analysis',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       })
     },
     clearFields() {
-      // this.bio_id = '';
-      this.sample_id = '';
-      this.description = '';
-      this.additional_type = '';
-    }
+      this.operation_id = '';
+      this.fetchUnanalyzedSamples();
+    },
+    async fetchUnanalyzedSamples() {
+      const sampleTypes = new Map([
+        ['BLOOD_SAMPLE', 'Blood sample'],
+        ['GENE_SAMPLE', 'Gene sample'],
+        ['MATERIAL_SAMPLE', 'Material sample'],
+        ['OTHER_SAMPLE', 'Other sample'],
+      ]);
+      await axios.get('/operation').then(res => {
+        const data = res.data || [];
+        this.unanalyzedSamples = data.filter(operation => {
+          // Filter out non-samples
+          return (operation.additional_type || '').match(/.*_SAMPLE/);
+         }).map(operation => {
+           const text = `${operation.sample_id} (${sampleTypes.get(operation.additional_type)})`;
+           return { key: operation.id, text };
+        });
+      });
+      this.validateForm();
+    },
   },
-  watch: {},
-  created() {},
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
@@ -89,6 +93,7 @@ $orange: #f4a140;
 }
 h1 {
   padding-bottom: 1rem !important;
+  margin-bottom: 1rem;
 }
 label {
   font-size: 1.2rem;
@@ -112,6 +117,7 @@ textarea {
   padding: 1rem;
 }
 button {
+  margin-top: 40px !important;
   background: darken($orange, 10);
   border: 0.1rem solid darken($orange, 25);
   font-size: 1.6rem;
@@ -119,5 +125,8 @@ button {
   margin: 1rem;
   color: #fff;
   text-shadow: 0px 0px 3px rgba(0, 0, 0, .8);
+}
+button:disabled {
+    background: darken($orange, 30);
 }
 </style>
