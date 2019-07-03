@@ -4,16 +4,22 @@
     <toolbar-top />
     <div class="container">
         <h1>TAKE A SAMPLE</h1>
-        <p class="has-id" v-if="bio_id">BIO ID OK</p>
-        <p class="no-bio-id" v-else>SCAN PATIENT BIO ID</p>
+        <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isMedic">SCAN PATIENT BIO ID<span class="required">*</span></p>
+        <p class="bio-id has-id" v-else-if="isScientist && catalog_id">ARTIFACT CATALOG ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isScientist">SCAN ARTIFACT CATALOG ID<span class="required">*</span></p>
         <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
-        <input v-model="sample_id" type="text" id="sample-id" />
-        <label for="additional-type">SAMPLE TYPE (BLOOD, SALIVA...)<span class="required">*</span></label>
-        <input v-model="additional_type" type="text" id="additional-type" />
-        <label for="sample-description">DESCRIPTION</label>
-        <textarea v-model="description" id="sample-description" />
-        <button type="button" @click="submitSample">
-          SUBMIT FOR ANALYSIS
+        <input v-model="sample_id" type="text" id="sample-id" @keyup="validateForm" />
+        <label for="additional-type">SAMPLE TYPE<span class="required">*</span></label>
+        <v-ons-select name="additional-type" class="type-select" v-model="additional_type" @change="validateForm">
+          <option v-for="option in typeOptions" :value="option.key" v-bind:key="option.key">
+            {{ option.text }}
+          </option>
+        </v-ons-select>
+        <label for="sample-description" v-if="additional_type === 'OTHER'">DESCRIPTION<span class="required">*</span></label>
+        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER'" @keyup="validateForm" />
+        <button type="button" @click="submitSample" :disabled="!isValid">
+          SUBMIT SAMPLE FOR ANALYSIS
         </button>
     </div>
   </v-ons-page>
@@ -27,50 +33,82 @@ export default {
   data() {
     return {
       bio_id: '',
+      catalog_id: '',
       sample_id: '',
       description: '',
       additional_type: '',
+      isMedic: false,
+      isScientist: false,
+      isValid: false,
+      typeOptions: []
     }
+  },
+  created() {
+    const groups = new Set(get(this.$store.state, 'user.user.groups', []));
+    const isMedic = groups.has('role:medic');
+    const isScientist = groups.has('role:science');
+    if (isMedic) {
+      this.typeOptions.push({ key: 'BLOOD', text: 'Blood sample' });
+      this.typeOptions.push({ key: 'GENE', text: 'Gene sample' });
+      this.additional_type = 'BLOOD';
+    } else if (isScientist) {
+      this.typeOptions.push({ key: 'MATERIAL', text: 'Material sample' });
+      this.additional_type = 'MATERIAL';
+    }
+    this.typeOptions.push({ key: 'OTHER', text: 'Other sample' });
+    this.isMedic = isMedic;
+    this.isScientist = isScientist;
   },
   methods: {
     setBioId(message) {
-      console.log('got message', message);
-      if (message.startsWith('bio:')) {
-          console.log('starts with bio');
+      if (this.isMedic && message.startsWith('bio:')) {
           const id = message.split(':', 2)[1];
           this.bio_id = id;
-          console.log('this bio id =>', this.bio_id);
+          this.validateForm();
+      } else if (this.isScientist && message.startsWith('artifact:')) {
+          const id = message.split(':', 2)[1];
+          this.catalog_id = id;
+          this.validateForm();
       } else {
-        this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' });
+        let wantedId;
+        if (this.isMedic) wantedId = 'a Bio ID';
+        else if (this.isScientist) wantedId = 'an Artifact Catalog ID';
+        this.$ons.notification.toast(`Scanned tag is not ${wantedId}`, { timeout: 2500, animation: 'fall' });
       }
     },
+    validateForm(evt) {
+      if (evt && evt.key === 'Enter' && evt.target) {
+        evt.target.blur();
+      }
+      let id;
+      if (this.isMedic) id = this.bio_id;
+      else if (this.isScientist) id = this.catalog_id;
+      const description = this.description.trim();
+      this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER' || description)
+    },
     submitSample() {
+      let type;
+      if (this.isMedic) type = 'MEDIC';
+      else if (this.isScientist) type = 'SCIENCE';
       const data = {
         is_complete: false,
         is_analysed: false,
         author_id: this.$store.state.user.user.id,
-        type: 'MEDIC',
+        type,
         additional_type: this.additional_type,
-        bio_id: this.bio_id,
         sample_id: this.sample_id,
-        description: this.description,
       };
-      if (!data.author_id || !data.additional_type || !data.bio_id || !data.sample_id)
-        return this.$ons.notification.alert(
-          'Make sure you fill in the required fields',
-          { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
+      if (this.isMedic) data.bio_id = this.bio_id;
+      else if (this.isScientist) data.catalog_id = this.catalog_id;
+      if (this.description) data.description = this.description.trim();
       post('/operation', data).then(res => {
         this.$ons.notification.alert('Sample sent for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
       }).catch(err => {
         // No time to make error handling that makes sense, so behold:
-        const msg = get(err, 'response.data.error');
-        const mightBeBioIdError = msg.includes('operation_result_bio_id_foreign');
-
+        console.log('got error', err);
         this.$ons.notification.alert(
-          mightBeBioIdError ?
-            'Make sure that you have the correct patient Bio ID.' :
-            'Could not submit sample for analysis.',
+          'Could not submit sample for analysis. Make sure that the sample ID is unique.',
           { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       })
     },
@@ -79,6 +117,7 @@ export default {
       this.sample_id = '';
       this.description = '';
       this.additional_type = '';
+      this.validateForm();
     },
     show() {
       startWatch(this.setBioId)
@@ -93,6 +132,12 @@ export default {
 $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
+
+.bio-id {
+  padding-top: 0;
+  margin-top: 0;
+  font-size: 1.2rem;
+}
 
 p {
   font-weight: bold;
@@ -117,7 +162,7 @@ h1 {
 label {
   font-size: 1.2rem;
 }
-input, textarea {
+input, textarea, .type-select {
   background: lighten($gray, 20);
   background-color: lighten($gray, 20);
   border: 1px solid lighten($gray, 25);
@@ -126,6 +171,9 @@ input, textarea {
   color: #fff;
   margin: 1rem;
   margin-top: 0.5rem;
+}
+.type-select {
+  text-align: center;
 }
 input {
     text-align: center;
