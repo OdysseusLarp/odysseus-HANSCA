@@ -91,6 +91,7 @@ export default {
         this.additional_type = 'XRAY_SCAN';
         this.description = '';
         this.validateForm();
+        this.$ons.notification.toast(`Scan complete, results sent to EVA`, { timeout: 2500, animation: 'fall' })
     },
     startScanner(channel) {
         return post(`/dmx/event/${channel}`).then(() => {
@@ -112,7 +113,7 @@ export default {
         }
         const data = {
             is_complete: false,
-            is_analysed: false,
+            is_analysed: true, // Scan results do not need to be analysed by players
             author_id: this.$store.state.user.user.id,
             type: 'MEDIC',
             additional_type: this.additional_type,
@@ -158,6 +159,16 @@ $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
 
+.container {
+  text-align: center;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  padding-bottom: 3vh;
+}
+
 .bio-id {
   padding-top: 0;
   margin-top: 0;
@@ -188,6 +199,25 @@ v-ons-select {
     margin-top: 0 !important;
 }
 
+input, textarea, .type-select {
+  background: lighten($gray, 20);
+  background-color: lighten($gray, 20);
+  border: 1px solid lighten($gray, 25);
+  font-size: 1.6rem;
+  padding: 0.5rem;
+  color: #fff;
+  margin: 1rem;
+  margin-top: 0.5rem;
+}
+.type-select {
+  text-align: center;
+}
+textarea {
+  resize: none;
+  min-height: 8rem;
+  padding: 1rem;
+}
+
 button {
   background: darken($orange, 10);
   border: 0.1rem solid darken($orange, 25);
@@ -196,6 +226,7 @@ button {
   color: #fff;
   margin-top: 1rem;
   text-shadow: 0px 0px 3px rgba(0, 0, 0, .8);
+  padding: 15px;
 }
 button:disabled {
     background: darken($orange, 30);
