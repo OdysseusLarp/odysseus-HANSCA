@@ -16,8 +16,8 @@
             {{ option.text }}
           </option>
         </v-ons-select>
-        <label for="sample-description" v-if="additional_type === 'OTHER'">DESCRIPTION<span class="required">*</span></label>
-        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER'" @keyup="validateForm" />
+        <label for="sample-description" v-if="additional_type === 'OTHER_SAMPLE'">DESCRIPTION<span class="required">*</span></label>
+        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" />
         <button type="button" @click="submitSample" :disabled="!isValid">
           SUBMIT SAMPLE FOR ANALYSIS
         </button>
@@ -48,14 +48,14 @@ export default {
     const isMedic = groups.has('role:medic');
     const isScientist = groups.has('role:science');
     if (isMedic) {
-      this.typeOptions.push({ key: 'BLOOD', text: 'Blood sample' });
-      this.typeOptions.push({ key: 'GENE', text: 'Gene sample' });
-      this.additional_type = 'BLOOD';
+      this.typeOptions.push({ key: 'BLOOD_SAMPLE', text: 'Blood sample' });
+      this.typeOptions.push({ key: 'GENE_SAMPLE', text: 'Gene sample' });
+      this.additional_type = 'BLOOD_SAMPLE';
     } else if (isScientist) {
-      this.typeOptions.push({ key: 'MATERIAL', text: 'Material sample' });
-      this.additional_type = 'MATERIAL';
+      this.typeOptions.push({ key: 'MATERIAL_SAMPLE', text: 'Material sample' });
+      this.additional_type = 'MATERIAL_SAMPLE';
     }
-    this.typeOptions.push({ key: 'OTHER', text: 'Other sample' });
+    this.typeOptions.push({ key: 'OTHER_SAMPLE', text: 'Other sample' });
     this.isMedic = isMedic;
     this.isScientist = isScientist;
   },
@@ -84,7 +84,7 @@ export default {
       if (this.isMedic) id = this.bio_id;
       else if (this.isScientist) id = this.catalog_id;
       const description = this.description.trim();
-      this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER' || description)
+      this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER_SAMPLE' || description)
     },
     submitSample() {
       let type;
@@ -128,10 +128,17 @@ export default {
   },
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
+
+.has-id {
+    color: rgb(88, 240, 88);
+}
+.no-bio-id {
+    color: rgb(228, 78, 78);
+}
 
 .bio-id {
   padding-top: 0;
@@ -191,5 +198,8 @@ button {
   margin: 1rem;
   color: #fff;
   text-shadow: 0px 0px 3px rgba(0, 0, 0, .8);
+}
+button:disabled {
+    background: darken($orange, 30);
 }
 </style>
