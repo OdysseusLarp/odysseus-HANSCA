@@ -3,7 +3,7 @@
     <div style="text-align: center; margin-top: 50px;">
       <h1 v-if="config.gameTitle">{{config.gameTitle}}</h1>
       <p class="value">{{value}} {{config.unit}}</p>
-      <div :class="{btn:true, selected: current[index], hint}" v-for="(value, index) in values" :key="index" @click="toggle(index)">
+      <div :class="{'btn-value':true, selected: current[index], hint}" v-for="(value, index) in values" :key="index" @click="toggle(index)">
         <div class="index">{{index+1}}</div>
         <div class="hint">{{value}} {{config.unit}}</div>
       </div>
@@ -20,7 +20,7 @@
 .value {
   font-size: 300%;
 }
-.btn {
+.btn-value {
   display: inline-block;
   width: 50px;
   height: 35px;
