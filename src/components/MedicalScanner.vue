@@ -4,8 +4,11 @@
     <toolbar-top />
     <div class="container no-top-margin">
         <h1>MEDICAL SCANNERS</h1>
-        <p class="bio-id has-id" v-if="bio_id">BIO ID OK</p>
-        <p class="bio-id no-bio-id" v-else-if="!standingInProgress && !tableInProgress">SCAN PATIENT BIO ID<span class="required">*</span></p>
+        <p v-if="isScientist">Medical scanners might reveal something about artifacts too.</p>
+        <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isMedic && !standingInProgress && !tableInProgress">SCAN PATIENT BIO ID<span class="required">*</span></p>
+        <p class="bio-id has-id" v-else-if="isScientist && catalog_id">ARTIFACT CATALOG ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isScientist && !standingInProgress && !tableInProgress">SCAN ARTIFACT CATALOG ID<span class="required">*</span></p>
         <label for="additional-type">SCAN TYPE<span class="required">*</span></label>
         <v-ons-select name="additional-type" class="type-select" v-model="additional_type" @change="validateForm" :disabled="standingInProgress || tableInProgress">
           <option v-for="option in typeOptions" :value="option.key" v-bind:key="option.key">
@@ -15,10 +18,10 @@
         <label for="sample-description" class="label-description" v-if="additional_type === 'OTHER_SCAN'">DESCRIPTION<span class="required">*</span></label>
         <span class="subtitle" v-if="additional_type === 'OTHER_SCAN'">(What area your scan is targeting)</span>
         <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SCAN'" @keyup="validateForm" :disabled="standingInProgress || tableInProgress" />
-        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="standingInProgress || tableInProgress || !isValid || !bio_id" type="button" class="button-standing-scanner" @click="startStandingScanner">
+        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="standingInProgress || tableInProgress || !isValid || !(bio_id || catalog_id)" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
-        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="tableInProgress || standingInProgress || !isValid || !bio_id" type="button" class="button-table-scanner" @click="startTableScanner">
+        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="tableInProgress || standingInProgress || !isValid || !(bio_id || catalog_id)" type="button" class="button-table-scanner" @click="startTableScanner">
           {{ tableInProgress ? 'TABLE SCANNER IS SCANNING...' : 'START TABLE SCANNER' }}
         </button>
     </div>
@@ -27,6 +30,7 @@
 
 <script>
 import { post } from 'axios';
+import { get } from 'lodash';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
 
 // Should get the channel config from backend /dmx/channels
@@ -46,8 +50,11 @@ export default {
         standingInProgressTimeout: null,
         hasInput: !hasNfc(),
         bio_id: '', // Target person Bio ID
+        catalog_id: '', // Target artifact Catalog ID
         additional_type: 'XRAY_SCAN',
         isValid: true,
+        isMedic: false,
+        isScientist: false,
         description: '',
         typeOptions: [
             { key: 'XRAY_SCAN', text: 'X-Ray scan' },
@@ -56,15 +63,22 @@ export default {
     }
   },
   created() {
-      console.log('scanners in progress?', this.tableInProgress, this.standingInProgress);
+    const groups = new Set(get(this.$store.state, 'user.user.groups', []));
+    const isMedic = groups.has('role:medic');
+    const isScientist = groups.has('role:science');
+    this.isMedic = isMedic;
+    this.isScientist = isScientist;
   },
   methods: {
     validateForm(evt) {
         if (evt && evt.key === 'Enter' && evt.target) {
             evt.target.blur();
         }
+        let id;
+        if (this.isMedic) id = this.bio_id;
+        else if (this.isScientist) id = this.catalog_id;
         const description = this.description.trim();
-        this.isValid = this.bio_id && this.additional_type && (this.additional_type !== 'OTHER_SCAN' || description);
+        this.isValid = id && this.additional_type && (this.additional_type !== 'OTHER_SCAN' || description);
     },
     startTableScanner() {
         if (this.tableInProgress) return;
@@ -96,6 +110,7 @@ export default {
         this.standingInProgress = false;
         this.tableInProgress = false;
         this.bio_id = '';
+        this.catalog_id = '';
         this.additional_type = 'XRAY_SCAN';
         this.description = '';
         this.validateForm();
@@ -115,18 +130,22 @@ export default {
         });
     },
     postOperationResults(scannerType) {
-        if (!this.bio_id) {
-            console.log('no bio_id, not submitting the operation result');
+        if (!(this.bio_id || this.catalog_id)) {
+            console.log('no bio_id or catalog_id, not submitting the operation result');
             return;
         }
+        let type;
+        if (this.isMedic) type = 'MEDIC';
+        else if (this.isScientist) type = 'SCIENCE';
         const data = {
             is_complete: false,
             is_analysed: true, // Scan results do not need to be analysed by players
             author_id: this.$store.state.user.user.id,
-            type: 'MEDIC',
+            type,
             additional_type: this.additional_type,
-            bio_id: this.bio_id,
       };
+      if (this.isMedic) data.bio_id = this.bio_id;
+      else if (this.isScientist) data.catalog_id = this.catalog_id;
       const description = this.description.trim();
       if (description) data.description = description;
       post('/operation', data).then(res => {
@@ -136,15 +155,19 @@ export default {
       });
     },
     setBioId(message) {
-        console.log('got message', message);
-        if (message.startsWith('bio:')) {
-            console.log('starts with bio');
+        if (message.startsWith('bio:') && this.isMedic) {
             const id = message.split(':', 2)[1];
             this.bio_id = id;
-            console.log('this bio id =>', this.bio_id);
+            this.validateForm();
+        } else if(message.startsWith('artifact:') && this.isScientist) {
+            const id = message.split(':', 2)[1];
+            this.catalog_id = id;
             this.validateForm();
         } else {
-            this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' });
+            let wantedIdType;
+            if (this.isMedic) wantedIdType = 'a Bio ID';
+            else if (this.isScientist) wantedIdType = 'an Artifact Catalog ID';
+            this.$ons.notification.toast(`Scanned tag is not ${wantedIdType}`, { timeout: 2500, animation: 'fall' });
         }
     },
     show() {
@@ -155,7 +178,6 @@ export default {
     }
   },
   watch: {},
-  created() {},
   destroyed() {
       clearTimeout(this.tableInProgress);
       clearTimeout(this.standingInProgress);
@@ -166,6 +188,11 @@ export default {
 $gray: #171717;
 $light-gray: #383838;
 $orange: #f4a140;
+
+.required {
+  color: $orange;
+  padding-left: 5px;
+}
 
 .container {
   text-align: center;

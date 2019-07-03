@@ -18,7 +18,7 @@
         </v-ons-select>
         <label for="sample-description" v-if="additional_type === 'OTHER_SAMPLE'">DESCRIPTION<span class="required">*</span></label>
         <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" />
-        <button type="button" @click="submitSample" :disabled="!isValid || isSubmitting">
+        <button type="button" @click="submitSample" :disabled="!isValid || isSubmitting">
           SUBMIT SAMPLE FOR ANALYSIS
         </button>
     </div>
