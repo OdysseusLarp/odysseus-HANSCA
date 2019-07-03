@@ -56,6 +56,11 @@ const PAGES = [
         page: ScienceInspectObject,
       },
       {
+        icon: 'vial',
+        title: 'Take sample',
+        page: MedicalSample,
+      },
+      {
         icon: 'puzzle-piece',
         title: 'Analyze',
         page: ScienceAnalysis,
@@ -93,7 +98,7 @@ const PAGES = [
     tools: [
       {
         icon: 'diagnoses',
-        title: 'Medical scan',
+        title: 'Medical details',
         page: MedicalRecords,
       },
       {
