@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <div v-if="state == 'scanning'">
         <h2>Scanning...</h2>
