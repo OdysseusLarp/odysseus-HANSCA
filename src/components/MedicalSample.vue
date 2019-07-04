@@ -9,7 +9,7 @@
         <p class="bio-id has-id" v-else-if="isScientist && catalog_id">ARTIFACT CATALOG ID OK</p>
         <p class="bio-id no-bio-id" v-else-if="isScientist">SCAN ARTIFACT CATALOG ID<span class="required">*</span></p>
         <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
-        <input v-model="sample_id" type="text" id="sample-id" @keyup="validateForm" />
+        <input v-model="sample_id" type="text" id="sample-id" @keyup="validateForm" @blur="validateForm" />
         <label for="additional-type">SAMPLE TYPE<span class="required">*</span></label>
         <v-ons-select name="additional-type" class="type-select" v-model="additional_type" @change="validateForm">
           <option v-for="option in typeOptions" :value="option.key" v-bind:key="option.key">
@@ -105,7 +105,7 @@ export default {
       else if (this.isScientist) data.catalog_id = this.catalog_id;
       if (this.description) data.description = this.description.trim();
       post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample sent for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Sample was logged into the system', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {

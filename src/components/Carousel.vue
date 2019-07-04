@@ -46,12 +46,12 @@ const PAGES = [
     tools: [
       {
         icon: 'searchengin',
-        title: 'Scan artifact',
+        title: 'Artifact details',
         page: ScienceArtifactDetails,
       },
       {
         icon: 'futbol',
-        title: 'Inspect object',
+        title: 'Scan object',
         page: ScienceInspectObject,
       },
       {
@@ -61,7 +61,7 @@ const PAGES = [
       },
       {
         icon: 'puzzle-piece',
-        title: 'Analyze',
+        title: 'Analyze sample',
         page: ScienceAnalysis,
       },
       {
@@ -117,7 +117,7 @@ const PAGES = [
       },
       {
         icon: 'puzzle-piece',
-        title: 'Analyze',
+        title: 'Analyze sample',
         page: ScienceAnalysis,
       },
     ],

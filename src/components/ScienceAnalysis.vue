@@ -41,7 +41,7 @@ export default {
       this.isSubmitting = true;
       const data = { is_analysed: true };
       axios.put(`/operation/${this.operation_id}`, data).then(res => {
-        this.$ons.notification.alert('Analysis submitted to EVA for analysis', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Analysis submitted to EVA for processing', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {
@@ -66,8 +66,8 @@ export default {
       await axios.get('/operation').then(res => {
         const data = res.data || [];
         this.unanalyzedSamples = data.filter(operation => {
-          // Filter out non-samples
-          return (operation.additional_type || '').match(/.*_SAMPLE/);
+          // Filter out non-samples and analysed operations
+          return (operation.additional_type || '').match(/.*_SAMPLE/) && !operation.is_analysed;
          }).map(operation => {
            const text = `${operation.sample_id} (${sampleTypes.get(operation.additional_type)})`;
            return { key: operation.id, text };

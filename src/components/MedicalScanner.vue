@@ -16,8 +16,8 @@
           </option>
         </v-ons-select>
         <label for="sample-description" class="label-description" v-if="additional_type === 'OTHER_SCAN'">DESCRIPTION<span class="required">*</span></label>
-        <span class="subtitle" v-if="additional_type === 'OTHER_SCAN'">(What area your scan is targeting)</span>
-        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SCAN'" @keyup="validateForm" :disabled="standingInProgress || tableInProgress" />
+        <span class="subtitle" v-if="additional_type === 'OTHER_SCAN'">(Purpose of the scan)</span>
+        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SCAN'" @keyup="validateForm" @blur="validateForm" :disabled="standingInProgress || tableInProgress" />
         <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="standingInProgress || tableInProgress || !isValid || !(bio_id || catalog_id)" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
