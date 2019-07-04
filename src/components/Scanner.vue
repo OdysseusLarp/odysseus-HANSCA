@@ -16,12 +16,12 @@
       </div>
       <div v-if="state == 'results'">
         <h2>Results</h2>
-        <span class="result" v-for="(result, index) in results">
+        <span class="result" v-for="(result, index) in results" v-bind:key="index">
           <v-ons-progress-circular :value="result.value" :secondary-value="result.max" @click.prevent="setResultText(index)"></v-ons-progress-circular>
           <span class="percent">{{ result.value }}%</span>
         </span>
         <div class="resultTextBox">
-          <pre><vue-typer :text='resultText' :repeat="0" :type-delay="15"></vue-typer></pre>
+          <p class="pre">{{ resultText }}</p>
         </div>
     </div>
       <v-ons-bottom-toolbar transparent>
@@ -123,6 +123,18 @@ export default {
 }
 </script>
 <style>
+.pre {
+ color: #fff;
+ font-family: monospace;
+ hyphens: auto;
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+ padding: 0;
+ margin: 0;
+}
 ons-progress-circular {
   width: 64px;
   height: 64px;
@@ -136,9 +148,6 @@ ons-progress-circular {
   display: inline-block;
   width: 80px;
   height: 80px;
-}
-.vue-typer .custom.char.typed { 
-  color: #fff;
 }
 .resultTextBox {
   background-color: rgba( 0, 0, 0, 0.4);

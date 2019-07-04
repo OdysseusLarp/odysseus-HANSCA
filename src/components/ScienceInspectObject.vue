@@ -6,7 +6,7 @@
       <h1>{{ this.title }}</h1>
       <v-ons-search-input placeholder="Search" v-model="query" v-if="hasInput" @keyup="e => debouncedGetRecords(e.target.value)"></v-ons-search-input>
       <div class="resultTextBox" v-if="state === 'results'">
-        <pre><vue-typer :text="resultText" :repeat="0" :type-delay="10" v-if="resultText"></vue-typer></pre>
+        <pre class="pre">{{ resultText }}</pre>
       </div>
       <div v-else-if="state === 'processing'" class="processing">
       <h2>Processing...</h2>
@@ -26,7 +26,7 @@
 
 import { getBlob, patchBlob } from '../blob'
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { debounce, get, chunk } from 'lodash';
+import { debounce, get } from 'lodash';
 import axios from 'axios';
 
 export default {
@@ -69,9 +69,7 @@ export default {
       }
     },
     showRecord() {
-      this.resultText = chunk(get(this.res, 'data.description', this.tagNotFoundMessage).split(''), 40)
-        .map(line => line.join(''))
-        .join('\n') + '\n\nReady to scan another object';
+      this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\nReady to scan another object';
       this.state = 'results';
     },
     show() {
@@ -121,15 +119,24 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
 .result {
   text-align: center;
   display: inline-block;
   width: 80px;
   height: 80px;
 }
-.vue-typer .custom.char.typed {
-  color: #fff;
+.pre {
+ color: #fff;
+ font-family: monospace;
+ hyphens: auto;
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+ padding: 0;
+ margin: 0;
 }
 .resultTextBox {
   background-color: rgba( 0, 0, 0, 0.4);

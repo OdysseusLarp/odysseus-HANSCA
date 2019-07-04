@@ -19,7 +19,7 @@
         <label for="sample-description" v-if="additional_type === 'OTHER_SAMPLE'">DESCRIPTION<span class="required">*</span></label>
         <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" />
         <button type="button" @click="submitSample" :disabled="!isValid || isSubmitting">
-          SUBMIT SAMPLE FOR ANALYSIS
+          TAKE SAMPLE
         </button>
     </div>
   </v-ons-page>
@@ -105,7 +105,7 @@ export default {
       else if (this.isScientist) data.catalog_id = this.catalog_id;
       if (this.description) data.description = this.description.trim();
       post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample was logged into the system', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Sample is now ready to be analyzed', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {

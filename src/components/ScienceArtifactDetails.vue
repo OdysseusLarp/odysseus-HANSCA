@@ -6,10 +6,7 @@
       <h1>SCAN ARTIFACT</h1>
       <v-ons-search-input placeholder="Search" v-model="query" v-if="showInput && state === 'results'" @keyup="e => debouncedGetRecords(e.target.value)"></v-ons-search-input>
       <div class="resultTextBox" v-if="state === 'results'">
-        <pre>
-          <vue-typer class="typer" :text='resultText' :repeat="0" :type-delay="10" v-if="resultText.length < 800"></vue-typer>
-          <p class="pre" v-if="resultText.length > 800">{{ resultText }}</p>
-        </pre>
+        <p class="pre">{{ resultText }}</p>
       </div>
       <div v-else-if="state === 'processing'" class="processing">
         <h2>Processing...</h2>
@@ -149,6 +146,9 @@ ons-progress-circular {
   margin-top: 20px;
 }
 .pre {
+ color: #fff;
+ font-family: monospace;
+ hyphens: auto;
  white-space: pre-wrap;       /* css-3 */
  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
  white-space: -pre-wrap;      /* Opera 4-6 */
@@ -162,9 +162,6 @@ ons-progress-circular {
   display: inline-block;
   width: 80px;
   height: 80px;
-}
-.vue-typer .custom.char.typed {
-  color: #fff;
 }
 .resultTextBox {
   background-color: rgba( 0, 0, 0, 0.4);
