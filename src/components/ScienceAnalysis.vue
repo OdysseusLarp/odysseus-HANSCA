@@ -12,7 +12,6 @@
         </v-ons-select>
         <div v-else><span>
           There are currently no samples waiting to be analyzed.</span>
-          <span v-if="isMedic"> As a medic you can only analyze blood samples. Please ask the scientist to analyze other samples for you.</span>
         </div>
         <button type="button" @click="markAnalysisDone" :disabled="!isValid || isSubmitting">
           SUBMIT TO EVA FOR ANALYSIS
@@ -80,8 +79,8 @@ export default {
           // Filter out non-samples and analysed operations
           return (operation.additional_type || '').match(/.*_SAMPLE/) && !operation.is_analysed;
          }).filter(operation => {
-          // Filter out other samples than BLOOD_SAMPLE from medics
-          return this.isMedic ? operation.additional_type === 'BLOOD_SAMPLE' : true;
+          // Let medics only analyze samples of type MEDIC
+          return this.isMedic ? operation.type === 'MEDIC' : true;
          }).map(operation => {
            const text = `${operation.sample_id} (${sampleTypes.get(operation.additional_type)})`;
            return { key: operation.id, text };
