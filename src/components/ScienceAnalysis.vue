@@ -10,7 +10,10 @@
             {{ option.text }}
           </option>
         </v-ons-select>
-        <div v-else>There are currently no samples waiting to be analyzed</div>
+        <div v-else><span>
+          There are currently no samples waiting to be analyzed.</span>
+          <span v-if="isMedic"> As a medic you can only analyze blood samples. Please ask the scientist to analyze other samples for you.</span>
+        </div>
         <button type="button" @click="markAnalysisDone" :disabled="!isValid || isSubmitting">
           SUBMIT TO EVA FOR ANALYSIS
         </button>
@@ -19,6 +22,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { get } from 'lodash';
 
 export default {
   data() {
@@ -27,10 +31,17 @@ export default {
       unanalyzedSamples: [],
       isValid: false,
       isSubmitting: false,
+      isMedic: false,
+      isScientist: false,
     }
   },
   created() {
     this.fetchUnanalyzedSamples();
+    const groups = new Set(get(this.$store.state, 'user.user.groups', []));
+    const isMedic = groups.has('role:medic');
+    const isScientist = groups.has('role:science');
+    this.isMedic = isMedic;
+    this.isScientist = isScientist;
   },
   methods: {
     validateForm(evt) {
@@ -68,6 +79,9 @@ export default {
         this.unanalyzedSamples = data.filter(operation => {
           // Filter out non-samples and analysed operations
           return (operation.additional_type || '').match(/.*_SAMPLE/) && !operation.is_analysed;
+         }).filter(operation => {
+          // Filter out other samples than BLOOD_SAMPLE from medics
+          return this.isMedic ? operation.additional_type === 'BLOOD_SAMPLE' : true;
          }).map(operation => {
            const text = `${operation.sample_id} (${sampleTypes.get(operation.additional_type)})`;
            return { key: operation.id, text };
