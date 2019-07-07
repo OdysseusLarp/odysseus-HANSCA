@@ -108,6 +108,7 @@ export default {
   methods: {
     async start() {
       // Load the game configs into 'this'
+      localStorage.setItem('game-tag', this.tag)
       if (this.tag.startsWith('game:')) {
         const id = this.tag.split(':', 2)[1]
         this.game = await getBlob('/data/game', id)
@@ -203,7 +204,7 @@ export default {
         this.debugCount++
         if (this.debugCount >= 5) {
           this.debug = true
-          this.tag = 'game:flappy_example'
+          this.tag = localStorage.getItem('game-tag') || 'game:reactor_1'
         }
       }
     },
