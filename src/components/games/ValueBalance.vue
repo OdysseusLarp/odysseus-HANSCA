@@ -3,9 +3,9 @@
     <div style="text-align: center; margin-top: 50px;">
       <h1 v-if="config.gameTitle">{{config.gameTitle}}</h1>
       <p class="value">{{value}} {{config.unit}}</p>
-      <div :class="{'btn-value':true, selected: current[index], hint}" v-for="(value, index) in values" :key="index" @click="toggle(index)">
+      <div :class="{'btn-value':true, selected: current[index]}" v-for="(value, index) in values" :key="index" @click="toggle(index)">
         <div class="index">{{index+1}}</div>
-        <div class="hint">{{value}} {{config.unit}}</div>
+        <div v-if="hint" class="hint">{{value}} {{config.unit}}</div>
       </div>
 
       <div v-if="hintAvailable" style="margin-top: 3em">
@@ -30,13 +30,9 @@
   border: 1px solid #eee;
   text-align: center;
 }
-.btn .hint {
+.btn-value .hint {
   font-size: 70%;
   color: #777;
-  visibility: hidden;
-}
-.btn.hint .hint {
-  visibility: visible;
 }
 .selected {
   background-color: yellow;
