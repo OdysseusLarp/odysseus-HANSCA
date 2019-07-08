@@ -6,8 +6,13 @@
         <h1>TAKE A SAMPLE</h1>
         <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
         <p class="bio-id no-bio-id" v-else-if="isMedic">SCAN PATIENT BIO ID<span class="required">*</span></p>
-        <p class="bio-id has-id" v-else-if="isScientist && catalog_id">ARTIFACT CATALOG ID OK</p>
-        <p class="bio-id no-bio-id" v-else-if="isScientist">SCAN ARTIFACT CATALOG ID<span class="required">*</span></p>
+        <p class="bio-id has-id" v-else-if="isScientist && catalog_id && isCatalogIdOk">ARTIFACT CATALOG ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isScientist">SCAN/ENTER ARTIFACT CATALOG ID<span class="required">*</span></p>
+        <div v-if="isScientist" class="catalog-id-input-wrapper">
+            <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
+            <label for="catalog-id">ARTIFACT CATALOG ID<span class="required">*</span></label>
+            <input v-model="catalog_id" type="text" id="catalog-id" @keyup="onCatalogIdKeyUp" @blur="validateForm" />
+        </div>
         <label for="sample-id">UNIQUE SAMPLE ID<span class="required">*</span></label>
         <input v-model="sample_id" type="text" id="sample-id" @keyup="validateForm" @blur="validateForm" />
         <label for="additional-type">SAMPLE TYPE<span class="required">*</span></label>
@@ -25,7 +30,7 @@
   </v-ons-page>
 </template>
 <script>
-import { post } from 'axios';
+import axios from 'axios';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
 import { get } from 'lodash';
 
@@ -37,10 +42,12 @@ export default {
       sample_id: '',
       description: '',
       additional_type: '',
+      errorMessage: '',
       isMedic: false,
       isScientist: false,
       isValid: false,
       isSubmitting: false,
+      isCatalogIdOk: false,
       typeOptions: []
     }
   },
@@ -61,6 +68,11 @@ export default {
     this.isScientist = isScientist;
   },
   methods: {
+    async onCatalogIdKeyUp(evt) {
+      if (evt && evt.key === 'Enter' && evt.target) {
+          evt.target.blur();
+      };
+    },
     setBioId(message) {
       if (this.isMedic && message.startsWith('bio:')) {
           const id = message.split(':', 2)[1];
@@ -77,15 +89,28 @@ export default {
         this.$ons.notification.toast(`Scanned tag is not ${wantedId}`, { timeout: 2500, animation: 'fall' });
       }
     },
-    validateForm(evt) {
+    async validateForm(evt) {
+      this.errorMessage = '';
       if (evt && evt.key === 'Enter' && evt.target) {
         evt.target.blur();
       }
-      let id;
+      let id, isCatalogIdValid;
       if (this.isMedic) id = this.bio_id;
-      else if (this.isScientist) id = this.catalog_id;
+      else if (this.isScientist) {
+          id = this.catalog_id;
+          if (id) await this.fetchArtifactByCatalogId().then(res => isCatalogIdValid = !!res.data);
+          if (id && !isCatalogIdValid) {
+              this.errorMessage = 'Artifact not found in EOC Datahub';
+              this.isCatalogIdOk = false;
+          } else if (isCatalogIdValid) {
+              this.isCatalogIdOk = true;
+          }
+      }
       const description = this.description.trim();
       this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER_SAMPLE' || description)
+    },
+    fetchArtifactByCatalogId() {
+        return axios.get(`/science/artifact/catalog/${this.catalog_id.trim().toUpperCase()}`);
     },
     submitSample() {
       if (this.isSubmitting) return;
@@ -102,9 +127,9 @@ export default {
         sample_id: this.sample_id,
       };
       if (this.isMedic) data.bio_id = this.bio_id;
-      else if (this.isScientist) data.catalog_id = this.catalog_id;
+      else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
       if (this.description) data.description = this.description.trim();
-      post('/operation', data).then(res => {
+      axios.post('/operation', data).then(res => {
         this.$ons.notification.alert('Sample is now ready to be analyzed', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
@@ -122,6 +147,7 @@ export default {
       this.sample_id = '';
       this.description = '';
       this.additional_type = '';
+      this.isCatalogIdOk = false;
       this.validateForm();
     },
     show() {
@@ -154,6 +180,15 @@ $orange: #f4a140;
 p {
   font-weight: bold;
   margin-bottom: 40px;
+}
+.catalog-id-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+}
+.error-message {
+    color: rgb(228, 78, 78);
+    margin-bottom: 12px;
 }
 .container {
   text-align: center;
