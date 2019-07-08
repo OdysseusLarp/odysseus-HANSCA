@@ -102,12 +102,14 @@ export default {
       defaultNotBroken: 'The system is operating nominally',
       debug: false,
       debugCount: 0,
-      gameLoader: () => undefined
+      gameLoader: () => undefined,
+      startTime: 0,
     }
   },
   methods: {
     async start() {
       // Load the game configs into 'this'
+      localStorage.setItem('game-tag', this.tag)
       if (this.tag.startsWith('game:')) {
         const id = this.tag.split(':', 2)[1]
         this.game = await getBlob('/data/game', id)
@@ -153,7 +155,11 @@ export default {
       console.log('getting game component');
       if (config.game in GAMES) {
         cancelWatch()
-        this.gameLoader = () => this.component = GAMES[config.game]
+        this.gameLoader = () => {
+          this.component = GAMES[config.game]
+          this.startTime = Date.now()
+          patchBlob('/data/' + this.game.type, this.game.id, { game_start: new Date().toISOString() })
+        }
         let condition = true
         if (this.config.preCondition) {
           condition = await this.checkPreCondition()
@@ -181,7 +187,8 @@ export default {
       this.state = 'game'
     },
     success() {
-      patchBlob('/data/' + this.game.type, this.game.id, { status: 'fixed' })
+      const duration = Date.now() - this.startTime
+      patchBlob('/data/' + this.game.type, this.game.id, { status: 'fixed', game_duration: Math.floor(duration/1000) })
       if (this.config.endDescription) {
         this.state = 'end'
       } else {
@@ -203,7 +210,7 @@ export default {
         this.debugCount++
         if (this.debugCount >= 5) {
           this.debug = true
-          this.tag = 'game:flappy_example'
+          this.tag = localStorage.getItem('game-tag') || 'game:reactor_1'
         }
       }
     },
