@@ -80,7 +80,7 @@ export default {
     async onCatalogIdKeyUp(evt) {
         if (evt && evt.key === 'Enter' && evt.target) {
             evt.target.blur();
-        };
+        }
     },
     async validateForm(evt) {
         this.errorMessage = '';

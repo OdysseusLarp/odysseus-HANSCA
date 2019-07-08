@@ -71,7 +71,7 @@ export default {
     async onCatalogIdKeyUp(evt) {
       if (evt && evt.key === 'Enter' && evt.target) {
           evt.target.blur();
-      };
+      }
     },
     setBioId(message) {
       if (this.isMedic && message.startsWith('bio:')) {
