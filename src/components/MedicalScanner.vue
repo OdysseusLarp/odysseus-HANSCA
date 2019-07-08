@@ -7,8 +7,13 @@
         <p v-if="isScientist">Medical scanners might reveal something about artifacts too.</p>
         <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
         <p class="bio-id no-bio-id" v-else-if="isMedic && !standingInProgress && !tableInProgress">SCAN PATIENT BIO ID<span class="required">*</span></p>
-        <p class="bio-id has-id" v-else-if="isScientist && catalog_id">ARTIFACT CATALOG ID OK</p>
-        <p class="bio-id no-bio-id" v-else-if="isScientist && !standingInProgress && !tableInProgress">SCAN ARTIFACT CATALOG ID<span class="required">*</span></p>
+        <p class="bio-id has-id" v-else-if="isScientist && catalog_id && isCatalogIdOk">ARTIFACT CATALOG ID OK</p>
+        <p class="bio-id no-bio-id" v-else-if="isScientist && !standingInProgress && !tableInProgress">SCAN/ENTER ARTIFACT CATALOG ID<span class="required">*</span></p>
+        <p v-if="isScientist" class="catalog-id-input-wrapper">
+            <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
+            <label for="catalog-id">ARTIFACT CATALOG ID<span class="required">*</span></label>
+            <input v-model="catalog_id" type="text" id="catalog-id" @keyup="onCatalogIdKeyUp" @blur="validateForm" />
+        </p>
         <label for="additional-type">SCAN TYPE<span class="required">*</span></label>
         <v-ons-select name="additional-type" class="type-select" v-model="additional_type" @change="validateForm" :disabled="standingInProgress || tableInProgress">
           <option v-for="option in typeOptions" :value="option.key" v-bind:key="option.key">
@@ -29,7 +34,7 @@
 </template>
 
 <script>
-import { post } from 'axios';
+import axios from 'axios';
 import { get } from 'lodash';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
 
@@ -51,7 +56,9 @@ export default {
         hasInput: !hasNfc(),
         bio_id: '', // Target person Bio ID
         catalog_id: '', // Target artifact Catalog ID
+        isCatalogIdOk: false,
         additional_type: 'XRAY_SCAN',
+        errorMessage: '',
         isValid: true,
         isMedic: false,
         isScientist: false,
@@ -70,15 +77,33 @@ export default {
     this.isScientist = isScientist;
   },
   methods: {
-    validateForm(evt) {
+    async onCatalogIdKeyUp(evt) {
+        if (evt && evt.key === 'Enter' && evt.target) {
+            evt.target.blur();
+        };
+    },
+    async validateForm(evt) {
+        this.errorMessage = '';
         if (evt && evt.key === 'Enter' && evt.target) {
             evt.target.blur();
         }
-        let id;
+        let id, isCatalogIdValid;
         if (this.isMedic) id = this.bio_id;
-        else if (this.isScientist) id = this.catalog_id;
+        else if (this.isScientist) {
+            id = this.catalog_id;
+            if (id) await this.fetchArtifactByCatalogId().then(res => isCatalogIdValid = !!res.data);
+            if (id && !isCatalogIdValid) {
+                this.errorMessage = 'Artifact not found in EOC Datahub';
+                this.isCatalogIdOk = false;
+            } else if (isCatalogIdValid) {
+                this.isCatalogIdOk = true;
+            }
+        }
         const description = this.description.trim();
         this.isValid = id && this.additional_type && (this.additional_type !== 'OTHER_SCAN' || description);
+    },
+    fetchArtifactByCatalogId() {
+        return axios.get(`/science/artifact/catalog/${this.catalog_id.trim().toUpperCase()}`);
     },
     startTableScanner() {
         if (this.tableInProgress) return;
@@ -111,13 +136,14 @@ export default {
         this.tableInProgress = false;
         this.bio_id = '';
         this.catalog_id = '';
+        this.isCatalogIdOk = false;
         this.additional_type = 'XRAY_SCAN';
         this.description = '';
         this.validateForm();
         this.$ons.notification.toast(`Scan complete, results sent to EVA`, { timeout: 2500, animation: 'fall' })
     },
     startScanner(channel) {
-        return post(`/dmx/event/${channel}`).then(() => {
+        return axios.post(`/dmx/event/${channel}`).then(() => {
             this.$ons.notification.alert(
             'Scanner is initializing',
             { title: 'Initializing scanner...', maskColor: 'rgba(0, 255, 0, 0.2)' });
@@ -145,10 +171,10 @@ export default {
             additional_type: this.additional_type,
       };
       if (this.isMedic) data.bio_id = this.bio_id;
-      else if (this.isScientist) data.catalog_id = this.catalog_id;
+      else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
       const description = this.description.trim();
       if (description) data.description = description;
-      post('/operation', data).then(res => {
+      axios.post('/operation', data).then(res => {
           console.log('created operation result for the scan', data);
       }).catch(err => {
           console.log('failed to create operation result for the scan', err);
@@ -202,6 +228,17 @@ $orange: #f4a140;
   padding-left: 5vw;
   padding-right: 5vw;
   padding-bottom: 3vh;
+}
+
+.catalog-id-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0;
+}
+
+.error-message {
+    color: rgb(228, 78, 78);
+    margin-bottom: 12px;
 }
 
 .bio-id {
