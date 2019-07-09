@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       bioId: '',
-      version: '709.0840',  // <month><day>.<hour><minute>
+      version: '709.1230',  // <month><day>.<hour><minute>
     }
   },
   created() {
