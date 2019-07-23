@@ -25,3 +25,8 @@ function nfcHandler(message) {
     currentHandler(record.data)
   }
 }
+
+// Allow debugging from console
+window.nfcDebugMessage = function (msg) {
+  currentHandler(msg);
+}
