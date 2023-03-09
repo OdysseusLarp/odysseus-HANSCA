@@ -1,8 +1,8 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
-      <h1 :class="exposureRisk">{{ radiationLevel }}</h1>
+      <h1 :class="exposureRisk">{{ radiationLevel }}</h1>
       <div>
       Latitude: {{ latitude }}<br>
       Longitude: {{ longitude }}
@@ -13,7 +13,7 @@
           <td>Distance</td>
           <td>Dose</td>
         </tr>
-        <tr v-for="source in radiationSources">
+        <tr v-for="(source, index) in radiationSources" v-bind:key="index">
           <td>{{ source.type }}</td>
           <td>{{ source.distance }} m</td>
           <td>{{ source.radiationLevel }} Sv</td>

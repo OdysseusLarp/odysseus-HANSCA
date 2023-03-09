@@ -1,6 +1,6 @@
 <template>
     <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
         <div class="content">
             <p>
                 Phase sync game:

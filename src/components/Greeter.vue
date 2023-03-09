@@ -14,7 +14,7 @@
 <script>
 import Carousel from './Carousel.vue'
 import { startWatch, cancelWatch } from '../nfc'
-import { getBlob, patchBlob } from '../blob'
+import { getBlob } from '../blob'
 
 export default {
   name: "greeter",
@@ -26,7 +26,7 @@ export default {
   },
   created() {
     getBlob('/data/misc', 'hansca').then(res => {
-      const analyseBaseTime = res.data.analyseBaseTime;
+      const analyseBaseTime = res.analyseBaseTime;
       this.$store.commit('user/analyseBaseTime', analyseBaseTime || 90);
     }).catch(err => {
       console.log('could not get hansca config from backend', err);
