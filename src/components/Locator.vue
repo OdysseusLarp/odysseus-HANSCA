@@ -1,9 +1,9 @@
 <template>
   <v-ons-page>
-    <toolbar-top/></toolbar-top>
+    <toolbar-top />
     <div style="text-align: center; margin-top: 50px;">
       <img class="arrow" src="images/locator/arrow.png" :style="angle"/>
-      <p>{{ distance }}m</p>
+      <p>{{ distance }}m</p>
     </div>
   </v-ons-page>
 </template>
