@@ -5,9 +5,8 @@
   "scripts": {
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
-    "build": "cp -r fonts/* node_modules/onsenui/css/font_awesome && vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "deploy": "aws s3 sync dist/ s3://turboencabulator.space"
+    "build": "cp -r fonts/* node_modules/onsenui/css/font_awesome && NODE_ENVIRONMENT=production vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.18.0",
