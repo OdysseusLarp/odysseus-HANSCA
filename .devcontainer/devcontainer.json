@@ -1,0 +1,39 @@
+// For template details, see https://github.com/microsoft/vscode-dev-containers/tree/main/container-templates
+// For image details, see https://github.com/devcontainers/images/tree/main/src/typescript-node
+// For config options, see https://code.visualstudio.com/docs/remote/devcontainerjson-reference
+{
+	"name": "Odysseus HANSCA",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:18-bullseye",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"Vue.volar"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	"mounts": [
+		{
+			"source": "${localWorkspaceFolderBasename}-node_modules",
+			"target": "${containerWorkspaceFolder}/node_modules",
+			"type":"volume"
+		}
+	],
+	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+	"remoteEnv": {
+		"WATCHPACK_POLLING": "true",
+		"NODE_ENVIRONMENT": "development"
+	},
+	"remoteUser": "node",
+	"runArgs": [
+		// Turn off user namespace within the container (SELINUX)
+		"--security-opt",
+		"label:disable"
+	]
+}
