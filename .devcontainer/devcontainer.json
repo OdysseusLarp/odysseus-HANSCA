@@ -27,7 +27,7 @@
 	],
 	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
 	"remoteEnv": {
-		"CHOKIDAR_USEPOLLING": "true",
+		"WATCHPACK_POLLING": "true",
 		"NODE_ENVIRONMENT": "development"
 	},
 	"remoteUser": "node",
