@@ -9,7 +9,6 @@ Hand scanner for engineers, scientists and medics.
 
 ## Local setup
 
-### Environment file
 Copy `.env.example` file to a file named `.env` and changle the default environmental variables as following:
 
 ```
@@ -18,15 +17,11 @@ VUE_APP_BACKEND_USER=
 VUE_APP_BACKEND_PASS=
 ```
 
-### Install dependencies
-```
-npm install
-```
+* **`NOTE!`** Make sure you are running [Odysseus Backend](https://github.com/OdysseusLarp/odysseus-backend)!
+* Run `npm install` to install dependencies
+* Run `npm run serve` for compiles and hot-reloads for development
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+HANSCA should now be available at [http://localhost:8080/](http://localhost:8080/)
 
 ## Local setup in VSCode dev container
 
