@@ -196,8 +196,8 @@ export default {
             this.$ons.notification.toast(`Scanned tag is not ${wantedIdType}`, { timeout: 2500, animation: 'fall' });
         }
     },
-    show() {
-        startWatch(this.setBioId)
+    async show() {
+        await startWatch(this.setBioId);
     },
     hide() {
         cancelWatch()

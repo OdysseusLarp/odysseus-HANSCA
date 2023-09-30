@@ -7,13 +7,15 @@
         <v-ons-input v-model="bioId"></v-ons-input>
         <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
         <p class="version">Version {{version}}</p>
+        <v-ons-button @click="promptNfc" v-if="!isNfcPermissionGranted">Enable NFC reader</v-ons-button>
+        <v-ons-button @click="setFullScreen" v-if="!isFullScreen">Set full screen</v-ons-button>
     </div>
   </v-ons-page>
 </template>
 
 <script>
 import Carousel from './Carousel.vue'
-import { startWatch, cancelWatch } from '../nfc'
+import { startWatch, cancelWatch, isNfcPermissionGranted } from '../nfc'
 import { getBlob } from '../blob'
 
 export default {
@@ -22,9 +24,12 @@ export default {
     return {
       bioId: '',
       version: '709.1230',  // <month><day>.<hour><minute>
+      isNfcPermissionGranted: false,
+      isFullScreen: false,
     }
   },
   created() {
+    this.isFullScreen = document.webkitIsFullScreen;
     getBlob('/data/misc', 'hansca').then(res => {
       const analyseBaseTime = res.analyseBaseTime;
       this.$store.commit('user/analyseBaseTime', analyseBaseTime || 90);
@@ -66,8 +71,18 @@ export default {
       }
       this.bioId = ""
     },
-    show() {
-      startWatch(this.nfcLogin)
+    async show() {
+      this.isNfcPermissionGranted = await isNfcPermissionGranted();
+      if (this.isNfcPermissionGranted) {
+        await startWatch(this.nfcLogin);
+      }
+    },
+    async promptNfc() {
+      await startWatch(this.nfcLogin);
+    },
+    setFullScreen() {
+      document.documentElement.requestFullscreen();
+      this.isFullScreen = true;
     },
     hide() {
       cancelWatch()
