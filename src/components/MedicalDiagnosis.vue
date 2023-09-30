@@ -71,8 +71,8 @@ export default {
         this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\nReady to scan another injury';
         this.state = 'results';
     },
-    show() {
-      startWatch(this.getRecords)
+    async show() {
+      await startWatch(this.getRecords);
     },
     hide() {
       cancelWatch()

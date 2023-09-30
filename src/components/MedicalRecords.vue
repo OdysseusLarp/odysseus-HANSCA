@@ -119,8 +119,8 @@ Scan a patient ID card`;
         this.dataProgress2++
       }, 3 * analyseBaseTime * skillFactor)
     },
-    show() {
-      startWatch(this.getRecords)
+    async show() {
+      await startWatch(this.getRecords);
     },
     hide() {
       cancelWatch()

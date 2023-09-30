@@ -68,8 +68,8 @@ ${ parseEntries(this.record.entries) }
 Ready to scan a new artifact.`
     this.state = 'results';
     },
-    show() {
-    startWatch(this.getRecords)
+    async show() {
+      await startWatch(this.getRecords);
     },
     hide() {
       cancelWatch()
@@ -123,8 +123,8 @@ Ready to scan an artifact.`
   created() {
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
-  show() {
-    startWatch(this.getRecords)
+  async show() {
+    await startWatch(this.getRecords);
   },
   hide() {
     cancelWatch()

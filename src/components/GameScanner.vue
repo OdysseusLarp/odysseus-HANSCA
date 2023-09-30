@@ -218,8 +218,8 @@ export default {
       this.tag = message
       this.start()
     },
-    show() {
-      startWatch(this.handleTag)
+    async show() {
+      await startWatch(this.handleTag);
     },
     hide() {
       cancelWatch()

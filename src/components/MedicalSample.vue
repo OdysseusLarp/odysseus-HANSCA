@@ -150,8 +150,8 @@ export default {
       this.isCatalogIdOk = false;
       this.validateForm();
     },
-    show() {
-      startWatch(this.setBioId)
+    async show() {
+      await startWatch(this.setBioId);
     },
     hide() {
         cancelWatch()
