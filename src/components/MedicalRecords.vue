@@ -26,7 +26,7 @@
 
 import { getBlob, patchBlob } from '../blob'
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import { parseEntries } from '../helpers';
 
 export default {

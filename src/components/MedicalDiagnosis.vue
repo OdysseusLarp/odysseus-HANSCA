@@ -26,7 +26,7 @@
 
 import { getBlob, patchBlob } from '../blob'
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { debounce, get } from 'lodash';
+import { debounce, get } from 'lodash-es';
 import axios from 'axios';
 
 export default {

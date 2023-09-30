@@ -35,7 +35,7 @@
 
 <script>
 import axios from 'axios';
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
 
 // Should get the channel config from backend /dmx/channels

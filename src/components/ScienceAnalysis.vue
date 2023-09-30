@@ -21,7 +21,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 
 export default {
   data() {

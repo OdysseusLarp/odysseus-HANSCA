@@ -32,7 +32,7 @@
 <script>
 import axios from 'axios';
 import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { get } from 'lodash';
+import { get } from 'lodash-es';
 
 export default {
   data() {
