@@ -33,7 +33,6 @@ import MedicalSample from './MedicalSample.vue'
 import MedicalScanner from './MedicalScanner.vue'
 import ScienceArtifactDetails from './ScienceArtifactDetails.vue'
 import ScienceInspectObject from './ScienceInspectObject.vue'
-import ScienceAnalysis from './ScienceAnalysis.vue'
 import Locator from './Locator.vue'
 import ShipDatabase from './ShipDatabase.vue'
 import SampleList from './SampleList.vue';
@@ -59,11 +58,6 @@ const PAGES = [
         icon: 'vial',
         title: 'Take sample',
         page: MedicalSample,
-      },
-      {
-        icon: 'puzzle-piece',
-        title: 'Analyze sample',
-        page: ScienceAnalysis,
       },
       {
         icon: 'cash-register',
@@ -120,11 +114,6 @@ const PAGES = [
         icon: 'cash-register',
         title: 'Operate scanners',
         page: MedicalScanner,
-      },
-      {
-        icon: 'puzzle-piece',
-        title: 'Analyze sample',
-        page: ScienceAnalysis,
       },
       {
         icon: 'book',
