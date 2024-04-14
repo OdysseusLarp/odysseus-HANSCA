@@ -22,7 +22,7 @@
           </option>
         </v-ons-select>
         <label for="sample-description" v-if="additional_type === 'OTHER_SAMPLE'">DESCRIPTION<span class="required">*</span></label>
-        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" />
+        <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SAMPLE'" @keyup="validateForm" placeholder="Describe the sample you are taking"/>
         <button type="button" @click="submitSample" :disabled="!isValid || isSubmitting">
           TAKE SAMPLE
         </button>
@@ -130,7 +130,7 @@ export default {
       else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
       if (this.description) data.description = this.description.trim();
       axios.post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample is now ready to be analyzed', { title: 'Success!', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Sample has been sent for analysis', { title: 'Sample submitted', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {
