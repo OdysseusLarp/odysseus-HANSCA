@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
-    "build": "cp -r fonts/* node_modules/onsenui/css/font_awesome && NODE_ENVIRONMENT=production vue-cli-service build",
+    "build": "VERSION=$(date '+%m%d.%H%M') && export VUE_APP_VERSION=$VERSION && cp -r fonts/* node_modules/onsenui/css/font_awesome && NODE_ENVIRONMENT=production vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

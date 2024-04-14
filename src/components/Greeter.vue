@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       bioId: '',
-      version: '709.1230',  // <month><day>.<hour><minute>
+      version: process.env.VUE_APP_VERSION ?? "Unknown",  // <month><day>.<hour><minute>
       isNfcPermissionGranted: false,
       isFullScreen: false,
     }
