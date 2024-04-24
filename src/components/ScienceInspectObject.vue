@@ -69,7 +69,7 @@ export default {
       }
     },
     showRecord() {
-      this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\nReady to scan another object';
+      this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\n\nReady to scan another object';
       this.state = 'results';
     },
     async show() {
@@ -110,7 +110,7 @@ export default {
     },
   },
   created() {
-    this.title = 'INSPECT OBJECT';
+    this.title = 'SCAN OBJECT';
     this.resultText = 'Ready to scan an object';
     this.tagRegexp = /^science:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
