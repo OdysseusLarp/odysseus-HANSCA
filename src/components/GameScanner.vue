@@ -4,6 +4,7 @@
     <!-- For wtf reason v-if causes a crash when changing state -->
     <div v-show="state == 'scanning'" style="text-align: center; margin-top: 50px;">
       <h2 @click="countDebug">Scanning...</h2>
+      <p class="italic">[Scan an engineering task NFC tag]</p>
       <div v-if="debug">
         <p>Tag contents:</p>
         <v-ons-input placeholder="Tag contents" float v-model="tag"></v-ons-input>
@@ -233,3 +234,8 @@ export default {
   },
 }
 </script>
+<style lang="scss" scoped>
+p.italic {
+  font-style: italic;
+}
+</style>
