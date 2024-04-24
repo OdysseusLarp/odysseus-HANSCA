@@ -222,6 +222,9 @@ input, textarea, .type-select {
   margin: 1rem;
   margin-top: 0.5rem;
 }
+option {
+  background: lighten($gray, 45);
+}
 .type-select {
   text-align: center;
 }

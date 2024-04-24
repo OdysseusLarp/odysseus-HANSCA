@@ -36,7 +36,7 @@ export default {
       id: 0,
       query: '',
       results: [ ],
-      resultText: 'Scan a patient ID card',
+      resultText: 'Scan patient bio ID',
       hasInput: !hasNfc(),
       scanProgress: 0,
       dataProgress: 0,
@@ -51,42 +51,50 @@ export default {
   methods: {
     showRecord() {
       const person = this.record;
+      console.log("wut",parseEntries(this.record.entries), parseEntries(this.record.entries, 'MEDICAL').join('\n'))
       if (!person) return this.resultText = `Unknown person.
 
-Ready to scan another patient ID card`;
+Ready to scan another patient bio ID`;
       this.query = ''
-      this.resultText = `Medical details:
+      this.resultText = `MEDICAL DETAILS:
 
+  Name:               ${ person.full_name }
   Age:                ${ 542 - person.birth_year }
   Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
   Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
-  Blood type:         ${ person.blood_type || 'Unknown' }
+  Blood type:         ${ person.medical_blood_type || 'Unknown' }
+  Allergies:          ${ person.medical_allergies || 'None / Unknown' }
 
-  Medical records:
+CURRENT MEDICATION:
+${ person.medical_current_medication || 'None / Unknown' }
 
-${ parseEntries(this.record.entries, 'MEDICAL') }
+ACTIVE CONDITIONS:
+${ person.medical_active_conditions.replaceAll('\n\n','\n') || 'None / Unknown' }
+
+MEDICAL RECORDS:
+${ parseEntries(this.record.entries, 'MEDICAL').join('\n').replaceAll('\n\n','\n') }
 
 
-Ready to scan another patient ID card`
+Ready to scan another patient bio ID`
     this.state = 'results';
     },
     async getRecords(message) {
       console.log('messa', message);
       if (this.state === 'processing') return;
-      if (message.startsWith('card:')) {
+      if (message.startsWith('bio:')) {
         this.id = message.split( ':', 2)[1]
         if (!this.id) return;
-        this.record = await getBlob('/person/card', this.id)
+        this.record = await getBlob('/person/bio', this.id)
         if (this.record) {
           this.analyze();
         } else {
           this.showRecord();
         }
       } else {
-        this.resultText = `This does not seem to be an ID card.
+        this.resultText = `This does not seem to be an bio ID.
 
 
-Scan a patient ID card`;
+Scan patient bio ID`;
       }
     },
     analyze() {
