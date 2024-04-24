@@ -51,7 +51,6 @@ export default {
   methods: {
     showRecord() {
       const person = this.record;
-      console.log("wut",parseEntries(this.record.entries), parseEntries(this.record.entries, 'MEDICAL').join('\n'))
       if (!person) return this.resultText = `Unknown person.
 
 Ready to scan another patient bio ID`;

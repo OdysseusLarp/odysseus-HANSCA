@@ -53,7 +53,6 @@ export default {
       const artifact = this.record;
       if (!artifact) return this.resultText = `This artifact is unknown.`;
       this.query = ''
-      console.log("recoreds", parseEntries(this.record.entries));
       this.resultText = `ARTIFACT SCAN RESULTS:
 
   Name:               ${ artifact.name }
