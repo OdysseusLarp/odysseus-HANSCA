@@ -53,17 +53,21 @@ export default {
       const artifact = this.record;
       if (!artifact) return this.resultText = `This artifact is unknown.`;
       this.query = ''
-      this.resultText = `Artifact scan results:
+      this.resultText = `ARTIFACT SCAN RESULTS:
 
   Name:               ${ artifact.name }
+  Catalog ID:         ${ artifact.catalog_id }
+  Artifact origin:    ${ artifact.type || 'Unknown' }
   Discovered by:      ${ artifact.discovered_by || 'Unknown' }
   Discovery time:     ${ artifact.discovered_at || 'Unknown' }
   Discovery location: ${ artifact.discovered_from || 'Unknown' }
-  Artifact type:      ${ artifact.type || 'Unknown' }
 
-  Additional entries:
+ARTIFACT DESCRIPTION:
+${ artifact.text.split("![]")[0].trim() || 'None' }
 
-${ parseEntries(this.record.entries) }
+ADDITIONAL ENTRIES:
+${ parseEntries(this.record.entries).join('\n\n').replaceAll('\n\n', '\n')}
+
 
 Ready to scan a new artifact.`
     this.state = 'results';

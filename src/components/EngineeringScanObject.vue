@@ -1,4 +1,4 @@
-<!-- Science version of MedicalDiagnosis.vue -->
+<!-- Engineering version of MedicalDiagnosis.vue -->
 <template>
   <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
@@ -112,7 +112,7 @@ export default {
   created() {
     this.title = 'SCAN OBJECT';
     this.resultText = 'Ready to scan an object';
-    this.tagRegexp = /^science:..*/;
+    this.tagRegexp = /^engi:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
     this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
     this.debouncedGetRecords = debounce(this.getRecords, 700);

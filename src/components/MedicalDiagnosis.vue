@@ -68,7 +68,7 @@ export default {
       }
     },
     showRecord() {
-        this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\nReady to scan another injury';
+        this.resultText = get(this.res, 'data.description', this.tagNotFoundMessage) + '\n\n\nReady to scan another injury';
         this.state = 'results';
     },
     async show() {
@@ -110,7 +110,7 @@ export default {
     },
   },
   created() {
-    this.title = 'DIAGNOSE AN INJURY';
+    this.title = 'DIAGNOSE INJURY';
     this.resultText = 'Scan an injury';
     this.tagRegexp = /^medic:..*/;
     this.tagNotFoundMessage = 'This injury is unknown';
