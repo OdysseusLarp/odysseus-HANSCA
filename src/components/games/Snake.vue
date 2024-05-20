@@ -68,13 +68,11 @@ export default {
       this.snake.dy = 0;
       this.apple.x = this.getRandomInt(0, 18) * this.grid;
       this.apple.y = this.getRandomInt(0, 30) * this.grid;
-      console.log(this.apple.x, this.apple.y);
     },
     getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     },
     handleKeydown(e) {
-      console.log(e);
       if (e.which === 37 && this.snake.dx === 0) {
         this.snake.dx = -this.grid;
         this.snake.dy = 0;
@@ -90,28 +88,24 @@ export default {
       }
     },
     up() {
-      console.log("up");
       if (this.snake.dy === 0) {
         this.snake.dy = -this.grid;
         this.snake.dx = 0;
       }
     },
     down() {
-      console.log("down");
       if (this.snake.dy === 0) {
         this.snake.dy = this.grid;
         this.snake.dx = 0;
       }
     },
     left() {
-      console.log("left");
       if (this.snake.dx === 0) {
         this.snake.dx = -this.grid;
         this.snake.dy = 0;
       }
     },
     right() {
-      console.log("right");
       if (this.snake.dx === 0) {
         this.snake.dx = this.grid;
         this.snake.dy = 0;
