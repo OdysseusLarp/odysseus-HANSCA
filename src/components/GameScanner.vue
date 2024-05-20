@@ -82,6 +82,7 @@ import LightsOut from './games/LightsOut'
 import FlappyDrone from './games/FlappyDrone.vue'
 import ValueBalance from './games/ValueBalance.vue'
 import Nonogram from './games/Nonogram.vue'
+import Snake from './games/Snake.vue'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
@@ -91,6 +92,7 @@ const GAMES = {
   flappy: FlappyDrone,
   balance: ValueBalance,
   nonogram: Nonogram,
+  snake: Snake,
 }
 
 export default {
