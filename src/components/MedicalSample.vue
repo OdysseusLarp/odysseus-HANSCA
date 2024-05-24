@@ -31,8 +31,12 @@
 </template>
 <script>
 import axios from 'axios';
-import { startWatch, cancelWatch, hasNfc } from '../nfc'
-import { get } from 'lodash-es';
+import { startWatch, cancelWatch } from '../nfc'
+import { get, memoize } from 'lodash-es';
+
+const fetchArtifactByCatalogId = memoize((catalogId) => {
+  return axios.get(`/science/artifact/catalog/${catalogId.trim().toUpperCase()}`);
+});
 
 export default {
   data() {
@@ -61,6 +65,11 @@ export default {
       this.additional_type = 'BLOOD_SAMPLE';
     } else if (isScientist) {
       this.typeOptions.push({ key: 'MATERIAL_SAMPLE', text: 'Material sample' });
+      this.typeOptions.push({ key: 'MICROSCOPE_SAMPLE', text: 'Microscopic analysis' });
+      this.typeOptions.push({ key: 'AGE', text: 'Radiocarbon dating' });
+      // TODO: Use scanner for this
+      // this.typeOptions.push({ key: 'XRF_SAMPLE', text: 'X-Ray Fluorescence analysis' });
+      this.typeOptions.push({ key: 'HISTORY_SAMPLE', text: 'Historical analysis' });
       this.additional_type = 'MATERIAL_SAMPLE';
     }
     this.typeOptions.push({ key: 'OTHER_SAMPLE', text: 'Other sample' });
@@ -98,7 +107,10 @@ export default {
       if (this.isMedic) id = this.bio_id;
       else if (this.isScientist) {
           id = this.catalog_id;
-          if (id) await this.fetchArtifactByCatalogId().then(res => isCatalogIdValid = !!res.data);
+          if (id) {
+            const artifact = await fetchArtifactByCatalogId(this.catalog_id);
+            isCatalogIdValid = Boolean(artifact);
+          }
           if (id && !isCatalogIdValid) {
               this.errorMessage = 'Artifact not found in EOC Datahub';
               this.isCatalogIdOk = false;
@@ -108,9 +120,6 @@ export default {
       }
       const description = this.description.trim();
       this.isValid = id && this.sample_id && this.additional_type && (this.additional_type !== 'OTHER_SAMPLE' || description)
-    },
-    fetchArtifactByCatalogId() {
-        return axios.get(`/science/artifact/catalog/${this.catalog_id.trim().toUpperCase()}`);
     },
     submitSample() {
       if (this.isSubmitting) return;
@@ -130,7 +139,7 @@ export default {
       else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
       if (this.description) data.description = this.description.trim();
       axios.post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample has been sent for analysis', { title: 'Sample submitted', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Sample submitted for analysis. Results available within 20 minutes.', { title: 'Sample submitted', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {
