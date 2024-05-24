@@ -78,3 +78,6 @@ npm run deploy
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+# Game config examples
+See [Game config examples](docs/example_game_configs.md).

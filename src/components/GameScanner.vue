@@ -81,6 +81,8 @@ import ManualGame from './games/ManualGame'
 import LightsOut from './games/LightsOut'
 import FlappyDrone from './games/FlappyDrone.vue'
 import ValueBalance from './games/ValueBalance.vue'
+import Nonogram from './games/Nonogram.vue'
+import Snake from './games/Snake.vue'
 import { startWatch, cancelWatch } from '../nfc';
 
 const GAMES = {
@@ -89,6 +91,8 @@ const GAMES = {
   lightsout: LightsOut,
   flappy: FlappyDrone,
   balance: ValueBalance,
+  nonogram: Nonogram,
+  snake: Snake,
 }
 
 export default {
@@ -100,7 +104,7 @@ export default {
       gameConfig: {},
       config: {},
       state: 'scanning',
-      defaultNotBroken: 'The system is operating nominally',
+      defaultNotBroken: 'The system is operating normally',
       debug: false,
       debugCount: 0,
       gameLoader: () => undefined,
@@ -211,7 +215,7 @@ export default {
         this.debugCount++
         if (this.debugCount >= 5) {
           this.debug = true
-          this.tag = localStorage.getItem('game-tag') || 'game:reactor_1'
+          this.tag = localStorage.getItem('game-tag') || 'game:impulse_C1'
         }
       }
     },
