@@ -139,7 +139,7 @@ export default {
       else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
       if (this.description) data.description = this.description.trim();
       axios.post('/operation', data).then(res => {
-        this.$ons.notification.alert('Sample has been sent for analysis', { title: 'Sample submitted', maskColor: 'rgba(0, 255, 0, 0.2)' });
+        this.$ons.notification.alert('Sample submitted for analysis. Results available within 20 minutes.', { title: 'Sample submitted', maskColor: 'rgba(0, 255, 0, 0.2)' });
         this.clearFields();
         this.isSubmitting = false;
       }).catch(err => {
