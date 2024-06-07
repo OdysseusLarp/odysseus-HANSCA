@@ -8,7 +8,6 @@
         <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
         <p class="version">Version {{version}}</p>
         <v-ons-button @click="promptNfc" v-if="!isNfcPermissionGranted">Enable NFC reader</v-ons-button>
-        <v-ons-button @click="setFullScreen" v-if="!isFullScreen">Set full screen</v-ons-button>
     </div>
   </v-ons-page>
 </template>
@@ -25,11 +24,9 @@ export default {
       bioId: '',
       version: process.env.VUE_APP_VERSION ?? "Unknown",  // <month><day>.<hour><minute>
       isNfcPermissionGranted: false,
-      isFullScreen: false,
     }
   },
   created() {
-    this.isFullScreen = document.webkitIsFullScreen;
     getBlob('/data/misc', 'hansca').then(res => {
       const analyseBaseTime = res.analyseBaseTime;
       this.$store.commit('user/analyseBaseTime', analyseBaseTime || 90);
@@ -79,10 +76,6 @@ export default {
     },
     async promptNfc() {
       await startWatch(this.nfcLogin);
-    },
-    setFullScreen() {
-      document.documentElement.requestFullscreen();
-      this.isFullScreen = true;
     },
     hide() {
       cancelWatch()
