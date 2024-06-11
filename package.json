@@ -6,6 +6,7 @@
     "start": "npm run serve",
     "serve": "vue-cli-service serve",
     "build": "VERSION=$(date '+%m%d.%H%M') && export VUE_APP_VERSION=$VERSION && cp -r fonts/* node_modules/onsenui/css/font_awesome && NODE_ENVIRONMENT=production vue-cli-service build",
+    "build:live": "VERSION=$(date '+%m%d.%H%M') && export VUE_APP_VERSION=$VERSION && cp -r fonts/* node_modules/onsenui/css/font_awesome && NODE_ENVIRONMENT=production vue-cli-service build --mode live",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
