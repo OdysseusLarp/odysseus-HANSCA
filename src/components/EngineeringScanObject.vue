@@ -41,7 +41,7 @@ export default {
       diagnosis: null,
       title: '',
       tagRegexp: '',
-      invalidTagTypeMessage: '',
+      // invalidTagTypeMessage: '',
       tagNotFoundMessage: '',
       hasInput: !hasNfc(),
       scanProgress: 0,
@@ -64,8 +64,8 @@ export default {
           this.res = res;
           this.analyze();
         }
-      } else {
-        this.resultText = this.invalidTagTypeMessage;
+      // } else {
+      //   this.resultText = this.invalidTagTypeMessage;
       }
     },
     showRecord() {
@@ -114,7 +114,7 @@ export default {
     this.resultText = 'Ready to scan an object';
     this.tagRegexp = /^engi:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
-    this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
+    // this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
     this.debouncedGetRecords = debounce(this.getRecords, 700);
   },
 }

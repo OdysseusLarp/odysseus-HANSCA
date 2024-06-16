@@ -40,7 +40,7 @@ export default {
       diagnosis: null,
       title: '',
       tagRegexp: '',
-      invalidTagTypeMessage: '',
+      // invalidTagTypeMessage: '',
       tagNotFoundMessage: '',
       hasInput: !hasNfc(),
       scanProgress: 0,
@@ -63,8 +63,8 @@ export default {
             this.analyze();
           })
           .catch(e => this.resultText = this.tagNotFoundMessage);
-      } else {
-        this.resultText = this.invalidTagTypeMessage;
+      // } else {
+      //   this.resultText = this.invalidTagTypeMessage;
       }
     },
     showRecord() {
@@ -114,7 +114,7 @@ export default {
     this.resultText = 'Scan an injury';
     this.tagRegexp = /^medic:..*/;
     this.tagNotFoundMessage = 'This injury is unknown';
-    this.invalidTagTypeMessage = 'This is not recognized as an injury\n\nScan an injury';
+    // this.invalidTagTypeMessage = 'This is not recognized as an injury\n\nScan an injury';
     this.debouncedGetRecords = debounce(this.getRecords, 1000);
   },
 }

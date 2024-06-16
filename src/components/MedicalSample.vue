@@ -95,7 +95,7 @@ export default {
         let wantedId;
         if (this.isMedic) wantedId = 'a Bio ID';
         else if (this.isScientist) wantedId = 'an Artifact Catalog ID';
-        this.$ons.notification.toast(`Scanned tag is not ${wantedId}`, { timeout: 2500, animation: 'fall' });
+        // this.$ons.notification.toast(`Scanned tag is not ${wantedId}`, { timeout: 2500, animation: 'fall' });
       }
     },
     async validateForm(evt) {

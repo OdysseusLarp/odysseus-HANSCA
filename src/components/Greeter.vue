@@ -39,8 +39,8 @@ export default {
       if(message.startsWith('bio:')) {
         const id = message.split(':', 2)[1]
         this.login(id)
-      } else {
-        this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' })
+      // } else {
+      //   this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' })
       }
     },
     submit() {
@@ -62,9 +62,9 @@ export default {
         this.$store.commit('navigator/push', Carousel)
       } catch (e) {
         console.log("User login error", e)
-        this.$ons.notification.alert(
-          'Authorization to ship server failed',
-        { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
+        // this.$ons.notification.alert(
+        //   'Authorization to ship server failed',
+        // { title: 'Error', maskColor: 'rgba(255, 0, 0, 0.2)' });
       }
       this.bioId = ""
     },

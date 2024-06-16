@@ -193,7 +193,7 @@ export default {
             let wantedIdType;
             if (this.isMedic) wantedIdType = 'a Bio ID';
             else if (this.isScientist) wantedIdType = 'an Artifact Catalog ID';
-            this.$ons.notification.toast(`Scanned tag is not ${wantedIdType}`, { timeout: 2500, animation: 'fall' });
+            // this.$ons.notification.toast(`Scanned tag is not ${wantedIdType}`, { timeout: 2500, animation: 'fall' });
         }
     },
     async show() {

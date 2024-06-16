@@ -42,7 +42,7 @@ export default {
       title: '',
       tagRegexp: '',
       tagRegexpArtifactState: '',
-      invalidTagTypeMessage: '',
+      // invalidTagTypeMessage: '',
       tagNotFoundMessage: '',
       hasInput: !hasNfc(),
       scanProgress: 0,
@@ -67,8 +67,8 @@ export default {
         }
       } else if (message.match(this.tagRegexpArtifactState)){
         this.resultText = 'Artifact internal quantum configuration is: ' + message.split(':')[1];
-      } else {
-        this.resultText = this.invalidTagTypeMessage;
+      // } else {
+      //   this.resultText = this.invalidTagTypeMessage;
       }
     },
     showRecord() {
@@ -118,7 +118,7 @@ export default {
     this.tagRegexp = /^science:..*/;
     this.tagRegexpArtifactState = /^artifact_state:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
-    this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
+    // this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
     this.debouncedGetRecords = debounce(this.getRecords, 700);
   },
 }
