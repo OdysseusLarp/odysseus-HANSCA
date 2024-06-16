@@ -41,6 +41,7 @@ export default {
       diagnosis: null,
       title: '',
       tagRegexp: '',
+      tagRegexpArtifactState: '',
       invalidTagTypeMessage: '',
       tagNotFoundMessage: '',
       hasInput: !hasNfc(),
@@ -64,6 +65,8 @@ export default {
           this.res = res;
           this.analyze();
         }
+      } else if (message.match(this.tagRegexpArtifactState)){
+        this.resultText = 'Artifact internal quantum configuration is: ' + message.split(':')[1];
       } else {
         this.resultText = this.invalidTagTypeMessage;
       }
@@ -113,6 +116,7 @@ export default {
     this.title = 'SCAN OBJECT';
     this.resultText = 'Ready to scan an object';
     this.tagRegexp = /^science:..*/;
+    this.tagRegexpArtifactState = /^artifact_state:..*/;
     this.tagNotFoundMessage = 'This object is unknown';
     this.invalidTagTypeMessage = 'This is not recognized as an object\n\nReady to scan an object';
     this.debouncedGetRecords = debounce(this.getRecords, 700);
