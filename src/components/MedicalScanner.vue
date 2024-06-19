@@ -1,10 +1,10 @@
-<!-- Medical version of ScienceScanner.vue -->
 <template>
   <v-ons-page @show="show" @hide="hide">
     <toolbar-top />
     <div class="container no-top-margin">
         <h1>MEDICAL SCANNERS</h1>
-        <p v-if="isScientist">Medical scanners might reveal something about artifacts too.</p>
+        <p v-if="isScientist">Medical scanners are capable of performing XRF scans to uncover details about artifacts.</p>
+        <p v-if="isScientist" v-bind:class="{ 'has-id': isBigBatteryPluggedInMedbay === true, 'no-bio-id': isBigBatteryPluggedInMedbay === false }">The <strong>Futuro Fission Flux A550</strong> needs to be connected in the Medbay to enable XRF scans.</p>
         <p class="bio-id has-id" v-if="isMedic && bio_id">BIO ID OK</p>
         <p class="bio-id no-bio-id" v-else-if="isMedic && !standingInProgress && !tableInProgress">SCAN PATIENT BIO ID<span class="required">*</span></p>
         <p class="bio-id has-id" v-else-if="isScientist && catalog_id && isCatalogIdOk">ARTIFACT CATALOG ID OK</p>
@@ -23,10 +23,10 @@
         <label for="sample-description" class="label-description" v-if="additional_type === 'OTHER_SCAN'">DESCRIPTION<span class="required">*</span></label>
         <span class="subtitle" v-if="additional_type === 'OTHER_SCAN'">(Purpose of the scan)</span>
         <textarea v-model="description" id="sample-description" v-if="additional_type === 'OTHER_SCAN'" @keyup="validateForm" @blur="validateForm" :disabled="standingInProgress || tableInProgress" />
-        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="standingInProgress || tableInProgress || !isValid || !(bio_id || catalog_id)" type="button" class="button-standing-scanner" @click="startStandingScanner">
+        <button v-bind:class="{ 'in-progress': isInUse() }" :disabled="isScannerDisabled()" type="button" class="button-standing-scanner" @click="startStandingScanner">
           {{ standingInProgress ? 'STANDING SCANNER IS SCANNING...' : 'START STANDING SCANNER' }}
         </button>
-        <button v-bind:class="{ 'in-progress': standingInProgress || tableInProgress }" :disabled="tableInProgress || standingInProgress || !isValid || !(bio_id || catalog_id)" type="button" class="button-table-scanner" @click="startTableScanner">
+        <button v-bind:class="{ 'in-progress': isInUse() }" :disabled="isScannerDisabled()" type="button" class="button-table-scanner" @click="startTableScanner">
           {{ tableInProgress ? 'TABLE SCANNER IS SCANNING...' : 'START TABLE SCANNER' }}
         </button>
     </div>
@@ -63,10 +63,9 @@ export default {
         isMedic: false,
         isScientist: false,
         description: '',
-        typeOptions: [
-            { key: 'XRAY_SCAN', text: 'X-Ray scan' },
-            { key: 'OTHER_SCAN', text: 'Other scan' },
-        ],
+        typeOptions: [],
+        bigBatteryPollInterval: null,
+        isBigBatteryPluggedInMedbay: null,
     }
   },
   created() {
@@ -75,8 +74,48 @@ export default {
     const isScientist = groups.has('role:science');
     this.isMedic = isMedic;
     this.isScientist = isScientist;
+    if (isScientist) {
+        this.setupBigBatteryPolling();
+        this.typeOptions = [
+            { key: 'XRF_SCAN', text: 'XRF Scan' }
+        ];
+        this.additional_type = 'XRF_SCAN';
+    } else {
+        this.typeOptions = [
+            { key: 'XRAY_SCAN', text: 'X-Ray scan' },
+            { key: 'OTHER_SCAN', text: 'Other scan' },
+        ];
+        this.additional_type = 'XRAY_SCAN';
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this.bigBatteryPollInterval);
   },
   methods: {
+    isInUse() {
+        return this.tableInProgress || this.standingInProgress;
+    },
+    isScannerDisabled() {
+        const isInUse = this.isInUse();
+        const isInvalid = !this.isValid;
+        const hasNoId = !(this.bio_id || this.catalog_id);
+        const xrfBigBatteryMissing = this.isScientist && this.additional_type === 'XRF_SCAN' && !this.isBigBatteryPluggedInMedbay;
+        return isInUse || isInvalid || hasNoId || xrfBigBatteryMissing;
+    },
+    // No socket.io in HANSCA so let's go with polling
+    async setupBigBatteryPolling() {
+        const POLL_INTERVAL = 1000 * 5;
+
+        this.isBigBatteryPluggedInMedbay = await this.fetchIsBigBatteryPluggedInMedbay();
+
+        clearInterval(this.bigBatteryPollInterval);
+        this.bigBatteryPollInterval = setInterval(async () => {
+            const isPluggedIn = await this.fetchIsBigBatteryPluggedInMedbay();
+            if (isPluggedIn !== this.isBigBatteryPluggedInMedbay) {
+                this.isBigBatteryPluggedInMedbay = isPluggedIn;
+            }
+        }, POLL_INTERVAL);
+    },
     async onCatalogIdKeyUp(evt) {
         if (evt && evt.key === 'Enter' && evt.target) {
             evt.target.blur();
@@ -104,6 +143,19 @@ export default {
     },
     fetchArtifactByCatalogId() {
         return axios.get(`/science/artifact/catalog/${this.catalog_id.trim().toUpperCase()}`);
+    },
+    async fetchIsBigBatteryPluggedInMedbay() {
+        const { data } = await axios.get('/data/box/bigbattery');
+        const BigBatteryLocation = {
+            NONE: 0,
+            ENGINEERING: 1,
+            MEDBAY: 2,
+            SCIENCE: 3,
+            FIGHTER1: 4,
+            FIGHTER2: 5,
+            FIGHTER3: 6,
+        };
+        return data && data.connected_position === BigBatteryLocation.MEDBAY;
     },
     startTableScanner() {
         if (this.tableInProgress) return;
@@ -161,8 +213,11 @@ export default {
             return;
         }
         let type;
-        if (this.isMedic) type = 'MEDIC';
-        else if (this.isScientist) type = 'SCIENCE';
+        if (this.isMedic) {
+            type = 'MEDIC';
+        } else if (this.isScientist) {
+            type = 'SCIENCE';
+        }
         const data = {
             is_complete: false,
             is_analysed: true, // Scan results do not need to be analysed by players
@@ -170,17 +225,22 @@ export default {
             type,
             additional_type: this.additional_type,
       };
-      if (this.isMedic) data.bio_id = this.bio_id;
-      else if (this.isScientist) data.catalog_id = this.catalog_id.trim().toUpperCase();
+      if (this.isMedic) {
+        data.bio_id = this.bio_id;
+      } else if (this.isScientist) {
+        data.catalog_id = this.catalog_id.trim().toUpperCase();
+      }
       const description = this.description.trim();
-      if (description) data.description = description;
+      if (description) {
+        data.description = description;
+      }
       axios.post('/operation', data).then(res => {
           console.log('created operation result for the scan', data);
       }).catch(err => {
           console.log('failed to create operation result for the scan', err);
       });
     },
-    setBioId(message) {
+    readNfcTag(message) {
         if (message.startsWith('bio:') && this.isMedic) {
             const id = message.split(':', 2)[1];
             this.bio_id = id;
@@ -197,7 +257,7 @@ export default {
         }
     },
     async show() {
-        await startWatch(this.setBioId);
+        await startWatch(this.readNfcTag);
     },
     hide() {
         cancelWatch()
@@ -257,10 +317,10 @@ v-ons-select {
 }
 
 .has-id {
-    color: rgb(88, 240, 88);
+    color: rgb(132, 241, 132);
 }
 .no-bio-id {
-    color: rgb(228, 78, 78);
+    color: rgb(238, 125, 125);
 }
 
 .subtitle {
