@@ -67,8 +67,6 @@ export default {
       this.typeOptions.push({ key: 'MATERIAL_SAMPLE', text: 'Material sample' });
       this.typeOptions.push({ key: 'MICROSCOPE_SAMPLE', text: 'Microscopic analysis' });
       this.typeOptions.push({ key: 'AGE', text: 'Radiocarbon dating' });
-      // TODO: Use scanner for this
-      // this.typeOptions.push({ key: 'XRF_SAMPLE', text: 'X-Ray Fluorescence analysis' });
       this.typeOptions.push({ key: 'HISTORY_SAMPLE', text: 'Historical analysis' });
       this.additional_type = 'MATERIAL_SAMPLE';
     }
@@ -174,10 +172,10 @@ $light-gray: #383838;
 $orange: #f4a140;
 
 .has-id {
-    color: rgb(88, 240, 88);
+    color: rgb(132, 241, 132);
 }
 .no-bio-id {
-    color: rgb(228, 78, 78);
+    color: rgb(238, 125, 125);
 }
 
 .bio-id {

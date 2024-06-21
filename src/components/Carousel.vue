@@ -22,6 +22,7 @@
     </div>
   </v-ons-page>
 </template>
+
 <script>
 import Scanner from './Scanner.vue'
 import GameScanner from './GameScanner'
@@ -35,8 +36,6 @@ import ScienceArtifactDetails from './ScienceArtifactDetails.vue'
 import ScienceInspectObject from './ScienceInspectObject.vue'
 import EngineeringScanObject from './EngineeringScanObject.vue'
 import Locator from './Locator.vue'
-import ShipDatabase from './ShipDatabase.vue'
-import SampleList from './SampleList.vue';
 
 const PAGES = [
   {
@@ -62,7 +61,7 @@ const PAGES = [
       },
       {
         icon: 'cash-register',
-        title: 'Operate scanners',
+        title: 'XRF Scan',
         page: MedicalScanner,
       },
     ],
