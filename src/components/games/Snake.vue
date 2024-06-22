@@ -42,18 +42,36 @@ export default {
         y: 320
       },
       requestId: null,
-      showFps: process.env.NODE_ENV !== 'production',
+      debug: process.env.NODE_ENV !== 'production',
       frameRateCounter: 0,
       frameRateCountStartedAt: Date.now(),
-      fps: ''
+      fps: '',
+      maxFps: 90,
+      lastFrameRenderedAt: Date.now(),
+      // Support for touch controls (swipe)
+      touchStartX: 0,
+      touchStartY: 0,
+      touchEndX: 0,
+      touchEndY: 0,
     };
+  },
+  computed: {
+    showFps() {
+      return this.debug;
+    }
   },
   mounted() {
     this.initGame();
     document.addEventListener('keydown', this.handleKeydown);
+    document.addEventListener('touchstart', this.handleTouchStart);
+    document.addEventListener('touchmove', this.handleTouchMove);
+    document.addEventListener('touchend', this.handleTouchEnd);
   },
   beforeDestroy() {
     document.removeEventListener('keydown', this.handleKeydown);
+    document.removeEventListener('touchstart', this.handleTouchStart);
+    document.removeEventListener('touchmove', this.handleTouchMove);
+    document.removeEventListener('touchend', this.handleTouchEnd);
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
     }
@@ -71,6 +89,16 @@ export default {
         this.frameRateCountStartedAt = Date.now()
       }
     },
+   shouldRender() {
+    const now = Date.now();
+    const timeSinceLastFrame = now - this.lastFrameRenderedAt;
+    const timeBetweenFrames = 1000 / this.maxFps;
+    if (timeSinceLastFrame > timeBetweenFrames) {
+      this.lastFrameRenderedAt = now - (timeSinceLastFrame % timeBetweenFrames);
+      return true;
+    }
+    return false;
+   },
     resetGame() {
       this.snake.x = 160;
       this.snake.y = 160;
@@ -85,18 +113,21 @@ export default {
       return Math.floor(Math.random() * (max - min)) + min;
     },
     handleKeydown(e) {
-      if (e.which === 37 && this.snake.dx === 0) {
-        this.snake.dx = -this.grid;
-        this.snake.dy = 0;
-      } else if (e.which === 38 && this.snake.dy === 0) {
-        this.snake.dy = -this.grid;
-        this.snake.dx = 0;
-      } else if (e.which === 39 && this.snake.dx === 0) {
-        this.snake.dx = this.grid;
-        this.snake.dy = 0;
-      } else if (e.which === 40 && this.snake.dy === 0) {
-        this.snake.dy = this.grid;
-        this.snake.dx = 0;
+      switch (e.key) {
+        case 'ArrowLeft':
+          this.left();
+          break;
+        case 'ArrowUp':
+          this.up();
+          break;
+        case 'ArrowRight':
+          this.right();
+          break;
+        case 'ArrowDown':
+          this.down();
+          break;
+        default:
+          break;
       }
     },
     up() {
@@ -124,11 +155,17 @@ export default {
       }
     },
     loop() {
+      if (!this.shouldRender()) {
+        this.requestId = requestAnimationFrame(this.loop);
+        return;
+      }
+
+      this.calculateFPS();
+
       this.requestId = requestAnimationFrame(this.loop);
       if (++this.count < this.speed) {
         return;
       }
-      this.calculateFPS();
       this.count = 0;
       const canvas = this.$refs.gameCanvas;
       const context = canvas.getContext('2d');
@@ -182,8 +219,40 @@ export default {
         context.font = '20px verdana';
         context.fillText(`FPS: ${this.fps}`, 10, 20);
       }
-    }
-  }
+    },
+    handleTouchStart(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+    },
+    handleTouchMove(e) {
+      this.touchEndX = e.touches[0].clientX;
+      this.touchEndY = e.touches[0].clientY;
+    },
+    handleTouchEnd() {
+      const deltaX = this.touchEndX - this.touchStartX;
+      const deltaY = this.touchEndY - this.touchStartY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > 0) {
+          // Swipe Right
+          this.right();
+        } else {
+          // Swipe Left
+          this.left();
+        }
+      } else {
+        // Vertical swipe
+        if (deltaY > 0) {
+          // Swipe Down
+          this.down();
+        } else {
+          // Swipe Up
+          this.up();
+        }
+      }
+    },
+  },
 };
 </script>
 
