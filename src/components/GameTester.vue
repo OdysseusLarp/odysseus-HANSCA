@@ -4,6 +4,9 @@
     <div v-show="state === 'scanning'" class="game-selector">
       <h1>Select game</h1>
       <div class="game-selection-button-container">
+        <v-ons-select id="skill-level" v-model="skillLevel">
+          <option v-for="level in skillLevels" :value="level.value" :key="level.value">Difficulty: {{ level.label }}</option>
+        </v-ons-select>
         <v-ons-button disabled @click="onGameSelected('phasesync')">Phase Sync</v-ons-button>
         <v-ons-button disabled @click="onGameSelected('manual')">Manual</v-ons-button>
         <v-ons-button disabled @click="onGameSelected('lightsout')">Lights Out</v-ons-button>
@@ -121,6 +124,12 @@ export default {
       debugCount: 0,
       gameLoader: () => undefined,
       startTime: 0,
+      skillLevel: 'default',
+      skillLevels: [
+        { label: 'Default', value: 'default' },
+        { label: 'Novice (hard)', value: 'skill:novice' },
+        { label: 'Master (medium)', value: 'skill:master' },
+        { label: 'Expert (easy)', value: 'skill:expert' },]
     }
   },
   methods: {
@@ -159,15 +168,12 @@ export default {
       this.startGame();
     },
     async startGame() {
-      // Start the game
       const gameConfig = JSON.parse(JSON.stringify(this.gameConfig));
+      const difficulty = this.skillLevel;
 
-      // Find proper config for the user
-      const groups = this.$store.state.user.user.groups;
-      const roleForConfig = groups.find(g => g in this.gameConfig)
-      let config
-      if (roleForConfig) {
-        config = gameConfig;
+      let config;
+      if (difficulty in gameConfig) {
+        config = gameConfig[difficulty];
       } else {
         config = gameConfig.default;
         console.log('Using default config', config)
