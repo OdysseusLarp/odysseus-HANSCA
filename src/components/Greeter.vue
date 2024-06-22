@@ -4,7 +4,7 @@
         <h1>HANSCA</h1>
         <h3>The Standard Universal Hand Scanner</h3>
         <p class="bioid">Bio ID:</p>
-        <v-ons-input v-model="bioId"></v-ons-input>
+        <v-ons-input v-model="bioId" @keyup="onKeyPress" autofocus></v-ons-input>
         <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
         <p class="version">Version {{version}}</p>
         <v-ons-button @click="promptNfc" v-if="!isNfcPermissionGranted">Enable NFC reader</v-ons-button>
@@ -41,6 +41,11 @@ export default {
         this.login(id)
       } else {
         this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' })
+      }
+    },
+    onKeyPress(event) {
+      if (event.key === 'Enter') {
+        this.submit()
       }
     },
     submit() {
