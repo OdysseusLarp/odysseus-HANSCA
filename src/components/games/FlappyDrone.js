@@ -34,7 +34,7 @@ class FlappyDrone {
       y: 0
     }]
 
-    this.maxFps = 90;
+    this.maxFps = 58; // Old HANSCA phones have 60Hz refresh rate, so we can't go higher than this
     this.lastFrameRenderedAt = Date.now();
     this.debug = debug;
     this.showFps = this.debug;

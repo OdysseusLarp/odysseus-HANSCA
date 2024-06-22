@@ -36,7 +36,7 @@ export default {
       frameRateCounter: 0,
       frameRateCountStartedAt: Date.now(),
       fps: '',
-      maxFps: 90,
+      maxFps: 58, // Old HANSCA phones have 60Hz refresh rate, so we can't go higher than this
       lastFrameRenderedAt: Date.now(),
       // Support for touch controls (swipe)
       touchStartX: 0,
