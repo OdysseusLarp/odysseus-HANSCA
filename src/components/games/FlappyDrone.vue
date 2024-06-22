@@ -7,7 +7,7 @@
 </template>
 <script>
 import FlappyDrone from './FlappyDrone'
-import { getBlob, patchBlob } from '../../blob'
+import { getBlob } from '../../blob'
 
 export default {
   name: 'FlappyDrone',

@@ -157,7 +157,6 @@ export default {
         return
       }
 
-      console.log('getting game component');
       if (config.game in GAMES) {
         cancelWatch()
         this.gameLoader = () => {

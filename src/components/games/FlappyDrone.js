@@ -1,4 +1,5 @@
-import { getBlob, patchBlob } from '../../blob'
+import { patchBlob } from '../../blob'
+
 class FlappyDrone {
   constructor(context, canvas, config, game) {
     this.ctx = context
@@ -17,7 +18,7 @@ class FlappyDrone {
     this.pipeNorth.src = 'images/flappy/pipeNorth.png'
     this.pipeSouth.src = 'images/flappy/pipeSouth.png'
 
-    this.scor = 0
+    this.currentScore = 0
 
     this.gap = config.gap
     this.interval = config.interval
@@ -26,24 +27,37 @@ class FlappyDrone {
     this.gravity = config.gravity
     this.collision = false
     this.requiredScore = config.score
-    console.log( this.requiredScore)
+    console.log("FlappyDrone required score:", this.requiredScore)
 
     this.pipes = [{
       x: canvas.width,
       y: 0
     }]
+
+    this.debug = process.env.NODE_ENV === 'development';
+
+    this.showFps = this.debug;
+    this.frameRateCounter = 0;
+    this.frameRateCountStartedAt = Date.now();
+    this.fps = "";
+
+  }
+
+  calculateFPS() {
+    this.frameRateCounter++
+    if (Date.now() - this.frameRateCountStartedAt >= 1000) {
+      this.fps = this.frameRateCounter
+      this.frameRateCounter = 0
+      this.frameRateCountStartedAt = Date.now()
+    }
   }
 
   getGap() {
     return this.pipeNorth.height + this.gap
   }
 
-  getHeigth() {
+  getHeight() {
     return this.cvs.height
-  }
-
-  getWidth() {
-    return this.cvs.width
   }
 
   fly() {
@@ -65,6 +79,8 @@ class FlappyDrone {
 
       this.drawScore()
 
+      this.drawFps()
+
       if (this.checkComplete()) {
         this.game.$emit('gameSuccess')
       } else {
@@ -75,6 +91,7 @@ class FlappyDrone {
           this.game.$emit('gameFail')
         }
       }
+      this.calculateFPS()
     }
 
     go()
@@ -82,7 +99,16 @@ class FlappyDrone {
   }
 
   checkComplete() {
-    return this.scor >= this.requiredScore
+    return this.currentScore >= this.requiredScore
+  }
+
+  drawFps() {
+    if (!this.showFps) {
+      return;
+    }
+    this.ctx.fillStyle = '#fff'
+    this.ctx.font = "20px verdana"
+    this.ctx.fillText(`FPS: ${this.fps}`, 10, 40)
   }
 
   drawPipes() {
@@ -101,12 +127,20 @@ class FlappyDrone {
 
       this.detectCollision(this.pipes[i].x, this.pipes[i].y)
 
-      this.score(this.pipes[i].x)
+      this.incrementScore(this.pipes[i].x)
     }
   }
 
   drawDrone(x = 0, y = 0) {
     this.ctx.drawImage(this.drone, x, y)
+    if (this.debug) {
+      this.drawDroneBorders()
+    }
+  }
+
+  drawDroneBorders() {
+    this.ctx.strokeStyle = 'red'
+    this.ctx.strokeRect(this.bX, this.bY, this.drone.width, this.drone.height)
   }
 
   drawBg() {
@@ -114,7 +148,7 @@ class FlappyDrone {
   }
 
   drawFg() {
-    this.ctx.drawImage(this.fg, 0, this.getHeigth() - this.fg.height)
+    this.ctx.drawImage(this.fg, 0, this.getHeight() - this.fg.height)
   }
 
   drawPipeNorth(x = 0, y = 0) {
@@ -125,10 +159,10 @@ class FlappyDrone {
     this.ctx.drawImage(this.pipeSouth, x, y)
   }
 
-  drawScore(x, y) {
-    this.ctx.fillStyle = '#000'
+  drawScore() {
+    this.ctx.fillStyle = '#fff'
     this.ctx.font = "20px verdana"
-    this.ctx.fillText(`Score: ${this.scor}`, 40, this.cvs.height - 50)
+    this.ctx.fillText(`Score: ${this.currentScore}`, 10, 20);
   }
 
   detectCollision(x, y) {
@@ -139,9 +173,9 @@ class FlappyDrone {
     }
   }
 
-  score(x) {
-    if (x == 5) {
-      this.scor++
+  incrementScore(x) {
+    if (x === 5) {
+      this.currentScore++
     }
   }
 }

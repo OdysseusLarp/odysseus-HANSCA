@@ -41,7 +41,11 @@ export default {
         x: 320,
         y: 320
       },
-      requestId: null
+      requestId: null,
+      showFps: process.env.NODE_ENV !== 'production',
+      frameRateCounter: 0,
+      frameRateCountStartedAt: Date.now(),
+      fps: ''
     };
   },
   mounted() {
@@ -58,6 +62,14 @@ export default {
     initGame() {
       this.resetGame();
       this.requestId = requestAnimationFrame(this.loop);
+    },
+    calculateFPS() {
+      this.frameRateCounter++
+      if (Date.now() - this.frameRateCountStartedAt >= 1000) {
+        this.fps = this.frameRateCounter
+        this.frameRateCounter = 0
+        this.frameRateCountStartedAt = Date.now()
+      }
     },
     resetGame() {
       this.snake.x = 160;
@@ -116,6 +128,7 @@ export default {
       if (++this.count < this.speed) {
         return;
       }
+      this.calculateFPS();
       this.count = 0;
       const canvas = this.$refs.gameCanvas;
       const context = canvas.getContext('2d');
@@ -163,6 +176,12 @@ export default {
           }
         }
       });
+
+      if (this.showFps) {
+        context.fillStyle = '#fff';
+        context.font = '20px verdana';
+        context.fillText(`FPS: ${this.fps}`, 10, 20);
+      }
     }
   }
 };

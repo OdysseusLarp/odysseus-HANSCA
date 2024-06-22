@@ -148,7 +148,6 @@ export default {
         case Games.FlappyDrone:
           this.tag = 'game:flappy'
           this.gameConfig = cloneDeep(flappyConfig);
-          console.log("CONFIG SET TO FLABBY CONFIG", flappyConfig);
           break
         case Games.ValueBalance:
           this.tag = 'game:balance'
@@ -184,7 +183,6 @@ export default {
       }
       this.config = config
 
-      console.log('getting game component');
       if (config.game in GameComponents) {
         this.gameLoader = () => {
           this.component = GameComponents[config.game]
