@@ -2,19 +2,7 @@
   <v-ons-page>
     <div id="app" style="text-align: center;">
       <div class="info">Snake length: {{this.snake.maxCells}} / {{this.targetSnakeLength}}</div>
-      <canvas width="288" height="480" ref="gameCanvas"></canvas>
-    </div>
-    <div class="arrow" style="text-align: center;">
-      <div class="row">
-        <div></div>
-        <div><ons-button @click="up" class="arrow-btn"><ons-icon icon="arrow-up"></ons-icon></ons-button></div>
-        <div></div>
-      <div class="row">
-        <ons-button @click="left" class="arrow-btn"><ons-icon icon="arrow-left"></ons-icon></ons-button>
-        <ons-button @click="down" class="arrow-btn"><ons-icon icon="arrow-down"></ons-icon></ons-button>
-        <ons-button @click="right" class="arrow-btn"><ons-icon icon="arrow-right"></ons-icon></ons-button>
-      </div>
-      </div>
+      <canvas width="400" height="700" ref="gameCanvas"></canvas>
     </div>
   </v-ons-page>
 </template>
@@ -106,11 +94,22 @@ export default {
       this.snake.maxCells = 4;
       this.snake.dx = this.grid;
       this.snake.dy = 0;
-      this.apple.x = this.getRandomInt(0, 18) * this.grid;
-      this.apple.y = this.getRandomInt(0, 30) * this.grid;
+
+      const applePosition = this.getFreeApplePosition();
+      this.apple.x = applePosition.x;
+      this.apple.y = applePosition.y;
     },
     getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
+    },
+    getFreeApplePosition() {
+      let x = this.getRandomInt(0, 18) * this.grid;
+      let y = this.getRandomInt(0, 30) * this.grid;
+      while (this.snake.cells.some(cell => cell.x === x && cell.y === y)) {
+        x = this.getRandomInt(0, 18) * this.grid;
+        y = this.getRandomInt(0, 30) * this.grid;
+      }
+      return { x, y };
     },
     handleKeydown(e) {
       switch (e.key) {
@@ -203,8 +202,9 @@ export default {
           if (this.snake.maxCells === this.targetSnakeLength) {
             this.$emit('gameSuccess');
           }
-          this.apple.x = this.getRandomInt(0, 18) * this.grid;
-          this.apple.y = this.getRandomInt(0, 30) * this.grid;
+          const applePosition = this.getFreeApplePosition();
+          this.apple.x = applePosition.x;
+          this.apple.y = applePosition.y;
         }
 
         for (let i = index + 1; i < this.snake.cells.length; i++) {
@@ -276,14 +276,5 @@ canvas {
 .info {
   padding-top: 10px;
   margin-bottom: 10px;
-}
-
-.arrow-btn{
-  width: 50px;
-  height: 50px;
-  margin-left: 4px;
-  margin-right: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
 }
 </style>
