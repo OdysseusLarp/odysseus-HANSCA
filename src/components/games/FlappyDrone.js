@@ -34,13 +34,15 @@ class FlappyDrone {
       y: 0
     }]
 
+    this.maxFps = 90;
+    this.lastFrameRenderedAt = Date.now();
+
     this.debug = process.env.NODE_ENV === 'development';
 
     this.showFps = this.debug;
     this.frameRateCounter = 0;
     this.frameRateCountStartedAt = Date.now();
     this.fps = "";
-
   }
 
   calculateFPS() {
@@ -64,9 +66,24 @@ class FlappyDrone {
     this.bY -= 25
   }
 
-  draw() {
+  shouldRender() {
+    const now = Date.now();
+    const timeSinceLastFrame = now - this.lastFrameRenderedAt;
+    const timeBetweenFrames = 1000 / this.maxFps;
+    if (timeSinceLastFrame > timeBetweenFrames) {
+      this.lastFrameRenderedAt = now - (timeSinceLastFrame % timeBetweenFrames);
+      return true;
+    }
+    return false;
+  }
 
+  draw() {
     const go = () => {
+      if (!this.shouldRender()) {
+        requestAnimationFrame(go)
+        return
+      }
+
       this.drawBg()
 
       this.drawPipes()
@@ -95,7 +112,6 @@ class FlappyDrone {
     }
 
     go()
-
   }
 
   checkComplete() {
