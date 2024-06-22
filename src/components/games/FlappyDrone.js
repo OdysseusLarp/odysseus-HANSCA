@@ -1,7 +1,7 @@
 import { patchBlob } from '../../blob'
 
 class FlappyDrone {
-  constructor(context, canvas, config, game) {
+  constructor(context, canvas, config, game, debug = false) {
     this.ctx = context
     this.cvs = canvas
     this.game = game
@@ -36,9 +36,7 @@ class FlappyDrone {
 
     this.maxFps = 90;
     this.lastFrameRenderedAt = Date.now();
-
-    this.debug = process.env.NODE_ENV === 'development';
-
+    this.debug = debug;
     this.showFps = this.debug;
     this.frameRateCounter = 0;
     this.frameRateCountStartedAt = Date.now();

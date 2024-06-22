@@ -12,6 +12,8 @@ export default {
   name: 'Snake',
   props: [ 'config' ],
   data() {
+    const groups = this.$store.state.user.user.groups || [];
+    const isGm = groups.includes('role:admin');
     return {
       speed: this.config.speed, // 12 is ok bigger the slower
       targetSnakeLength: this.config.targetSnakeLength,
@@ -30,7 +32,7 @@ export default {
         y: 320
       },
       requestId: null,
-      debug: process.env.NODE_ENV !== 'production',
+      debug: process.env.NODE_ENV !== 'production' || isGm,
       frameRateCounter: 0,
       frameRateCountStartedAt: Date.now(),
       fps: '',
