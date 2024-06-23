@@ -1,8 +1,8 @@
 <template>
   <v-ons-page>
-    <div id="app" style="text-align: center;">
+    <div id="app" class="snake-app">
       <div class="info">Snake length: {{this.snake.maxCells}} / {{this.targetSnakeLength}}</div>
-      <canvas width="400" height="700" ref="gameCanvas"></canvas>
+      <canvas width="288" height="480" ref="gameCanvas"></canvas>
     </div>
   </v-ons-page>
 </template>
@@ -163,8 +163,8 @@ export default {
 
       this.calculateFPS();
 
-      this.requestId = requestAnimationFrame(this.loop);
       if (++this.count < this.speed) {
+        this.requestId = requestAnimationFrame(this.loop);
         return;
       }
       this.count = 0;
@@ -221,6 +221,8 @@ export default {
         context.font = '20px verdana';
         context.fillText(`FPS: ${this.fps}`, 10, 20);
       }
+
+      this.requestId = requestAnimationFrame(this.loop);
     },
     handleTouchStart(e) {
       this.touchStartX = e.touches[0].clientX;
@@ -273,10 +275,16 @@ body {
 
 canvas {
   border: 1px solid white;
+  height: 95%;
 }
 
 .info {
   padding-top: 10px;
   margin-bottom: 10px;
+}
+
+.snake-app {
+  text-align: center;
+  height: 95%;
 }
 </style>
