@@ -3,9 +3,14 @@
     <div class="greeter">
         <h1>HANSCA</h1>
         <h3>The Standard Universal Hand Scanner</h3>
-        <p class="bioid">Bio ID:</p>
-        <v-ons-input v-model="bioId"></v-ons-input>
-        <v-ons-button class="submit" @click="submit">Submit</v-ons-button>
+        <div class="login-form" v-if="showLoginInput">
+          <p class="bioid">Scan or enter your Bio ID:</p>
+          <v-ons-input v-model="bioId" @keyup="onKeyPress" autofocus></v-ons-input>
+          <v-ons-button class="submit" @click="submit">Proceed</v-ons-button>
+        </div>
+        <div class="login-form" v-else>
+          <p class="bioid">Scan your Bio ID to proceed</p>
+        </div>
         <p class="version">Version {{version}}</p>
         <v-ons-button @click="promptNfc" v-if="!isNfcPermissionGranted">Enable NFC reader</v-ons-button>
     </div>
@@ -26,6 +31,11 @@ export default {
       isNfcPermissionGranted: false,
     }
   },
+  computed: {
+    showLoginInput() {
+      return !this.isNfcPermissionGranted || process.env.NODE_ENV !== 'production';
+    }
+  },
   created() {
     getBlob('/data/misc', 'hansca').then(res => {
       const analyseBaseTime = res.analyseBaseTime;
@@ -41,6 +51,11 @@ export default {
         this.login(id)
       } else {
         this.$ons.notification.toast('Scanned tag is not a Bio ID', { timeout: 2500, animation: 'fall' })
+      }
+    },
+    onKeyPress(event) {
+      if (event.key === 'Enter') {
+        this.submit()
       }
     },
     submit() {
@@ -87,6 +102,13 @@ export default {
 .greeter {
   width: 100%;
   height: 100%;
+  vertical-align: middle;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.login-form {
   vertical-align: middle;
   display: flex;
   flex-direction: column;

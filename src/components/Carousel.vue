@@ -27,7 +27,8 @@
 import Scanner from './Scanner.vue'
 import GameScanner from './GameScanner'
 import RadiationDetector from './RadiationDetector.vue'
-import GameTest from './GameTest.vue'
+import GameTester from './GameTester.vue'
+import PhaseSyncGameTest from './PhaseSyncGameTest.vue'
 import MedicalRecords from './MedicalRecords.vue'
 import MedicalDiagnosis from './MedicalDiagnosis.vue'
 import MedicalSample from './MedicalSample.vue'
@@ -114,7 +115,7 @@ const PAGES = [
   },
   {
     id: 'admin',
-    title: 'Off-game admin',
+    title: 'HANSCA / GM / ADMIN / DEV',
     role: 'role:admin',
     color: '#9c4e4e',
     tools: [
@@ -126,7 +127,12 @@ const PAGES = [
       {
         icon: 'atom',
         title: 'Phase sync game test',
-        page: GameTest,
+        page: PhaseSyncGameTest,
+      },
+      {
+        icon: 'atom',
+        title: 'Game tester',
+        page: GameTester,
       },
       {
         icon: 'atom',

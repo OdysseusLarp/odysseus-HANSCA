@@ -1,17 +1,21 @@
 <template>
-  <v-ons-page @show="show" @hide="hide">
+  <v-ons-page>
     <toolbar-top></toolbar-top>
-    <!-- For wtf reason v-if causes a crash when changing state -->
-    <div v-show="state == 'scanning'" style="text-align: center; margin-top: 50px;">
-      <h2 @click="countDebug">Scanning...</h2>
-      <p class="italic">[Scan an engineering task NFC tag]</p>
-      <div v-if="debug">
-        <p>Tag contents:</p>
-        <v-ons-input placeholder="Tag contents" float v-model="tag"></v-ons-input>
-        <v-ons-button @click="start">Start</v-ons-button>
+    <div v-show="state === 'scanning'" class="game-selector">
+      <h1>Select game</h1>
+      <div class="game-selection-button-container">
+        <v-ons-select id="skill-level" v-model="skillLevel">
+          <option v-for="level in skillLevels" :value="level.value" :key="level.value">Difficulty: {{ level.label }}</option>
+        </v-ons-select>
+        <v-ons-button disabled @click="onGameSelected('phasesync')">Phase Sync</v-ons-button>
+        <v-ons-button disabled @click="onGameSelected('manual')">Manual</v-ons-button>
+        <v-ons-button disabled @click="onGameSelected('lightsout')">Lights Out</v-ons-button>
+        <v-ons-button @click="onGameSelected('flappy')">Flappy Drone</v-ons-button>
+        <v-ons-button disabled @click="onGameSelected('balance')">Value Balance</v-ons-button>
+        <v-ons-button disabled @click="onGameSelected('nonogram')">Nonogram</v-ons-button>
+        <v-ons-button @click="onGameSelected('snake')">Snake</v-ons-button>
       </div>
     </div>
-    <div></div>
     <div v-show="state == 'init'">
       <div class="desc">
         <h1 v-if="config.title">{{config.title}}</h1>
@@ -75,7 +79,6 @@
 </style>
 
 <script>
-import { getBlob, patchBlob } from '../blob'
 import PhaseSyncGame from './games/PhaseSyncGame'
 import ManualGame from './games/ManualGame'
 import LightsOut from './games/LightsOut'
@@ -83,9 +86,11 @@ import FlappyDrone from './games/FlappyDrone.vue'
 import ValueBalance from './games/ValueBalance.vue'
 import Nonogram from './games/Nonogram.vue'
 import Snake from './games/Snake.vue'
-import { startWatch, cancelWatch } from '../nfc';
+import { flappyConfig } from './game-test-configs/flappy';
+import { snakeConfig } from './game-test-configs/snake';
+import cloneDeep from "lodash-es";
 
-const GAMES = {
+const GameComponents = {
   phasesync: PhaseSyncGame,
   manual: ManualGame,
   lightsout: LightsOut,
@@ -93,6 +98,16 @@ const GAMES = {
   balance: ValueBalance,
   nonogram: Nonogram,
   snake: Snake,
+}
+
+const Games = {
+  PhaseSync: 'phasesync',
+  Manual: 'manual',
+  LightsOut: 'lightsout',
+  FlappyDrone: 'flappy',
+  ValueBalance: 'balance',
+  Nonogram: 'nonogram',
+  Snake: 'snake',
 }
 
 export default {
@@ -109,42 +124,57 @@ export default {
       debugCount: 0,
       gameLoader: () => undefined,
       startTime: 0,
+      skillLevel: 'default',
+      skillLevels: [
+        { label: 'Default', value: 'default' },
+        { label: 'Novice (hard)', value: 'skill:novice' },
+        { label: 'Master (medium)', value: 'skill:master' },
+        { label: 'Expert (easy)', value: 'skill:expert' },]
     }
   },
   methods: {
-    async start() {
-      // Load the game configs into 'this'
-      localStorage.setItem('game-tag', this.tag)
-      if (this.tag.startsWith('game:')) {
-        const id = this.tag.split(':', 2)[1]
-        this.game = await getBlob('/data/game', id)
-        if (!this.game.game_config) {
-          console.error(`Game '${id}' did not contain game_config`)
+    async onGameSelected(gameType) {
+      console.log("Launching game", gameType);
+      switch (gameType) {
+        case Games.PhaseSync:
+          this.tag = 'game:phasesync'
+          break
+        case Games.Manual:
+          this.tag = 'game:manual'
+          break
+        case Games.LightsOut:
+          this.tag = 'game:lightsout'
+          break
+        case Games.FlappyDrone:
+          this.tag = 'game:flappy'
+          this.gameConfig = cloneDeep(flappyConfig);
+          break
+        case Games.ValueBalance:
+          this.tag = 'game:balance'
+          break
+        case Games.Nonogram:
+          this.tag = 'game:nonogram'
+          break
+        case Games.Snake:
+          this.tag = 'game:snake'
+          this.gameConfig = cloneDeep(snakeConfig);
+          break
+        default:
+          console.error(`Unknown game type: ${gameType}`)
           return
-        }
-
-        this.gameConfig = await getBlob('/data/game_config', this.game.game_config)
-        if (!this.gameConfig.default) {
-          console.error(`Game config '${this.game.game_config}' did not contain default config`)
-          return
-        }
-        this.startGame()
-      } else {
-        console.error(`Unknown tag: '${this.tag}`)
       }
+      this.game = {};
+      this.startGame();
     },
     async startGame() {
-      // Start the game
-      
-      // Find proper config for the user
-      const groups = this.$store.state.user.user.groups;
-      const roleForConfig = groups.find(g => g in this.gameConfig)
-      let config
-      if (roleForConfig) {
-        config = this.gameConfig[roleForConfig]
-        console.log('Using config for role ' + roleForConfig, config)
+      const gameConfig = JSON.parse(JSON.stringify(this.gameConfig));
+      const difficulty = this.skillLevel;
+
+      let config;
+      if (difficulty in gameConfig) {
+        config = gameConfig[difficulty];
       } else {
-        config = this.gameConfig.default
+        config = gameConfig.default;
         console.log('Using default config', config)
       }
 
@@ -152,22 +182,13 @@ export default {
         config = { ...config, ...this.game.config }
       }
       this.config = config
-      if (this.game.status !== 'broken') {
-        this.state = 'notbroken'
-        return
-      }
 
-      if (config.game in GAMES) {
-        cancelWatch()
+      if (config.game in GameComponents) {
         this.gameLoader = () => {
-          this.component = GAMES[config.game]
+          this.component = GameComponents[config.game]
           this.startTime = Date.now()
-          patchBlob('/data/' + this.game.type, this.game.id, { game_start: new Date().toISOString() })
         }
         let condition = true
-        if (this.config.preCondition) {
-          condition = await this.checkPreCondition()
-        }
         if (condition) {
           if (config.initDescription) {
             this.state = 'init'
@@ -188,15 +209,14 @@ export default {
         this.gameLoader();
         this.gameLoader = () => undefined;
       }
-      this.state = 'game'
+      this.state = 'game';
     },
     success() {
-      const duration = Date.now() - this.startTime
-      patchBlob('/data/' + this.game.type, this.game.id, { status: 'fixed', game_duration: Math.floor(duration/1000) })
       if (this.config.endDescription) {
-        this.state = 'end'
+        this.state = 'end';
       } else {
-        this.close()
+        this.$ons.notifications.alert('Game completed', { title: 'Game completed!', maskColor: 'rgba(0, 255, 0, 0.2)' })
+        this.close();
       }
     },
     fail() {
@@ -209,36 +229,23 @@ export default {
     close() {
       this.$store.commit('navigator/pop')
     },
-    countDebug() {
-      if (!this.debug) {
-        this.debugCount++
-        if (this.debugCount >= 5) {
-          this.debug = true
-          this.tag = localStorage.getItem('game-tag') || 'game:impulse_C1'
-        }
-      }
-    },
-    handleTag(message) {
-      this.tag = message
-      this.start()
-    },
-    async show() {
-      await startWatch(this.handleTag);
-    },
-    hide() {
-      cancelWatch()
-    },
-    async checkPreCondition() {
-      this.conditionData = await getBlob(this.config.preCondition, '')
-      console.log('precon data', this.conditionData)
-      return (this.conditionData.amount > 0)
-
-    },
   },
 }
 </script>
 <style lang="scss" scoped>
 p.italic {
   font-style: italic;
+}
+.game-selection-button-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  > * {
+    margin: 0.5em;
+    max-width: 300px;
+    text-align: center;
+  }
 }
 </style>

@@ -1,20 +1,8 @@
 <template>
   <v-ons-page>
-    <div id="app" style="text-align: center;">
+    <div id="app" class="snake-app">
       <div class="info">Snake length: {{this.snake.maxCells}} / {{this.targetSnakeLength}}</div>
       <canvas width="288" height="480" ref="gameCanvas"></canvas>
-    </div>
-    <div class="arrow" style="text-align: center;">
-      <div class="row">
-        <div></div>
-        <div><ons-button @click="up" class="arrow-btn"><ons-icon icon="arrow-up"></ons-icon></ons-button></div>
-        <div></div>
-      <div class="row">
-        <ons-button @click="left" class="arrow-btn"><ons-icon icon="arrow-left"></ons-icon></ons-button>
-        <ons-button @click="down" class="arrow-btn"><ons-icon icon="arrow-down"></ons-icon></ons-button>
-        <ons-button @click="right" class="arrow-btn"><ons-icon icon="arrow-right"></ons-icon></ons-button>
-      </div>
-      </div>
     </div>
   </v-ons-page>
 </template>
@@ -24,6 +12,8 @@ export default {
   name: 'Snake',
   props: [ 'config' ],
   data() {
+    const groups = this.$store.state.user.user.groups || [];
+    const isGm = groups.includes('role:admin');
     return {
       speed: this.config.speed, // 12 is ok bigger the slower
       targetSnakeLength: this.config.targetSnakeLength,
@@ -41,15 +31,37 @@ export default {
         x: 320,
         y: 320
       },
-      requestId: null
+      requestId: null,
+      debug: process.env.NODE_ENV !== 'production' || isGm,
+      frameRateCounter: 0,
+      frameRateCountStartedAt: Date.now(),
+      fps: '',
+      maxFps: 58, // Old HANSCA phones have 60Hz refresh rate, so we can't go higher than this
+      lastFrameRenderedAt: Date.now(),
+      // Support for touch controls (swipe)
+      touchStartX: 0,
+      touchStartY: 0,
+      touchEndX: 0,
+      touchEndY: 0,
     };
+  },
+  computed: {
+    showFps() {
+      return this.debug;
+    }
   },
   mounted() {
     this.initGame();
     document.addEventListener('keydown', this.handleKeydown);
+    document.addEventListener('touchstart', this.handleTouchStart);
+    document.addEventListener('touchmove', this.handleTouchMove);
+    document.addEventListener('touchend', this.handleTouchEnd);
   },
   beforeDestroy() {
     document.removeEventListener('keydown', this.handleKeydown);
+    document.removeEventListener('touchstart', this.handleTouchStart);
+    document.removeEventListener('touchmove', this.handleTouchMove);
+    document.removeEventListener('touchend', this.handleTouchEnd);
     if (this.requestId) {
       cancelAnimationFrame(this.requestId);
     }
@@ -59,6 +71,24 @@ export default {
       this.resetGame();
       this.requestId = requestAnimationFrame(this.loop);
     },
+    calculateFPS() {
+      this.frameRateCounter++
+      if (Date.now() - this.frameRateCountStartedAt >= 1000) {
+        this.fps = this.frameRateCounter
+        this.frameRateCounter = 0
+        this.frameRateCountStartedAt = Date.now()
+      }
+    },
+   shouldRender() {
+    const now = Date.now();
+    const timeSinceLastFrame = now - this.lastFrameRenderedAt;
+    const timeBetweenFrames = 1000 / this.maxFps;
+    if (timeSinceLastFrame > timeBetweenFrames) {
+      this.lastFrameRenderedAt = now - (timeSinceLastFrame % timeBetweenFrames);
+      return true;
+    }
+    return false;
+   },
     resetGame() {
       this.snake.x = 160;
       this.snake.y = 160;
@@ -66,25 +96,39 @@ export default {
       this.snake.maxCells = 4;
       this.snake.dx = this.grid;
       this.snake.dy = 0;
-      this.apple.x = this.getRandomInt(0, 18) * this.grid;
-      this.apple.y = this.getRandomInt(0, 30) * this.grid;
+
+      const applePosition = this.getFreeApplePosition();
+      this.apple.x = applePosition.x;
+      this.apple.y = applePosition.y;
     },
     getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min)) + min;
     },
+    getFreeApplePosition() {
+      let x = this.getRandomInt(0, 18) * this.grid;
+      let y = this.getRandomInt(0, 30) * this.grid;
+      while (this.snake.cells.some(cell => cell.x === x && cell.y === y)) {
+        x = this.getRandomInt(0, 18) * this.grid;
+        y = this.getRandomInt(0, 30) * this.grid;
+      }
+      return { x, y };
+    },
     handleKeydown(e) {
-      if (e.which === 37 && this.snake.dx === 0) {
-        this.snake.dx = -this.grid;
-        this.snake.dy = 0;
-      } else if (e.which === 38 && this.snake.dy === 0) {
-        this.snake.dy = -this.grid;
-        this.snake.dx = 0;
-      } else if (e.which === 39 && this.snake.dx === 0) {
-        this.snake.dx = this.grid;
-        this.snake.dy = 0;
-      } else if (e.which === 40 && this.snake.dy === 0) {
-        this.snake.dy = this.grid;
-        this.snake.dx = 0;
+      switch (e.key) {
+        case 'ArrowLeft':
+          this.left();
+          break;
+        case 'ArrowUp':
+          this.up();
+          break;
+        case 'ArrowRight':
+          this.right();
+          break;
+        case 'ArrowDown':
+          this.down();
+          break;
+        default:
+          break;
       }
     },
     up() {
@@ -112,8 +156,15 @@ export default {
       }
     },
     loop() {
-      this.requestId = requestAnimationFrame(this.loop);
+      if (!this.shouldRender()) {
+        this.requestId = requestAnimationFrame(this.loop);
+        return;
+      }
+
+      this.calculateFPS();
+
       if (++this.count < this.speed) {
+        this.requestId = requestAnimationFrame(this.loop);
         return;
       }
       this.count = 0;
@@ -153,8 +204,9 @@ export default {
           if (this.snake.maxCells === this.targetSnakeLength) {
             this.$emit('gameSuccess');
           }
-          this.apple.x = this.getRandomInt(0, 18) * this.grid;
-          this.apple.y = this.getRandomInt(0, 30) * this.grid;
+          const applePosition = this.getFreeApplePosition();
+          this.apple.x = applePosition.x;
+          this.apple.y = applePosition.y;
         }
 
         for (let i = index + 1; i < this.snake.cells.length; i++) {
@@ -163,8 +215,48 @@ export default {
           }
         }
       });
-    }
-  }
+
+      if (this.showFps) {
+        context.fillStyle = '#fff';
+        context.font = '20px verdana';
+        context.fillText(`FPS: ${this.fps}`, 10, 20);
+      }
+
+      this.requestId = requestAnimationFrame(this.loop);
+    },
+    handleTouchStart(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+    },
+    handleTouchMove(e) {
+      this.touchEndX = e.touches[0].clientX;
+      this.touchEndY = e.touches[0].clientY;
+    },
+    handleTouchEnd() {
+      const deltaX = this.touchEndX - this.touchStartX;
+      const deltaY = this.touchEndY - this.touchStartY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Horizontal swipe
+        if (deltaX > 0) {
+          // Swipe Right
+          this.right();
+        } else {
+          // Swipe Left
+          this.left();
+        }
+      } else {
+        // Vertical swipe
+        if (deltaY > 0) {
+          // Swipe Down
+          this.down();
+        } else {
+          // Swipe Up
+          this.up();
+        }
+      }
+    },
+  },
 };
 </script>
 
@@ -183,6 +275,7 @@ body {
 
 canvas {
   border: 1px solid white;
+  height: 95%;
 }
 
 .info {
@@ -190,12 +283,8 @@ canvas {
   margin-bottom: 10px;
 }
 
-.arrow-btn{
-  width: 50px;
-  height: 50px;
-  margin-left: 4px;
-  margin-right: 4px;
-  margin-top: 8px;
-  padding-top: 8px;
+.snake-app {
+  text-align: center;
+  height: 95%;
 }
 </style>
