@@ -275,12 +275,14 @@ body {
 
 canvas {
   border: 1px solid white;
-  height: 95%;
+  height: 85%;
 }
 
 .info {
   padding-top: 10px;
   margin-bottom: 10px;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .snake-app {
