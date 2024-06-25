@@ -130,7 +130,8 @@ export default {
         }
         this.startGame()
       } else {
-        console.error(`Unknown tag: '${this.tag}`)
+        console.warn(`Not a game tag: '${this.tag}`);
+        this.$ons.notification.toast('This is not an engineering task', { timeout: 2500, animation: 'fall' })
       }
     },
     async startGame() {
