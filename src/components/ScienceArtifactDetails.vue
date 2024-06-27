@@ -51,7 +51,12 @@ export default {
   methods: {
     showRecord() {
       const artifact = this.record;
-      if (!artifact) return this.resultText = `This artifact is unknown.`;
+      if (!artifact) {
+        this.resultText = `There are no details for this artifact.`
+        this.query = ''
+        this.state = 'results';
+        return;
+      }
       this.query = ''
       this.resultText = `ARTIFACT SCAN RESULTS:
 

@@ -51,9 +51,14 @@ export default {
   methods: {
     showRecord() {
       const person = this.record;
-      if (!person) return this.resultText = `Unknown person.
+      if (!person) {
+        this.query = ''
+        this.resultText = `Unknown person.
 
 Ready to scan another patient bio ID`;
+        return;
+      }
+
       this.query = ''
       this.resultText = `MEDICAL DETAILS:
 
