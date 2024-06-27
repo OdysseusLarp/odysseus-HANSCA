@@ -73,7 +73,7 @@ CURRENT MEDICATION:
 ${ person.medical_current_medication || 'None / Unknown' }
 
 ACTIVE CONDITIONS:
-${ person.medical_active_conditions.replaceAll('\n\n','\n') || 'None / Unknown' }
+${ person.medical_active_conditions?.replaceAll('\n\n','\n') || 'None / Unknown' }
 
 MEDICAL RECORDS:
 ${ parseEntries(this.record.entries, 'MEDICAL').join('\n').replaceAll('\n\n','\n') }
