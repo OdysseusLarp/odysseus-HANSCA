@@ -158,10 +158,10 @@ export default {
     if (pages.length == 0) {
       this.$store.commit('navigator/reset')
       return this.$ons.notification.alert(
-          `${user.full_name}, you are not authorized to use any HANSCA features.`,
+          `You are not authorized to use any HANSCA features.`,
         { title: 'Unauthorized', maskColor: 'rgba(255, 0, 0, 0.2)' });
     }
-    this.$ons.notification.toast(`Welcome to HANSCA, ${user.full_name}!`, { timeout: 2500, animation: 'fall' })
+    this.$ons.notification.toast(`Welcome to HANSCA!`, { timeout: 2500, animation: 'fall' })
     return {
       carouselIndex: 0,
       pages,

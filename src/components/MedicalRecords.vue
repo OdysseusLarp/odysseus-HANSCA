@@ -62,7 +62,6 @@ Ready to scan another patient bio ID`;
       this.query = ''
       this.resultText = `MEDICAL DETAILS:
 
-  Name:               ${ person.full_name }
   Age:                ${ 542 - person.birth_year }
   Fitness level:      ${ person.medical_fitness_level || 'Unknown' }
   Last fitness check: ${ person.medical_last_fitness_check || 'Unknown' }
